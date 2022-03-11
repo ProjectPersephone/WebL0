@@ -7,7 +7,7 @@ import java.util.*;
 import com.example.demo.AUGType; // for now: S, T, Oxy
 
 public class Type {
-    static LinkedList<Type> uniques = new LinkedList<Type>();
+    static HashMap<AUGType,Type> uniques = new HashMap<AUGType,Type>();
 
     AUGType type;
 
@@ -41,16 +41,13 @@ public class Type {
 
     static public Type of (AUGType augt, Type t_x, Type t_y) {
 
-        Iterator<Type> ti = uniques.iterator();
+        Type t = uniques.get(augt);
 
-        while (ti.hasNext()) {
-            Type t = ti.next();
-            if (t.type == augt && t.x == t_x && t.y == t_y)
-                return t;
-        }
+        if (t != null && t.x == t_x && t.y == t_y)
+            return t;
 
         Type tr = new Type (augt, t_x, t_y);
-        uniques.add (tr);
+        uniques.put (augt, tr);
 
         return tr;
     }
@@ -77,6 +74,12 @@ public class Type {
     }
 
     public static String all_types() {
-        return "all types=" + ls_str (uniques);
+        String s = "all types=";
+
+        for (AUGType k : uniques.keySet()) {
+            s += uniques.get(k).str();
+        }
+
+        return s;
     }
 }

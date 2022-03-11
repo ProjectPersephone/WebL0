@@ -12,26 +12,26 @@ import com.example.demo.Type;
 import com.example.demo.TypedTree;
 
 public class Lexicon {
-    public
+    private
         static // should allow multiple lexicons but for now, just one for English NSM
            HashMap<String,LinkedList<Type>> map; 
 
-    public static void insert(String w, LinkedList<Type> tl) {
-        map.put (w, tl);
+    private static LinkedList<Type> insert(String w) {
+        LinkedList<Type> l = new LinkedList<Type>();
+        map.put (w, l);
+        return l;
     }
 
-    public static LinkedList<Type> lookup(String w) {
+    public static LinkedList<Type> types_for(String w) {
         return map.get (w);
     }
 
-    public static void add_one_word_and_type (String w, Type t) {
-        LinkedList<Type> tl = new LinkedList<Type>();
-        tl.add(t);
-        Lexicon.insert (w,tl);
-    }
-
     public Lexicon() {
+
         map = new HashMap<String,LinkedList<Type>>();
+
+        // English-specific:
+
         Type T = Type.term();
         Type S = Type.sentence();
         AUGType O = AUGType.O;
@@ -40,42 +40,122 @@ public class Lexicon {
         Type p1  = Type.of (O,T,S); // e.g., is
         Type cop = Type.of (O,a,p1);
         Type osc = Type.of (O,S,c);
-//        Type something = Type.of (O,p1,p1);  //  Main.hs "today"
-        Type sometime = Type.of (O,S,S);  //  Main.hs "tomorrow", should be same as c
 
-        // better to read from file or have per-language init modules in Java
-
-
-        Lexicon.add_one_word_and_type ("BAD", a);
-        Lexicon.add_one_word_and_type ("GOOD", a);
-
-        LinkedList<Type> for_is = new LinkedList<Type>();
-        for_is.add (cop);
-        for_is.add (p1);
-        Lexicon.insert ("IS", for_is);
-
-        Lexicon.add_one_word_and_type ("THINK", p1);
-        Lexicon.add_one_word_and_type ("BECAUSE", osc);
-        Lexicon.add_one_word_and_type ("IF", osc);
-        Lexicon.add_one_word_and_type ("NOW", sometime);
-
-        LinkedList<Type> how_to_something = new LinkedList<Type>();
         Type something = Type.of (AUGType.SOMETHING,null,null);
-        assertNotNull (something);
-        how_to_something.add (something);
-        how_to_something.add (T); // until other cases covered
-        Lexicon.insert ("SOMETHING", how_to_something);
+        Type sometime = Type.of (O,S,S);  //  Main.hs "tomorrow", should be same as c
+        Type somewhere = Type.of (AUGType.SOMEWHERE,null,null);
+        Type someone = Type.of(AUGType.SOMEONE,null,null);
+        Type some_cause = Type.of(AUGType.BECAUSE,null,null);
+        Type somehow = Type.of(AUGType.LIKE,null,null);
+        Type some = Type.of(AUGType.THIS,null,null);  // when not modifying, so maybe not needed
 
-        LinkedList<Type> how_to_say = new LinkedList<Type>();
+//  somewhether IF
+//  somemuch(?) MANY -- quantifier
+//  -- evaluator/goodness -- "somewhat"
+//  -- intensifier - very
+
+        Tab.reset();
+        for (AUGType t : AUGType.values()) {
+            Tab.ln ("t=" + t + " string=" + t.toString());
+            insert (t.toString());
+        }
+
         Type say = Type.of (AUGType.SAY, null, null);
-        assertNotNull (say);
+
+/* I */
+        LinkedList <Type> I = types_for("I");
+        I.add (Type.of (O, say, S));
+        I.add (someone);
+        I.add (Type.of (O, p1, S)); // too general, but anyway
+/* YOU,
+   SOMEONE,
+   SOMETHING, */
+        LinkedList<Type> like = types_for ("SOMETHING");
+        like.add (something);
+        like.add (T);
+/* BODY,
+   PEOPLE,
+   KIND,
+   PART,
+   WORDS,
+
+   THIS,
+   THE_SAME,
+   OTHER,
+   ONE,
+   TWO,
+   MUCH_many,
+   ALL,
+   SOME,
+   LITTLE,
+
+   TIME_when,
+   NOW, */
+        types_for ("NOW").add (sometime);
+/* MOMENT,
+   FOR_SOME_TIME,
+   A_LONG_TIME,
+   A_SHORT_TIME,
+   BEFORE,
+   AFTER,
+
+   WANT,
+   DONT_WANT,
+   FEEL,
+   DO,
+   SAY, */
+        LinkedList<Type> how_to_say = types_for ("SAY");
         how_to_say.add (Type.of (O, something, say));
         how_to_say.add (Type.of (O, S, say));
-        Lexicon.insert ("SAY", how_to_say);
+/* KNOW,
+   SEE,
+   HEAR,
+   THINK, */ 
+        types_for ("THINK").add (p1);
+/* HAPPEN,
+   IS,    // copula */
+        LinkedList<Type> is = types_for("IS");
+        is.add (Type.of(O,someone,p1));
+        is.add (Type.of(O,something,p1));
+        is.add (cop);
+/* LIVE,
+   DIE,
+   THERE_IS,
+   BE,    // ... somewhere */
+        LinkedList<Type> be = types_for("BE");
+        be.add (Type.of(O,something,somewhere)); // was p1
+        be.add (Type.of(O,someone,somewhere));
+/* IS_MINE,
+   MOVE,
+   TOUCH,
+   INSIDE,
+   SOMEWHERE,
+   HERE, */
+        types_for("HERE").add(somewhere);
+/* ABOVE,
+   BELOW,
+   ON_ONE_SIDE,
+   NEAR,
+   FAR,
 
-        LinkedList<Type> I_can_do = new LinkedList<Type>();
-        I_can_do.add (Type.of (O, say, S));
-        I_can_do.add (T);   // until other cases covered
-        Lexicon.insert ("I", I_can_do);
+   NOT,
+   CAN,
+   BECAUSE, */
+        types_for("BECAUSE").add(osc);
+/* IF, */
+        types_for ("IF").add(osc);
+/* MAYBE,
+   LIKE,
+   VERY,
+   MORE,
+
+   SMALL,
+   BIG,
+   BAD, */
+        types_for ("BAD").add(a);
+/* GOOD, */
+        types_for("GOOD").add (a);
+/* TRUE
+*/
     }
 }
