@@ -25,7 +25,7 @@ public class TypedTree {
         Iterator<Type> ti = types.iterator();
         while (ti.hasNext()) {
             Type t = ti.next();
-            s += t.str();
+            s += t.toString();
             if (ti.hasNext()) s += " ";
         }
         return s + "]";
@@ -35,7 +35,7 @@ public class TypedTree {
         Iterator<TypedTree> tti = tt_ls.iterator();
         String s = "[";
         while (tti.hasNext()) {
-            s += tti.next().str();
+            s += tti.next().toString();
             if (tti.hasNext())
                 s += " ";
         }

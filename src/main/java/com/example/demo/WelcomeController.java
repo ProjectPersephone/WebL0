@@ -217,7 +217,7 @@ public class WelcomeController {
 
     public static JSONObject TypeToJSON(Type ty) {
         JSONObject o = new JSONObject();
-        o.put ("type", ty.str());
+        o.put ("type", ty.toString());
         return o;
     }
 

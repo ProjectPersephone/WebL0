@@ -27,13 +27,13 @@ public class Type {
         y = the_other;
     }
 
-    public String str() {
+    public String toString() {
         String s = this.type.name();
 
         if (type == AUGType.O) {
             assertNotNull (x);
             assertNotNull (y);
-            return s + x.str() + y.str();
+            return s + x.toString() + y.toString();
         }
         else
             return s;
@@ -64,7 +64,7 @@ public class Type {
         String s = "{";
         Iterator<Type> ti = l.iterator();
         while (ti.hasNext()) {
-            s += ti.next().str();
+            s += ti.next().toString();
             if (ti.hasNext())
                 s += ",";
         }
@@ -77,7 +77,7 @@ public class Type {
         String s = "all types=";
 
         for (AUGType k : uniques.keySet()) {
-            s += uniques.get(k).str();
+            s += uniques.get(k).toString();
         }
 
         return s;
