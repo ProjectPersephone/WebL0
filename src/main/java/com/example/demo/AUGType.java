@@ -1,6 +1,9 @@
 package com.example.demo;
 
-public enum AUGType { T, S, O,
+public enum AUGType {
+     T,        // from paper; should try to eliminate
+     S,        // predicates could reduce to this??? check
+     O,        // combinator op
 
      I,
      YOU,
@@ -17,15 +20,15 @@ public enum AUGType { T, S, O,
      OTHER,
      ONE,
      TWO,
-     MUCH_many,
+     MUCH,
      ALL,
      SOME,
      LITTLE,
 
-     TIME_when,
+     TIME,
      NOW,
      MOMENT,
-     FOR_SOME_TIME,
+     FOR_SOME_TIME,  // (for) some time, could be "a time" or "for some time"?
      A_LONG_TIME,
      A_SHORT_TIME,
      BEFORE,
@@ -57,7 +60,7 @@ public enum AUGType { T, S, O,
      HERE,
      ABOVE,
      BELOW,
-     ON_ONE_SIDE,
+     ON_ONE_SIDE, // (on) one side, quasisubstantive?
      NEAR,
      FAR,
 
@@ -66,7 +69,7 @@ public enum AUGType { T, S, O,
      BECAUSE,
      IF,
      MAYBE,
-     LIKE,
+     LIKE,     // ~as~way(~how)
      VERY,
      MORE,
 

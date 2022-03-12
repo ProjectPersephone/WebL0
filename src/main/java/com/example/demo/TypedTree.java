@@ -16,7 +16,8 @@ import com.example.demo.Splits;
 import com.example.demo.Tab;
 
 public class TypedTree {
-    Tree tree; 
+
+    Tree tree; // these are actually 1-for-1 with TypedTree nodes
     LinkedList<Type> types;
 
     public String str() {
@@ -30,6 +31,9 @@ public class TypedTree {
         }
         return s + "]";
     }
+
+    // some ghastly printers that should go away with a transition
+    // to the TrellisCache.
 
     public static String ls_str(LinkedList<TypedTree> tt_ls) {
         Iterator<TypedTree> tti = tt_ls.iterator();
@@ -78,22 +82,19 @@ public class TypedTree {
         types.add (t);
     }
 
-// This will get ungainly if we add more types than just T, S, and O.
-
     public static LinkedList<TypedTree>
     app (Order order, TypedTree this_ttree, TypedTree other_ttree) {
         assertNotNull(this_ttree);
         assertNotNull(other_ttree); //- Tab.ln ("app (" + order + ", " + this_ttree.str() + ", " + other_ttree.str() + ")");
         LinkedList<TypedTree> result = new LinkedList<TypedTree>();
-        Iterator<Type> ti_this = this_ttree.types.iterator(); //- Tab.ln ("-loop on " + ls_str(result)); Tab.o__();
-        while (ti_this.hasNext()) {
-            Type t_this = ti_this.next();
-            assertNotNull(t_this);  //-Tab.ln ("-Looking at t_this = " + t_this.str());
+
+        //- Tab.ln ("-loop on " + ls_str(result)); Tab.o__();
+        for (Type t_this : this_ttree.types) {
+            //-Tab.ln ("-Looking at t_this = " + t_this.str());
             if (t_this.type == AUGType.O) { // for all Oxy in this ttree
-                Iterator<Type> ti_other = other_ttree.types.iterator();
-                                    //- Tab.ln ("-loop on " + Type.ls_str (other_ttree.types)); Tab.o__();
-                while (ti_other.hasNext()) {
-                    Type t_other = ti_other.next(); //-Tab.ln ("-Looking at t_other = " + t_other.str());
+                //- Tab.ln ("-loop on " + Type.ls_str (other_ttree.types)); Tab.o__();
+                for (Type t_other : other_ttree.types) {
+                    //-Tab.ln ("-Looking at t_other = " + t_other.str());
                     Type r = t_this.fxy (t_other);
                     if (r != null) {
                         TypedTree new_before = new TypedTree (
@@ -149,26 +150,17 @@ public class TypedTree {
 
         r = new LinkedList<TypedTree>();
 
-        Iterator<Split> li = splits.all_splits.iterator(); //- Tab.ln ("-loop on " + splits.str());
-        //- Tab.o__();
-        while (li.hasNext()) {
-            Split split = li.next();
-            assertNotNull (split.before);
-            assertNotNull (split.after);
+        //- Tab.ln ("-loop on " + splits.str()); Tab.o__();
+        for (Split split : splits.all_splits) {
+
             LinkedList<TypedTree> before_tts = typed_trees (split.before);
             LinkedList<TypedTree> after_tts  = typed_trees (split.after);
 
-            Iterator<TypedTree> bli = before_tts.iterator(); //- Tab.ln (" -loop on" + ls_str(before_tts));
-            //- Tab.o__();
-            while (bli.hasNext()) {
-                TypedTree before = bli.next(); //- Tab.ln ("-before = " + before.str());
-
-                Iterator<TypedTree> ali = after_tts.iterator(); //- Tab.ln ("-loop on " + ls_str(after_tts));
-                //- Tab.o__();
-                while (ali.hasNext()) {
-                    TypedTree after = ali.next();   //- Tab.ln ("-after =" + after.str());
-                    LinkedList<TypedTree> x = combine (before, after); //- Tab.ln ("-adding " + ls_str(x));
-                    r.addAll (x);
+            //- Tab.ln (" -loop on" + ls_str(before_tts)); Tab.o__();
+            for (TypedTree before : before_tts) {
+                //- Tab.ln ("-loop on " + ls_str(after_tts)); Tab.o__();
+                for (TypedTree after : after_tts) {
+                    r.addAll (combine (before, after));
                 } //- Tab.__o();
             } //- Tab.__o();
         }

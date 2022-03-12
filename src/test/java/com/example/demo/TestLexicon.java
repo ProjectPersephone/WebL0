@@ -19,7 +19,7 @@ public class TestLexicon {
         Iterator<Type> ti = types.iterator();
         while (ti.hasNext()) {
             Type t = ti.next();
-            System.out.println ("TestLexicon on '" + w + "': t=" + t.str());
+            System.out.println ("TestLexicon on '" + w + "': t=" + t);
         }
     }
 

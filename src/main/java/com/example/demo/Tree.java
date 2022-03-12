@@ -9,9 +9,13 @@ import com.example.demo.AUGType;
 import com.example.demo.Type;
 import com.example.demo.TypedTree;
 
+// These are actually 1-for-1 with TypedTree nodes, haven't seen a case against merging
+// except that atom and before/after are mutually exclusive, suggesting that an
+// abstract class would make more sense: one for leaves, the other for order+before/after
+
 public class Tree {
-    Order order;
-    String atom; // type==NEITHER
+    Order order;  // type==NEITHER
+    String atom;
     TypedTree before; // forward application
     TypedTree after;  // backward application 
 

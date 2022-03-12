@@ -23,7 +23,7 @@ public class TestType {
 
         t1 = Type.of (AUGType.T,null,null);
 
-        assert(t1.str().equals("T"));
+        assert(t1.toString().equals("T"));
 
         assertNotNull(t1);
         assertSame(T,t1);
@@ -33,7 +33,7 @@ public class TestType {
         assertSame (OTT.x,T);
         assertSame (OTT.y,T);
 
-        assert(OTT.str().equals("OTT"));
+        assert(OTT.toString().equals("OTT"));
 
         a = OTT.fxy(T);
         assertNotNull(a);
