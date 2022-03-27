@@ -41,13 +41,7 @@ public class Lexicon {
         Type cop = Type.of (O,a,p1);
         Type osc = Type.of (O,S,c);
 
-        Type something = Type.of (AUGType.SOMETHING,null,null);
-        Type sometime = Type.of (O,S,S);  //  Main.hs "tomorrow", should be same as c
-        Type somewhere = Type.of (AUGType.SOMEWHERE,null,null);
-        Type someone = Type.of(AUGType.SOMEONE,null,null);
-        Type some_cause = Type.of(AUGType.BECAUSE,null,null);
-        Type somehow = Type.of(AUGType.LIKE,null,null);
-        Type some = Type.of(AUGType.THIS,null,null);  // when not modifying, so maybe not needed
+
 
 //  somewhether IF
 //  somemuch(?) MANY -- quantifier
@@ -56,23 +50,38 @@ public class Lexicon {
 
         Tab.reset();
         for (AUGType t : AUGType.values()) {
-            Tab.ln ("t=" + t + " string=" + t.toString());
-            insert (t.toString());
+            String sym = t.toString();
+            if (t == AUGType.O)
+                continue;
+            insert (sym);
+            types_for(sym).add(Type.of (t,null,null));        
         }
 
+        Type something = Type.of (AUGType.SOMETHING,null,null);
+        Type sometime = Type.of (O,S,S);  //  Main.hs "tomorrow", should be same as c
+        Type somewhere = Type.of (AUGType.SOMEWHERE,null,null);
+        Type someone = Type.of(AUGType.SOMEONE,null,null);
+        Type some_cause = Type.of(AUGType.BECAUSE,null,null);
+        Type somehow = Type.of(AUGType.LIKE,null,null);
+        Type some = Type.of(AUGType.THIS,null,null);  // when not modifying, so maybe not needed
+        Type good = Type.of(AUGType.GOOD,null,null);
         Type say = Type.of (AUGType.SAY, null, null);
+        Type is = Type.of(AUGType.IS,null,null);
 
 /* I */
         LinkedList <Type> I = types_for("I");
-        I.add (Type.of (O, say, S));
+////        I.add (Type.of (O, say, S));
         I.add (someone);
-        I.add (Type.of (O, p1, S)); // too general, but anyway
+////        I.add (Type.of (O, p1, S)); // too general, but anyway
 /* YOU,
-   SOMEONE,
+   SOMEONE, */
+        types_for("SOMEONE").add(Type.of(O,is,S));
+        types_for("SOMEONE").add(Type.of(O,say,S));
+/*
    SOMETHING, */
-        LinkedList<Type> like = types_for ("SOMETHING");
-        like.add (something);
-        like.add (T);
+        LinkedList<Type> st = types_for ("SOMETHING");
+        st.add (Type.of(O,say,say));   // can say something, though a something can't say things
+////        st.add (T);
 /* BODY,
    PEOPLE,
    KIND,
@@ -107,31 +116,37 @@ public class Lexicon {
         LinkedList<Type> how_to_say = types_for ("SAY");
         how_to_say.add (Type.of (O, something, say));
         how_to_say.add (Type.of (O, S, say));
+////        how_to_say.add (Type.of (O, someone, S));
 /* KNOW,
    SEE,
    HEAR,
    THINK, */ 
-        types_for ("THINK").add (p1);
+////        types_for ("THINK").add (p1);
 /* HAPPEN,
    IS,    // copula */
-        LinkedList<Type> is = types_for("IS");
-        is.add (Type.of(O,someone,p1));
-        is.add (Type.of(O,something,p1));
-        is.add (cop);
-/* LIVE,
+        LinkedList<Type> is_ = types_for("IS");
+////        is.add (Type.of(O,someone,p1));
+////        is.add (Type.of(O,something,p1));
+////        is.add (cop);                   // ???????????
+        is_.add(Type.of(O,good,is));
+////        is_.add(Type.of(O,someone,S));  // Makes "someone is"->S, but it will be discarded as nonsensical unless alone
+        is_.add(Type.of(O,someone,is));  // Makes "someone is"->S, but it will be discarded as nonsensical unless alone
+/* LIVE, */
+        types_for("LIVE").add(Type.of(O,someone,S));
+/*
    DIE,
    THERE_IS,
    BE,    // ... somewhere */
-        LinkedList<Type> be = types_for("BE");
-        be.add (Type.of(O,something,somewhere)); // was p1
-        be.add (Type.of(O,someone,somewhere));
+////        LinkedList<Type> be = types_for("BE");
+////        be.add (Type.of(O,something,somewhere)); // was p1
+////        be.add (Type.of(O,someone,somewhere));
 /* IS_MINE,
    MOVE,
    TOUCH,
    INSIDE,
    SOMEWHERE,
    HERE, */
-        types_for("HERE").add(somewhere);
+////        types_for("HERE").add(somewhere);
 /* ABOVE,
    BELOW,
    ON_ONE_SIDE,
@@ -141,9 +156,9 @@ public class Lexicon {
    NOT,
    CAN,
    BECAUSE, */
-        types_for("BECAUSE").add(osc);
+////        types_for("BECAUSE").add(osc);
 /* IF, */
-        types_for ("IF").add(osc);
+////        types_for ("IF").add(osc);
 /* MAYBE,
    LIKE,
    VERY,
@@ -152,10 +167,18 @@ public class Lexicon {
    SMALL,
    BIG,
    BAD, */
-        types_for ("BAD").add(a);
+////        types_for ("BAD").add(a);
 /* GOOD, */
-        types_for("GOOD").add (a);
+////        types_for("GOOD").add (a);
+                types_for("GOOD").add(Type.of(O,is,is));
 /* TRUE
 */
+
+        for (AUGType t : AUGType.values()) {
+                String sym = t.toString();
+                if (t == AUGType.O)
+                        continue;
+                Tab.ln ("t=" + t + " string=" + sym + Type.ls_str(types_for(sym)));            
+        }
     }
 }

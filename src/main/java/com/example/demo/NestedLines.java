@@ -77,6 +77,10 @@ public class NestedLines {   // helpful here to add Exceptions
 
     public void postprocess() {
         Tab.ln ("Entering postprocess():");
+        if (lines.isEmpty()) {
+            Tab.ln ("...empty");
+            return;   // OK to have lines be null?
+        }
         LinkedList<Line> ll = (LinkedList<Line>) lines.clone(); // avoid side effects
         int level = ll.get(0).level;
 

@@ -77,5 +77,5 @@ public enum AUGType {
      BIG,
      BAD,
      GOOD,
-     TRUE
+     TRUE,
 }

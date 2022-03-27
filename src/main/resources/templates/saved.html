@@ -158,13 +158,19 @@
     <script th:script="javascript">
     
         function tree_to_html (t) {
-            return ttree_to_html (t.before) + ' ' + ttree_to_html (t.after);
+            if (t.order == "BEFORE")
+                return ttree_to_html (t.before) + ' ' + ttree_to_html (t.after);
+            else
+                return ttree_to_html (t.after) + ' ' + ttree_to_html (t.before);
         }
 
         function spell_it_out (tt) {
             if (tt.tree.order == "NEITHER")
                 return tt.tree.atom + " ";
-            return spell_it_out (tt.tree.before) + spell_it_out (tt.tree.after);
+            if (tt.tree.order == "BEFORE")
+                return spell_it_out (tt.tree.before) + spell_it_out (tt.tree.after);
+            else
+            return spell_it_out (tt.tree.after) + spell_it_out (tt.tree.before);
         }
 
         function show_types (tt) {

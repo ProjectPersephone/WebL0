@@ -42,6 +42,8 @@ import com.example.demo.Tab;
 public class WelcomeController {
 
     private static Lexicon L = new Lexicon();
+    private static FileWriter myFileWriter;
+    String prolog_output_filename = "output.pl";
 
     // inject via application.properties
     @Value("${welcome.message}")
@@ -116,6 +118,13 @@ public class WelcomeController {
         post.setHtml(h);
 
 //        markdownToParses (content);
+        try {
+            myFileWriter = new FileWriter(prolog_output_filename);
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
         Visitor v = new Visitor();  
         Node doc = markdownToDocument(content);
         doc.accept(v);
@@ -132,6 +141,13 @@ public class WelcomeController {
 
         model.addAttribute("message", jas);
         model.addAttribute("post", post);
+
+        try {
+            myFileWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
 
         return "saved";
     }
@@ -164,8 +180,20 @@ public class WelcomeController {
             Sentence S = new Sentence (Str_nw);
             Cache C = Cache.cache (S);
             LinkedList<TypedTree> tt_ls = C.get(0,0);
+            if (tt_ls.isEmpty()) {
+                Tab.ln ("visit: empy tt_ls");
+                return;
+            }
             TypedTree tt = tt_ls.get(0);
-            Tab.ln (wordCount + " words in " + text.getLiteral());
+            Tab.ln (wordCount + " words in " + text.getLiteral() + ": " + tt.str());
+            try {
+                String pl = tt.prolog();
+                 myFileWriter.write(pl);
+                 Tab.ln("*** Wrote " + pl + " to " + prolog_output_filename + " ***");
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
             indented.add (tt);
         }
 
@@ -300,15 +328,16 @@ public class WelcomeController {
         Sentence S = new Sentence (Str_nw);
         Cache C = Cache.cache (S);
         LinkedList<TypedTree> tt_ls = C.get(0,0);
-        TypedTree tt = tt_ls.get(0);
 
-        JSONObject json = TypedTreeToJSON (tt);
-
-        String s = json.toString();
-
-        System.out.println ("s=" + s);
-        Tab.reset();
-        JSONTypedTreeShow (json);
+        // TypedTree tt = tt_ls.get(0);
+        String s = "";
+        for (TypedTree tt : tt_ls) {
+            JSONObject json = TypedTreeToJSON (tt);
+            s += json.toString();
+            System.out.println ("s=" + s);
+            Tab.reset();
+            JSONTypedTreeShow (json);
+        }
 
         model.addAttribute("message", s);
 

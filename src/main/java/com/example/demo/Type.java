@@ -16,8 +16,23 @@ public class Type {
     Type y;
 
     public Type fxy(Type q) {
-        if (type == AUGType.O && x == q)
-            return y;
+        assertNotNull(q);
+
+        if (type != AUGType.O) {    // prime
+            if (q.type == AUGType.O)
+                if (this == q.x) {
+                    Tab.ln (this.toString() + "." + "fxy(" + q.toString() + ") = q.y =" + q.y.toString());
+                    return q.y;
+                }
+        }
+
+        if (
+            type == AUGType.O &&
+             x == q) {
+                Tab.ln (this.toString() + "." + "fxy(" + q.toString() + ") = y =" + y.toString());
+                return y;
+             }
+        Tab.ln (this.toString() + "." + "fxy(" + q.toString() + ") = null");
         return null;
     }
 
@@ -33,7 +48,7 @@ public class Type {
         if (type == AUGType.O) {
             assertNotNull (x);
             assertNotNull (y);
-            return s + x.toString() + y.toString();
+            return s + "(+" + x.toString() + "=" + y.toString() + ")";
         }
         else
             return s;
@@ -62,12 +77,14 @@ public class Type {
 
     public static String ls_str (LinkedList<Type> l) {
         String s = "{";
-        Iterator<Type> ti = l.iterator();
-        while (ti.hasNext()) {
-            s += ti.next().toString();
-            if (ti.hasNext())
-                s += ",";
+        if (l != null) {
+            String delim = "";
+            for (Type t : l) {
+                s += delim + t.toString();
+                delim = ",";
+            }
         }
+
         s += "}";
 
         return s;
