@@ -35,11 +35,13 @@ public class TestLexicon {
     @Test
     public void main() throws Exception {
         Lexicon d = new Lexicon();
+        /*
         Type T = Type.term();
         AUGType O = AUGType.O;
         Type OTT = Type.of (O,T,T); // OTT is like an adjective
 
         // readback (new String ("I"), T   );  // commented out after adding more types
         readback (new String ("BAD"),   OTT );
+        */
     }
 }

@@ -32,14 +32,16 @@ public class Lexicon {
 
         // English-specific:
 
-        Type T = Type.term();
+//        Type T = Type.term();
         Type S = Type.sentence();
         AUGType O = AUGType.O;
+        /*
         Type a = Type.of (O,T,T); // OTT is like an adjective
         Type c = Type.of (O,S,S);
         Type p1  = Type.of (O,T,S); // e.g., is
         Type cop = Type.of (O,a,p1);
         Type osc = Type.of (O,S,c);
+        */
 
 
 

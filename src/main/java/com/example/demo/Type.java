@@ -66,11 +66,11 @@ public class Type {
 
         return tr;
     }
-
+/*
     static public Type term () {
         return Type.of (AUGType.T,null,null);
     }
-
+*/
     static public Type sentence () {
         return Type.of (AUGType.S,null,null);
     }
