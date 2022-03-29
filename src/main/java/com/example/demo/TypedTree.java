@@ -28,8 +28,18 @@ public class TypedTree implements Comparable<TypedTree> {
     Set<Type> types;
 
     public int compareTo(TypedTree tt) {
-        if (this == tt) return 0;
-        return 1;
+  
+            if (tt == this)
+                return 0;
+
+            if (tt.types.size() != types.size())
+                return 1;
+
+            if (types.containsAll(tt.types)) 
+            //    if (tree == tt.tree)        // iffy
+                    return 0;
+
+            return 1;
     }
 /*
     I LIVE : S

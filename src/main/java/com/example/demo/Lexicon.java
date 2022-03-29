@@ -130,6 +130,7 @@ Caused by: java.lang.ClassCastException: com.example.demo.Type cannot be cast to
         TreeSet<Type> how_to_say = types_for ("SAY");
         how_to_say.add (Type.of (O, something, say));
         how_to_say.add (Type.of (O, is, say));
+        how_to_say.add (Type.of (O, live, say));
 ////        how_to_say.add (Type.of (O, someone, S));
 /* KNOW,
    SEE,
