@@ -6,7 +6,7 @@ import java.util.*;
 
 import com.example.demo.AUGType; // for now: S, T, Oxy
 
-public class Type {
+public class Type implements Comparable<Type> {
     static HashMap<AUGType,Type> uniques = new HashMap<AUGType,Type>();
 
     AUGType type;
@@ -15,9 +15,35 @@ public class Type {
     Type x;
     Type y;
 
+    // not crazy about this, because it's O(n), n=# of nodes in tree
+    // but only in some terribly bad case
+
+
+    public int compareTo(Type t) {
+        int c = 0;
+        assertNotNull(t);
+
+        if (this != t) {
+
+            if (type == AUGType.O && t.type == AUGType.O) {
+                assertNotNull(x);
+                assertNotNull(y);
+                assertNotNull(t.x);
+                assertNotNull(t.y);
+
+                c = x.compareTo (t.x);
+                if (c == 0)
+                    c = y.compareTo (t.y);
+            }
+            else
+                c = this.type.compareTo (t.type);
+        }
+        return c;
+    }
+
     public Type fxy(Type q) {
         assertNotNull(q);
-
+/*
         if (type != AUGType.O) {    // prime
             if (q.type == AUGType.O)
                 if (this == q.x) {
@@ -25,7 +51,7 @@ public class Type {
                     return q.y;
                 }
         }
-
+*/
         if (
             type == AUGType.O &&
              x == q) {
@@ -70,12 +96,13 @@ public class Type {
     static public Type term () {
         return Type.of (AUGType.T,null,null);
     }
-*/
+
     static public Type sentence () {
         return Type.of (AUGType.S,null,null);
     }
+    */
 
-    public static String ls_str (LinkedList<Type> l) {
+    public static String ls_str (Set<Type> l) {
         String s = "{";
         if (l != null) {
             String delim = "";

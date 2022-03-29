@@ -2,7 +2,7 @@ package com.example.demo;
 
 public enum AUGType {
 //     T,        // from paper; should try to eliminate
-     S,        // predicates could reduce to this??? check
+//     S,        // predicates could reduce to this??? check
      O,        // combinator op
 
      I,

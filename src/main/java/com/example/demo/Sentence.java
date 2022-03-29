@@ -36,7 +36,7 @@ public class Sentence {
         String[] sa = s.split(" ");
         assertNotNull (sa);
         for (String w : sa) {
-            LinkedList<Type> tl = Lexicon.types_for (w);
+            Set<Type> tl = Lexicon.types_for (w);
             if (tl == null) {
                 Tab.ln ("Word w=" + w + " not in Lexicon");
             }

@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.Set;
 
 import com.example.demo.Cache;
 import com.example.demo.Tab;
@@ -266,7 +267,7 @@ public class WelcomeController {
     public static JSONObject TypedTreeToJSON (TypedTree tt) {
         JSONObject o = new JSONObject();
         o.put ("tree", TreeToJSON (tt.tree));
-        LinkedList<Type> ls_ty = tt.types;
+        Set<Type> ls_ty = tt.types;
         JSONArray a = new JSONArray();
         Iterator<Type> ty_it = ls_ty.iterator();
         while (ty_it.hasNext()) {

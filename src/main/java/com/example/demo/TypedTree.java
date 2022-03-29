@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // import java.security.cert.X509CRLEntry; // How'd this get here????????????
 import java.util.*;
+import java.util.Set;
 
 import com.example.demo.Order;
 import com.example.demo.AUGType;
@@ -21,10 +22,15 @@ import com.example.demo.Lexicon;
 
 import com.example.demo.Tab;
 
-public class TypedTree {
+public class TypedTree implements Comparable<TypedTree> {
 
-    Tree tree; // these are actually 1-for-1 with TypedTree nodes
-    LinkedList<Type> types;
+    Tree tree; // these are actually 1-for-1 with TypedTree nodes    
+    Set<Type> types;
+
+    public int compareTo(TypedTree tt) {
+        if (this == tt) return 0;
+        return 1;
+    }
 /*
     I LIVE : S
         I : SOMEONE
@@ -95,11 +101,24 @@ public class TypedTree {
         return s + "]";
     }
 
+
+
     // some ghastly printers that should go away with a transition
     // to the TrellisCache.
 
     public static String ls_str(LinkedList<TypedTree> tt_ls) {
         Iterator<TypedTree> tti = tt_ls.iterator();
+        String s = "[";
+        while (tti.hasNext()) {
+            s += tti.next().str();
+            if (tti.hasNext())
+                s += " ";
+        }
+        return s + "]";
+    }
+
+    static String ls_set(Set<TypedTree> tt_set) {
+        Iterator<TypedTree> tti = tt_set.iterator();
         String s = "[";
         while (tti.hasNext()) {
             s += tti.next().str();
@@ -131,7 +150,7 @@ public class TypedTree {
         return s + "]";
     }
 
-    public TypedTree (Tree p_tree, LinkedList<Type> p_types) {
+    public TypedTree (Tree p_tree, Set<Type> p_types) {
         assertNotNull (p_tree);
         assertNotNull (p_types);
         tree = p_tree;
@@ -141,23 +160,30 @@ public class TypedTree {
     public TypedTree (Tree p_tree, Type t) {
         assertNotNull (p_tree);
         tree = p_tree;
-        types = new LinkedList<Type>();
+        types = new TreeSet<>();
         types.add (t);
     }
 
-    public static LinkedList<TypedTree>
+    public static Set<TypedTree>
     app (Order order, TypedTree this_ttree, TypedTree other_ttree) {
         assertNotNull(this_ttree);
         assertNotNull(other_ttree);  Tab.ln ("app (" + order + ", " + this_ttree.str() + ", " + other_ttree.str() + ")");
-        LinkedList<TypedTree> result = new LinkedList<TypedTree>();
+        Set<TypedTree> result = new TreeSet<TypedTree>();
 
         Tab.ln ("Over " + this_ttree.types); Tab.o__();
         
         for (Type t_this : this_ttree.types) {
 
-            Tab.ln (t_this.toString() + Type.ls_str (Lexicon.types_for(t_this.toString())) + "...applied...");
-            // if (t_this.type == AUGType.O) // comment out because primes are now types
-                
+            TreeSet<Type> lx;
+
+            Tab.ln (t_this.toString() + Type.ls_str (Lexicon.types_for(t_this.toString())) + "...applying...");
+            if (t_this.type == AUGType.O) {
+                lx = new TreeSet<Type>();                           Tab.ln ("...to  = " + t_this + " with just " + Type.ls_str(lx));
+                lx.add (t_this);
+            } else {
+                lx = Lexicon.types_for(t_this.toString());          Tab.ln ("...to  = " + t_this + " including " + Type.ls_str(lx));
+            }
+            for (Type t_this_x : lx)    
                 { // for all Oxy in this ttree
 
                 Tab.ln ("...to these: " + Type.ls_str (other_ttree.types)); Tab.o__();
@@ -165,10 +191,10 @@ public class TypedTree {
 
                     // Type t_other_y = t_other;
 
-                    LinkedList<Type> ly;
+                    TreeSet<Type> ly;
                     
                     if (t_other.type == AUGType.O) {
-                        ly = new LinkedList<Type>();
+                        ly = new TreeSet<Type>();
                         ly.add (t_other);                           Tab.ln ("...to  = " + t_other + " with just " + Type.ls_str(ly));
                     } else {
                         ly = Lexicon.types_for(t_other.toString()); Tab.ln ("...to  = " + t_other + " including " + Type.ls_str(ly));
@@ -176,27 +202,27 @@ public class TypedTree {
                     
                                                                     Tab.o__();
                     for (Type t_other_y : ly) {
-                        Type r = t_this.fxy (t_other_y);
+                        Type r = t_this_x.fxy (t_other_y);
                         if (r == null)
                             continue;
                         Tab.o__();
- // with primes as types, t_this.x can be null! BAD!!!  ********************************************
-                        Type x = t_this.x;
+
+                        Type x = t_this_x.x;
                         if (x == null) {
-                            Tab.ln ("But " + t_this + " x = null, t_other =" + t_other);
+                            Tab.ln ("But " + t_this_x + " x = null, t_other =" + t_other);
                             x = t_other_y.x; // Try it --------------------------------------------
                         }
                                                                                                                 Tab.ln ("x = " + x.toString());
                         TypedTree new_before = new TypedTree (this_ttree.tree,  Type.of (AUGType.O, x, r) );    Tab.ln ("new_before=" + new_before.str());
                         TypedTree new_after =  new TypedTree (other_ttree.tree, x );                            Tab.ln ("new_after=" + new_after.str());
 
-                        LinkedList<Type> ls_type2 = new LinkedList<Type>();
+                        Set<Type> ls_type2 = new TreeSet<>();
                         ls_type2.add(r);
                         TypedTree new_tt =new TypedTree (
                                             new Tree (order, new_before, new_after),
                                             ls_type2
                                         );
-                                                                                                                Tab.ln ("-Adding new_tt = " + new_tt.str());
+                                                                                       Tab.ln ("-Adding new_tt = " + new_tt.str());
                         result.add (new_tt);
                         Tab.__o();
                     }
@@ -205,18 +231,18 @@ public class TypedTree {
                  Tab.__o();
             }
         }  Tab.__o();
-         Tab.ln ("app()"); Tab.ln (" =" + ls_str(result));
+         Tab.ln ("app()"); Tab.ln (" =" + TypedTree.ls_set(result));
         return result;
     }
 
-    public static LinkedList<TypedTree> combine (TypedTree one, TypedTree the_other) {
+    public static Set<TypedTree> combine (TypedTree one, TypedTree the_other) {
                  Tab.ln ("combine(" + one.str() + ", " + the_other.str() + ")");
-        LinkedList<TypedTree> tl = new LinkedList<TypedTree>();
-        LinkedList<TypedTree> tb = app (Order.BEFORE, one,       the_other );
-        LinkedList<TypedTree> ta = app (Order.AFTER,  the_other, one       );
+        Set<TypedTree> tl = new TreeSet<TypedTree>();
+        Set<TypedTree> tb = app (Order.BEFORE, one,       the_other );
+        Set<TypedTree> ta = app (Order.AFTER,  the_other, one       );
         tl.addAll(tb);
         tl.addAll(ta);
-                 Tab.ln ("combine():"); Tab.ln (" =" + ls_str(tl));
+                 Tab.ln ("combine():"); Tab.ln (" =" + ls_set(tl));
         return tl;
     }
 

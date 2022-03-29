@@ -15,7 +15,7 @@ import com.example.demo.Lexicon;
 public class TestLexicon {
 
     public static void print_word (String w) {
-        LinkedList<Type> types = Lexicon.types_for (w);
+        Set<Type> types = Lexicon.types_for (w);
         Iterator<Type> ti = types.iterator();
         while (ti.hasNext()) {
             Type t = ti.next();
@@ -25,11 +25,13 @@ public class TestLexicon {
 
 // only works if word w has only one type associated
     public static void readback (String w, Type t) {
-        LinkedList<Type> w_types = Lexicon.types_for (w);
+        Set<Type> w_types = Lexicon.types_for (w);
         assertNotNull(w_types);
         assertEquals(w_types.size(),1);
+/* change to "set" kills this:
         Type trb = w_types.get(0);
         assertEquals (trb,t);
+*/
     }
 
     @Test

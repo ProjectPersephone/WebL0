@@ -14,26 +14,26 @@ import com.example.demo.TypedTree;
 public class Lexicon {
     private
         static // should allow multiple lexicons but for now, just one for English NSM
-           HashMap<String,LinkedList<Type>> map; 
+           HashMap<String,TreeSet<Type>> map; 
 
-    private static LinkedList<Type> insert(String w) {
-        LinkedList<Type> l = new LinkedList<Type>();
+    private static TreeSet<Type> insert(String w) {
+        TreeSet<Type> l = new TreeSet<Type>();
         map.put (w, l);
         return l;
     }
 
-    public static LinkedList<Type> types_for(String w) {
+    public static TreeSet<Type> types_for(String w) {
         return map.get (w);
     }
 
     public Lexicon() {
 
-        map = new HashMap<String,LinkedList<Type>>();
+        map = new HashMap<String,TreeSet<Type>>();
 
         // English-specific:
 
 //        Type T = Type.term();
-        Type S = Type.sentence();
+//        Type S = Type.sentence();
         AUGType O = AUGType.O;
         /*
         Type a = Type.of (O,T,T); // OTT is like an adjective
@@ -55,12 +55,22 @@ public class Lexicon {
             String sym = t.toString();
             if (t == AUGType.O)
                 continue;
+
             insert (sym);
-            types_for(sym).add(Type.of (t,null,null));        
+        /*
+Caused by: java.lang.ClassCastException: com.example.demo.Type cannot be cast to java.lang.Comparable
+        at java.util.TreeMap.compare(TreeMap.java:1294) ~[na:1.8.0_161]
+        at java.util.TreeMap.put(TreeMap.java:538) ~[na:1.8.0_161]
+        at java.util.TreeSet.add(TreeSet.java:255) ~[na:1.8.0_161]
+        at com.example.demo.Lexicon.<init>(Lexicon.java:67) ~[classes/:na]
+        at com.example.demo.WelcomeController.<clinit>(WelcomeController.java:45) ~[classes/:na]
+
+*/ 
+            types_for(sym).add(Type.of (t,null,null));
         }
 
         Type something = Type.of (AUGType.SOMETHING,null,null);
-        Type sometime = Type.of (O,S,S);  //  Main.hs "tomorrow", should be same as c
+//        Type sometime = Type.of (O,S,S);  //  Main.hs "tomorrow", should be same as c
         Type somewhere = Type.of (AUGType.SOMEWHERE,null,null);
         Type someone = Type.of(AUGType.SOMEONE,null,null);
         Type some_cause = Type.of(AUGType.BECAUSE,null,null);
@@ -69,19 +79,21 @@ public class Lexicon {
         Type good = Type.of(AUGType.GOOD,null,null);
         Type say = Type.of (AUGType.SAY, null, null);
         Type is = Type.of(AUGType.IS,null,null);
+        Type live = Type.of (AUGType.LIVE,null,null);
 
 /* I */
-        LinkedList <Type> I = types_for("I");
+        Set<Type> I = types_for("I");
 ////        I.add (Type.of (O, say, S));
         I.add (someone);
 ////        I.add (Type.of (O, p1, S)); // too general, but anyway
 /* YOU,
    SOMEONE, */
-        types_for("SOMEONE").add(Type.of(O,is,S));
-        types_for("SOMEONE").add(Type.of(O,say,S));
+        types_for("SOMEONE").add(Type.of(O,is,is));
+        types_for("SOMEONE").add(Type.of(O,say,say));
+        types_for("SOMEONE").add(Type.of(O,live,live));
 /*
    SOMETHING, */
-        LinkedList<Type> st = types_for ("SOMETHING");
+        TreeSet<Type> st = types_for ("SOMETHING");
         st.add (Type.of(O,say,say));   // can say something, though a something can't say things
 ////        st.add (T);
 /* BODY,
@@ -102,7 +114,7 @@ public class Lexicon {
 
    TIME_when,
    NOW, */
-        types_for ("NOW").add (sometime);
+////        types_for ("NOW").add (sometime);
 /* MOMENT,
    FOR_SOME_TIME,
    A_LONG_TIME,
@@ -115,9 +127,9 @@ public class Lexicon {
    FEEL,
    DO,
    SAY, */
-        LinkedList<Type> how_to_say = types_for ("SAY");
+        TreeSet<Type> how_to_say = types_for ("SAY");
         how_to_say.add (Type.of (O, something, say));
-        how_to_say.add (Type.of (O, S, say));
+        how_to_say.add (Type.of (O, is, say));
 ////        how_to_say.add (Type.of (O, someone, S));
 /* KNOW,
    SEE,
@@ -126,20 +138,24 @@ public class Lexicon {
 ////        types_for ("THINK").add (p1);
 /* HAPPEN,
    IS,    // copula */
-        LinkedList<Type> is_ = types_for("IS");
+        TreeSet<Type> is_ = types_for("IS");
 ////        is.add (Type.of(O,someone,p1));
 ////        is.add (Type.of(O,something,p1));
 ////        is.add (cop);                   // ???????????
         is_.add(Type.of(O,good,is));
 ////        is_.add(Type.of(O,someone,S));  // Makes "someone is"->S, but it will be discarded as nonsensical unless alone
+Tab.ln ("after adding good ===== is_ = " + Type.ls_str(is_)); Tab.ln ("===== types_for IS = " + Type.ls_str(types_for("IS")));
         is_.add(Type.of(O,someone,is));  // Makes "someone is"->S, but it will be discarded as nonsensical unless alone
+Tab.ln ("after adding someone ===== is_ = " + Type.ls_str(is_)); Tab.ln ("===== types_for IS = " + Type.ls_str(types_for("IS")));
+        is_.add(Type.of(O,say,is)); // e.g. say (someone is good) -> some is saying an "is"
+ Tab.ln ("after adding say ===== is_ = " + Type.ls_str(is_)); Tab.ln ("===== types_for IS = " + Type.ls_str(types_for("IS")));
 /* LIVE, */
-        types_for("LIVE").add(Type.of(O,someone,S));
+        types_for("LIVE").add(Type.of(O,someone,live));
 /*
    DIE,
    THERE_IS,
    BE,    // ... somewhere */
-////        LinkedList<Type> be = types_for("BE");
+////        TreeSet<Type> be = types_for("BE");
 ////        be.add (Type.of(O,something,somewhere)); // was p1
 ////        be.add (Type.of(O,someone,somewhere));
 /* IS_MINE,
