@@ -43,8 +43,6 @@ public class Lexicon {
         Type osc = Type.of (O,S,c);
         */
 
-
-
 //  somewhether IF
 //  somemuch(?) MANY -- quantifier
 //  -- evaluator/goodness -- "somewhat"
@@ -57,15 +55,7 @@ public class Lexicon {
                 continue;
 
             insert (sym);
-        /*
-Caused by: java.lang.ClassCastException: com.example.demo.Type cannot be cast to java.lang.Comparable
-        at java.util.TreeMap.compare(TreeMap.java:1294) ~[na:1.8.0_161]
-        at java.util.TreeMap.put(TreeMap.java:538) ~[na:1.8.0_161]
-        at java.util.TreeSet.add(TreeSet.java:255) ~[na:1.8.0_161]
-        at com.example.demo.Lexicon.<init>(Lexicon.java:67) ~[classes/:na]
-        at com.example.demo.WelcomeController.<clinit>(WelcomeController.java:45) ~[classes/:na]
 
-*/ 
             types_for(sym).add(Type.of (t,null,null));
         }
 
@@ -88,7 +78,7 @@ Caused by: java.lang.ClassCastException: com.example.demo.Type cannot be cast to
 ////        I.add (Type.of (O, p1, S)); // too general, but anyway
 /* YOU,
    SOMEONE, */
-        types_for("SOMEONE").add(Type.of(O,is,is));
+        types_for("SOMEONE").add(Type.of(O,Type.of(O,good,is),is));
         types_for("SOMEONE").add(Type.of(O,say,say));
         types_for("SOMEONE").add(Type.of(O,live,live));
 /*
@@ -144,12 +134,8 @@ Caused by: java.lang.ClassCastException: com.example.demo.Type cannot be cast to
 ////        is.add (Type.of(O,something,p1));
 ////        is.add (cop);                   // ???????????
         is_.add(Type.of(O,good,is));
-////        is_.add(Type.of(O,someone,S));  // Makes "someone is"->S, but it will be discarded as nonsensical unless alone
-Tab.ln ("after adding good ===== is_ = " + Type.ls_str(is_)); Tab.ln ("===== types_for IS = " + Type.ls_str(types_for("IS")));
         is_.add(Type.of(O,someone,is));  // Makes "someone is"->S, but it will be discarded as nonsensical unless alone
-Tab.ln ("after adding someone ===== is_ = " + Type.ls_str(is_)); Tab.ln ("===== types_for IS = " + Type.ls_str(types_for("IS")));
-        is_.add(Type.of(O,say,is)); // e.g. say (someone is good) -> some is saying an "is"
- Tab.ln ("after adding say ===== is_ = " + Type.ls_str(is_)); Tab.ln ("===== types_for IS = " + Type.ls_str(types_for("IS")));
+        is_.add(Type.of(O,say,is)); // e.g. say (someone is good) -> someone is saying an "is"
 /* LIVE, */
         types_for("LIVE").add(Type.of(O,someone,live));
 /*
@@ -187,6 +173,7 @@ Tab.ln ("after adding someone ===== is_ = " + Type.ls_str(is_)); Tab.ln ("===== 
    BIG,
    BAD, */
 ////        types_for ("BAD").add(a);
+                types_for("BAD").add(Type.of(O,is,is));
 /* GOOD, */
 ////        types_for("GOOD").add (a);
                 types_for("GOOD").add(Type.of(O,is,is));

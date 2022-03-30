@@ -64,10 +64,18 @@ public class TypedTree implements Comparable<TypedTree> {
     => s(say(i,s(live(i))))
     */
 
-    public String prolog () {
+    public String prolog() {
+        return this.prolog (true) + ".\n";
+    }
+
+    public String prolog (boolean pred) {
         TypedTree f,x;
-        if (tree.order == Order.NEITHER)
-            return (tree.atom);
+        if (tree.order == Order.NEITHER) {
+            if (pred)
+                return (tree.atom.toLowerCase());
+//            return tree.atom.substring(0,0).toUpperCase() + tree.atom.substring(1);
+            return tree.atom.toLowerCase() + "_";
+        }
         if (tree.order == Order.BEFORE) {
             x = tree.before;
             f = tree.after;
@@ -75,7 +83,8 @@ public class TypedTree implements Comparable<TypedTree> {
             x = tree.after;
             f = tree.before;
         }
-        return "f:" + f.prolog() + "(x:" + x.prolog() + ")";
+
+        return f.prolog(true) + "("+ x.prolog(false) + ")";
     }
 /*
     public String prolog() {
