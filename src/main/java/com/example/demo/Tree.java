@@ -34,11 +34,11 @@ public class Tree {
 
     public String str () {
         String s = order.name();
-        if (s == "BEFORE") s = "<";
-        else s = ">";
+        if (s == "BEFORE") s = "<:";
+        else s = ">:";
         if (order == Order.NEITHER)
-            return "~\"" + atom + "\"";
+            return "~:\"" + atom + "\"";
         else
-            return s + " " + "(" + before.str() + "," + after.str() + ")";
+            return s + "(" + before.str() + "," + after.str() + ")";
     }
 }

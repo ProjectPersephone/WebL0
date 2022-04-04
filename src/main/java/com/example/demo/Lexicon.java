@@ -1,3 +1,6 @@
+// Lexicon.java -- should probably be folded in Type, since primes
+// and the basic grammar types initialized here are really types.
+
 package com.example.demo;
 
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +17,12 @@ import com.example.demo.TypedTree;
 public class Lexicon {
     private
         static // should allow multiple lexicons but for now, just one for English NSM
-           HashMap<String,TreeSet<Type>> map; 
+           HashMap<String,TreeSet<Type>> map;
+    public static Type S;
+    public static Type Pred;
+    public static Type PredOp; // really means takes sentence as operand, e.g. SAY, THINK, etc.
+    public static Type Quoter; // SAY, THINK ....
+    public static Type Arg; // SAY, THINK ....
 
     private static TreeSet<Type> insert(String w) {
         TreeSet<Type> l = new TreeSet<Type>();
@@ -26,6 +34,10 @@ public class Lexicon {
         return map.get (w);
     }
 
+    public static Type O_(Type x, Type y) {
+            return Type.of(AUGType.O, x, y);
+    }
+
     public Lexicon() {
 
         map = new HashMap<String,TreeSet<Type>>();
@@ -34,13 +46,13 @@ public class Lexicon {
 
 //        Type T = Type.term();
 //        Type S = Type.sentence();
-        AUGType O = AUGType.O;
+//        AUGType O = AUGType.O;
         /*
-        Type a = Type.of (O,T,T); // OTT is like an adjective
-        Type c = Type.of (O,S,S);
-        Type p1  = Type.of (O,T,S); // e.g., is
-        Type cop = Type.of (O,a,p1);
-        Type osc = Type.of (O,S,c);
+        Type a = O_(T,T); // OTT is like an adjective
+        Type c = O_(S,S);
+        Type p1  = O_(T,S); // e.g., is
+        Type cop = O_(a,p1);
+        Type osc = O_(S,c);
         */
 
 //  somewhether IF
@@ -49,6 +61,7 @@ public class Lexicon {
 //  -- intensifier - very
 
         Tab.reset();
+        Tab.trace(false);
         for (AUGType t : AUGType.values()) {
             String sym = t.toString();
             if (t == AUGType.O)
@@ -58,33 +71,43 @@ public class Lexicon {
 
             types_for(sym).add(Type.of (t,null,null));
         }
+        Tab.trace(true);
 
-        Type something = Type.of (AUGType.SOMETHING,null,null);
-//        Type sometime = Type.of (O,S,S);  //  Main.hs "tomorrow", should be same as c
-        Type somewhere = Type.of (AUGType.SOMEWHERE,null,null);
-        Type someone = Type.of(AUGType.SOMEONE,null,null);
-        Type some_cause = Type.of(AUGType.BECAUSE,null,null);
-        Type somehow = Type.of(AUGType.LIKE,null,null);
-        Type some = Type.of(AUGType.THIS,null,null);  // when not modifying, so maybe not needed
-        Type good = Type.of(AUGType.GOOD,null,null);
+//        Type something = Type.of (AUGType.SOMETHING,null,null);
+//        Type sometime = O_(S,S);  //  Main.hs "tomorrow", should be same as c
+//        Type somewhere = Type.of (AUGType.SOMEWHERE,null,null);
+        Type someone = Type.of (AUGType.SOMEONE,null,null);
+//        Type some_cause = Type.of (AUGType.BECAUSE,null,null);
+//        Type somehow = Type.of (AUGType.LIKE,null,null);
+//        Type some = Type.of (AUGType.THIS,null,null);  // when not modifying, so maybe not needed
+        Type good = Type.of (AUGType.GOOD,null,null);
+        Type bad = Type.of (AUGType.BAD,null,null);
         Type say = Type.of (AUGType.SAY, null, null);
-        Type is = Type.of(AUGType.IS,null,null);
+        Type is = Type.of (AUGType.IS,null,null);
         Type live = Type.of (AUGType.LIVE,null,null);
+        Type true_ = Type.of (AUGType.TRUE,null,null);
+        Type maybe = Type.of (AUGType.MAYBE,null,null);
+
+        S = true_;
+        Pred = maybe;
+        PredOp = O_(S,Pred);
+        Quoter = O_(Pred,S);
+        Arg = O_(O_(maybe,S),S);
 
 /* I */
         Set<Type> I = types_for("I");
-////        I.add (Type.of (O, say, S));
+////        I.add (O_(say, S));
         I.add (someone);
-////        I.add (Type.of (O, p1, S)); // too general, but anyway
+////        I.add (O_(p1, S)); // too general, but anyway
 /* YOU,
    SOMEONE, */
-        types_for("SOMEONE").add(Type.of(O,Type.of(O,good,is),is));
-        types_for("SOMEONE").add(Type.of(O,say,say));
-        types_for("SOMEONE").add(Type.of(O,live,live));
+        types_for("SOMEONE").add(O_(maybe, true_)); // someone can be good, bad; do thing, etc.
+//        types_for("SOMEONE").add(O_(O_(say,true_),say)); // someone can say something maybe true
+//        types_for("SOMEONE").add(O_(live,true_));
 /*
    SOMETHING, */
-        TreeSet<Type> st = types_for ("SOMETHING");
-        st.add (Type.of(O,say,say));   // can say something, though a something can't say things
+//        TreeSet<Type> st = types_for ("SOMETHING");
+//        st.add (O_(say,O_(say,true_)));   // can say something, though a something can't say things
 ////        st.add (T);
 /* BODY,
    PEOPLE,
@@ -118,10 +141,10 @@ public class Lexicon {
    DO,
    SAY, */
         TreeSet<Type> how_to_say = types_for ("SAY");
-        how_to_say.add (Type.of (O, something, say));
-        how_to_say.add (Type.of (O, is, say));
-        how_to_say.add (Type.of (O, live, say));
-////        how_to_say.add (Type.of (O, someone, S));
+//        how_to_say.add (O_(something, say)); // just raw SOMETHING, but need SOMETHING LIKE WORD(S)
+        how_to_say.add (O_(true_, maybe));       // for actual statement, maybe need a "MAYBE TRUE"
+//        how_to_say.add (O_(live, say));
+////        how_to_say.add (O_(someone, S));
 /* KNOW,
    SEE,
    HEAR,
@@ -130,21 +153,22 @@ public class Lexicon {
 /* HAPPEN,
    IS,    // copula */
         TreeSet<Type> is_ = types_for("IS");
-////        is.add (Type.of(O,someone,p1));
-////        is.add (Type.of(O,something,p1));
+////        is.add (O_(someone,p1));
+////        is.add (O_(something,p1));
 ////        is.add (cop);                   // ???????????
-        is_.add(Type.of(O,good,is));
-        is_.add(Type.of(O,someone,is));  // Makes "someone is"->S, but it will be discarded as nonsensical unless alone
-        is_.add(Type.of(O,say,is)); // e.g. say (someone is good) -> someone is saying an "is"
+        is_.add(O_(good,maybe)); // MAYBE type as predicate type
+//        is_.add(O_(someone,is));  // Makes "someone is"->S, but it will be discarded as nonsensical unless alone
+//        is_.add(O_(say,is)); // e.g. say (someone is good) -> someone is saying an "is"
 /* LIVE, */
-        types_for("LIVE").add(Type.of(O,someone,live));
+ //       types_for("LIVE").add(O_(someone,live));
+        types_for("LIVE").add(maybe);
 /*
    DIE,
    THERE_IS,
    BE,    // ... somewhere */
 ////        TreeSet<Type> be = types_for("BE");
-////        be.add (Type.of(O,something,somewhere)); // was p1
-////        be.add (Type.of(O,someone,somewhere));
+////        be.add (O_(something,somewhere)); // was p1
+////        be.add (O_(someone,somewhere));
 /* IS_MINE,
    MOVE,
    TOUCH,
@@ -173,10 +197,10 @@ public class Lexicon {
    BIG,
    BAD, */
 ////        types_for ("BAD").add(a);
-                types_for("BAD").add(Type.of(O,is,is));
+////                types_for("BAD").add(O_(is,O_(is, bad)));
 /* GOOD, */
 ////        types_for("GOOD").add (a);
-                types_for("GOOD").add(Type.of(O,is,is));
+////                types_for("GOOD").add(O_(is,O_(is, good)));
 /* TRUE
 */
 
@@ -186,5 +210,7 @@ public class Lexicon {
                         continue;
                 Tab.ln ("t=" + t + " string=" + sym + Type.ls_str(types_for(sym)));            
         }
+        Tab.ln ("<<<<<<<<<<<<<<<<<<<<< ALL TYPES >>>>>>>>>>>>>>>>>>>>>");
+        System.out.println (Type.all_types());
     }
 }

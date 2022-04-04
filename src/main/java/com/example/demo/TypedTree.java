@@ -2,9 +2,8 @@ package com.example.demo;
 
 import org.junit.jupiter.api.Assertions;
 
-import ch.qos.logback.core.joran.conditional.ElseAction;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,79 +34,90 @@ public class TypedTree implements Comparable<TypedTree> {
             if (tt.types.size() != types.size())
                 return 1;
 
-            if (types.containsAll(tt.types)) 
+boolean save = Tab.trace(false);
+            if (types.containsAll(tt.types)) {
             //    if (tree == tt.tree)        // iffy
+Tab.trace (save);
                     return 0;
-
+            }
+Tab.trace (save);
             return 1;
     }
-/*
-    I LIVE : S
-        I : SOMEONE
-        LIVE : O(SOMEONE->S)
-    => s(live(i))
 
-    I IS GOOD : S
-        I : O(IS->S)
-        IS GOOD : IS
-            IS : O(GOOD->IS)
-            GOOD : GOOD
-    => s(is(i,good))
+    static void lookit (String internal_name, Type t, TypedTree tt, TypedTree arg) {
+        Tab.ln ("Type " + internal_name +": " + t);
 
-    I SAY I LIVE : S
-        I : O(SAY->S)
-        SAY I LIVE : SAY
-            SAY : O(S->SAY)
-            I LIVE : S
-                I : SOMEONE
-                LIVE : O(SOMEONE->S)
-    => s(say(i,s(live(i))))
-    */
+        if (arg != null) Tab.ln ("arg = " + arg.str());
+        else Tab.ln ("arg = null");
 
-    public String prolog() {
-        return this.prolog (true) + ".\n";
+        Tab.ln ("tt.tree.atom="+tt.tree.atom);
+
+        if (tt.tree.before != null) Tab.ln ("tt.tree.before = " + tt.tree.before.str());
+        else Tab.ln ("tt.tree.before = null");
+
+        if (tt.tree.after != null) Tab.ln ("tt.tree.after = " + tt.tree.after.str());
+        else Tab.ln ("tt.tree.after = null");
     }
 
-    public String prolog (boolean pred) {
-        TypedTree f,x;
-        if (tree.order == Order.NEITHER) {
-            if (pred)
-                return (tree.atom.toLowerCase());
-//            return tree.atom.substring(0,0).toUpperCase() + tree.atom.substring(1);
-            return tree.atom.toLowerCase() + "_";
-        }
-        if (tree.order == Order.BEFORE) {
-            x = tree.before;
-            f = tree.after;
-        } else {
-            x = tree.after;
-            f = tree.before;
-        }
-
-        return f.prolog(true) + "("+ x.prolog(false) + ")";
-    }
-/*
-    public String prolog() {
+    private static String pl(TypedTree tt, TypedTree arg) {
         String s = "";
-//        for (Type t : types) {
-//            s += "\nprolog: type=" + t + '\n';
-//            s += "   " + tree.str();
-            if (tree.order == Order.NEITHER) {
-                s += tree.atom.toLowerCase();
-            // should be a predicate-based in-order traversal
-            // not a replication of the original order
-            } else if (tree.order == Order.BEFORE) 
-                    s = // tree.order.toString() + ": " + 
-                        tree.before.prolog() + "(" + tree.after.prolog()  + ")";
-                else 
-                    s = tree.after.prolog()  + "(" + tree.before.prolog() + ")";
-//        }
+        assertNotNull(tt);
+        assertNotNull(tt.tree);
+        assertEquals(1,tt.types.size());
 
-    //    s += ".";
+        TypedTree before = tt.tree.before;
+        TypedTree after = tt.tree.after;
+
+        if (tt.types.contains(Lexicon.S) || tt.types.contains(Lexicon.PredOp)) { lookit("PredOp/S", Lexicon.PredOp,tt, arg);
+//            s += "PredOp/S[";
+
+            if (after.tree.atom != null)
+                s += after.tree.atom.toLowerCase() + " ";
+            s += pl (after, before);
+
+            /* s += ']'; */                                                      Tab.ln ("s = " + s);
+        } else if (tt.types.contains(Lexicon.Pred)) {                            lookit("Pred", Lexicon.Pred,tt, arg);
+//            s += "Pred[";
+//            if (tt.tree.order == Order.NEITHER) {
+//                s += tt.tree.atom;                                            
+//            }
+            s += arg.tree.atom.toLowerCase();
+            /* s += "]"; */                                                      Tab.ln ("s = " + s);
+        } else if (tt.types.contains(Lexicon.Quoter)) {                          lookit("Quoter", Lexicon.Quoter,tt, arg);
+//            s += "Quoter[";
+
+            if (before != null) // needed??? *************************
+                s += before.tree.atom.toLowerCase(); // hopefully...
+            s += "(";
+            s += arg.tree.atom.toLowerCase();
+            if (after != null) {
+                s += ",";
+                s += pl (after, arg);
+            }
+            s += ")";
+            /* s += "]";  */                                                     Tab.ln ("s = " + s);                       
+        } else if (tt.types.contains(Lexicon.Arg)) {                             lookit("Arg", Lexicon.Arg,tt, arg);
+            s += "Arg[";
+            s += tt.tree.atom.toLowerCase();
+            s += "]";                                                            Tab.ln ("s = " + s);
+        } else {                                                                 lookit ("*General case", Lexicon.S,tt, arg);
+            s += tt.tree.atom.toLowerCase();                                                   Tab.ln ("s = " + s);                                                   
+        }
 
         return s;
     }
-*/
+       
+    public String prolog() {
+  //      return prolog_ (this);
+  //      return this.prolog (true) + ".\n";
+        String s = pl (this, null);
+        Tab.ln ("--------------------- pl output -----------------");
+        Tab.ln (s);
+        Tab.ln ("-------------------------------------------------");
+        return s;
+    }
+
+
     public String str() {
         String s = tree.str() + "[";
         assertNotNull (types);
@@ -186,7 +196,7 @@ public class TypedTree implements Comparable<TypedTree> {
     public static Set<TypedTree>
     app (Order order, TypedTree this_ttree, TypedTree other_ttree) {
         assertNotNull(this_ttree);
-        assertNotNull(other_ttree);  Tab.ln ("app (" + order + ", " + this_ttree.str() + ", " + other_ttree.str() + ")");
+        assertNotNull(other_ttree);  Tab.ln ("app: apply " + this_ttree.str() + " to " + other_ttree.str());
         Set<TypedTree> result = new TreeSet<TypedTree>();
 
         Tab.ln ("Over " + this_ttree.types); Tab.o__();
@@ -202,36 +212,51 @@ public class TypedTree implements Comparable<TypedTree> {
             } else {
                 lx = Lexicon.types_for(t_this.toString());          Tab.ln ("...to  = " + t_this + " including " + Type.ls_str(lx));
             }
-            for (Type t_this_x : lx)    
+
+            for (Type t_this_x : lx) 
+//          Type t_this_x = t_this;
                 { // for all Oxy in this ttree
 
                 Tab.ln ("...to these: " + Type.ls_str (other_ttree.types)); Tab.o__();
                 for (Type t_other : other_ttree.types) {
 
                     // Type t_other_y = t_other;
-
+/*
                     TreeSet<Type> ly;
                     
                     if (t_other.type == AUGType.O) {
                         ly = new TreeSet<Type>();
-                        ly.add (t_other);                           Tab.ln ("...to  = " + t_other + " with just " + Type.ls_str(ly));
+                        boolean ok = ly.add (t_other);
+                        assertTrue(ok);
+                        assertTrue(ly.contains(t_other));
+                        Tab.ln ("Listing out ly:");
+                        for (Type xxx : ly) {
+                            Tab.ln ("...in ly: " + xxx);
+                        }                           
+                                                                    Tab.ln ("...to  = " + t_other + " with just " + Type.ls_str(ly));
                     } else {
                         ly = Lexicon.types_for(t_other.toString()); Tab.ln ("...to  = " + t_other + " including " + Type.ls_str(ly));
                     }
                     
                                                                     Tab.o__();
-                    for (Type t_other_y : ly) {
+                    for (Type t_other_y : ly)
+*/                  Type t_other_y = t_other;
+                                            {
+                                                                    Tab.ln ("t_other_y loop");
                         Type r = t_this_x.fxy (t_other_y);
-                        if (r == null)
+                        if (r == null) {                            Tab.ln ("...exiting");
                             continue;
+                        }
                         Tab.o__();
-
+/*
                         Type x = t_this_x.x;
                         if (x == null) {
                             Tab.ln ("But " + t_this_x + " x = null, t_other =" + t_other);
                             x = t_other_y.x; // Try it --------------------------------------------
                         }
-                                                                                                                Tab.ln ("x = " + x.toString());
+*/                      
+                        Type x = t_this_x;                                                                      Tab.ln ("x = " + x.toString());
+                        
                         TypedTree new_before = new TypedTree (this_ttree.tree,  Type.of (AUGType.O, x, r) );    Tab.ln ("new_before=" + new_before.str());
                         TypedTree new_after =  new TypedTree (other_ttree.tree, x );                            Tab.ln ("new_after=" + new_after.str());
 

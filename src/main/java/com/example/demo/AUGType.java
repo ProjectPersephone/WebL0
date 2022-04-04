@@ -6,15 +6,18 @@ public enum AUGType {
      O,        // combinator op
 
      I,
-     YOU,
+//     YOU,
      SOMEONE,
+/*
      SOMETHING,
      BODY,
      PEOPLE,
      KIND,
      PART,
      WORDS,
+*/
 
+/*
      THIS,
      THE_SAME,
      OTHER,
@@ -24,7 +27,9 @@ public enum AUGType {
      ALL,
      SOME,
      LITTLE,
+*/
 
+/*
      TIME,
      NOW,
      MOMENT,
@@ -33,29 +38,41 @@ public enum AUGType {
      A_SHORT_TIME,
      BEFORE,
      AFTER,
+     */
 
+/*
      WANT,
      DONT_WANT,
      FEEL,
      DO,
+*/
      SAY,
+/*
      KNOW,
      SEE,
      HEAR,
      THINK,
+*/
 
+/*
      HAPPEN,
+*/
      IS,    // copula
      LIVE,
+/*
      DIE,
      THERE_IS,
      BE,    // ... somewhere
+*/
 
+/*
      IS_MINE,
      MOVE,
      TOUCH,
      INSIDE,
+*/
 
+/*
      SOMEWHERE,
      HERE,
      ABOVE,
@@ -63,18 +80,25 @@ public enum AUGType {
      ON_ONE_SIDE, // (on) one side, quasisubstantive?
      NEAR,
      FAR,
+*/
 
+/*
      NOT,
      CAN,
      BECAUSE,
      IF,
+*/
      MAYBE,
+/*
      LIKE,     // ~as~way(~how)
      VERY,
      MORE,
+*/
 
+/*
      SMALL,
      BIG,
+*/
      BAD,
      GOOD,
      TRUE,

@@ -10,8 +10,10 @@ public class Tab {
     protected static String one_tab = "| ";
     private   static Boolean on = true;
 
-    public static void trace (Boolean flag) {
+    public static boolean trace (boolean flag) {
+        boolean tmp = on;
         on = flag;
+        return tmp;
     }
 
     private static int stackdepth() {
