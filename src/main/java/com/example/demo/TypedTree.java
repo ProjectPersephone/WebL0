@@ -46,6 +46,7 @@ Tab.trace (save);
 
     static void lookit (String internal_name, Type t, TypedTree tt, TypedTree arg) {
         Tab.ln ("Type " + internal_name +": " + t);
+        Tab.ln ("tt.types=" + Type.ls_str(tt.types));
 
         if (arg != null) Tab.ln ("arg = " + arg.str());
         else Tab.ln ("arg = null");
@@ -59,7 +60,25 @@ Tab.trace (save);
         else Tab.ln ("tt.tree.after = null");
     }
 
+    static String sentence (TypedTree before, TypedTree after, TypedTree arg) {
+        Tab.ln ("sentence:");
+        String s ="";
+        if (before.types.contains(Lexicon.CondS)) {
+            Tab.ln ("before: Conds");
+            s += pl (after,arg);
+            s += " :- ";
+            s += pl (before.tree.after, arg);
+        } else { 
+            Tab.ln ("before: not CondS");
+            if (after != null && after.tree.atom != null)
+                s += after.tree.atom.toLowerCase();
+            s += pl (after, before);
+        }
+        return s;
+    }
+
     private static String pl(TypedTree tt, TypedTree arg) {
+        Tab.ln("pl:");
         String s = "";
         assertNotNull(tt);
         assertNotNull(tt.tree);
@@ -69,39 +88,67 @@ Tab.trace (save);
         TypedTree after = tt.tree.after;
 
         if (tt.types.contains(Lexicon.S) || tt.types.contains(Lexicon.PredOp)) { lookit("PredOp/S", Lexicon.PredOp,tt, arg);
-//            s += "PredOp/S[";
-
-            if (after.tree.atom != null)
-                s += after.tree.atom.toLowerCase() + " ";
-            s += pl (after, before);
-
-            /* s += ']'; */                                                      Tab.ln ("s = " + s);
+            s += sentence (before, after, arg);                                  Tab.ln ("s = " + s);                               
         } else if (tt.types.contains(Lexicon.Pred)) {                            lookit("Pred", Lexicon.Pred,tt, arg);
-//            s += "Pred[";
-//            if (tt.tree.order == Order.NEITHER) {
-//                s += tt.tree.atom;                                            
-//            }
-            s += arg.tree.atom.toLowerCase();
-            /* s += "]"; */                                                      Tab.ln ("s = " + s);
+            s += arg.tree.atom.toLowerCase();                                    Tab.ln ("s = " + s);           
         } else if (tt.types.contains(Lexicon.Quoter)) {                          lookit("Quoter", Lexicon.Quoter,tt, arg);
-//            s += "Quoter[";
-
             if (before != null) // needed??? *************************
                 s += before.tree.atom.toLowerCase(); // hopefully...
             s += "(";
-            s += arg.tree.atom.toLowerCase();
+            if (arg != null && arg.tree.atom != null)
+                s += arg.tree.atom.toLowerCase();
+            else
+                s += "[*arg== null*]";
             if (after != null) {
                 s += ",";
                 s += pl (after, arg);
             }
-            s += ")";
-            /* s += "]";  */                                                     Tab.ln ("s = " + s);                       
-        } else if (tt.types.contains(Lexicon.Arg)) {                             lookit("Arg", Lexicon.Arg,tt, arg);
-            s += "Arg[";
-            s += tt.tree.atom.toLowerCase();
-            s += "]";                                                            Tab.ln ("s = " + s);
-        } else {                                                                 lookit ("*General case", Lexicon.S,tt, arg);
-            s += tt.tree.atom.toLowerCase();                                                   Tab.ln ("s = " + s);                                                   
+            s += ")";                                                         Tab.ln ("s = " + s);                        
+        } 
+        else if (tt.types.contains(Lexicon.Cond)) {                           lookit("Cond", Lexicon.Cond,tt, arg);
+            s += sentence (before,after,arg);
+/*
+            s += pl (before,null);
+            s += " :- ";
+            s += pl (after,null);
+            s += "<Cond>";
+*/                                                                            Tab.ln ("s = " + s);             
+        } else if (tt.types.contains(Lexicon.Conseq)) {                       lookit("Conseq", Lexicon.Cond,tt, arg);
+            s += sentence (before,after,arg);                                 Tab.ln ("s = " + s);
+
+        } else if (tt.types.contains(Lexicon.PredPred)) {                     lookit("PredPred", Lexicon.PredPred,tt, arg);
+            if (tt.tree.atom != null)
+                s += tt.tree.atom.toLowerCase();
+            if (before != null)
+                s += pl (before, null);
+            if (after != null)
+                s += "(" + pl (after,arg) + ")";
+                                                                              Tab.ln ("s = " + s);
+    // *** NOT SURE THIS ONE IS NEEDED **************/
+    
+        } /* else if (tt.types.contains(Lexicon.QualifiedThing)) {               lookit("QualifiedThing", Lexicon.QualifiedThing,tt, arg);
+            s += "<";
+            if (tt.tree.atom != null)
+                s += tt.tree.atom.toLowerCase();
+            if (before != null)
+                s += pl (before,null);
+            s += "+";
+            if (after != null)
+                s += pl(after,null);
+            s += ">";
+                                                                              Tab.ln ("s = " + s);
+        }
+    */
+        else {                                                                lookit ("*General case", Lexicon.S,tt, arg);
+            if (tt.tree.atom != null) {
+                s += tt.tree.atom.toLowerCase();
+            } else {
+                if (before != null)
+                    s += pl (before,null);
+                if (after != null)
+                    s += "(" + pl (after,null) + ")";
+            }
+                                                                              Tab.ln ("s = " + s);                                                   
         }
 
         return s;

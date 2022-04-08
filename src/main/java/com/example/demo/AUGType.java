@@ -8,8 +8,8 @@ public enum AUGType {
      I,
 //     YOU,
      SOMEONE,
-/*
      SOMETHING,
+/*
      BODY,
      PEOPLE,
      KIND,
@@ -17,8 +17,9 @@ public enum AUGType {
      WORDS,
 */
 
-/*
+
      THIS,
+/*
      THE_SAME,
      OTHER,
      ONE,
@@ -40,15 +41,15 @@ public enum AUGType {
      AFTER,
      */
 
-/*
      WANT,
      DONT_WANT,
-     FEEL,
-     DO,
-*/
-     SAY,
 /*
+     FEEL, */
+     DO,
+
+     SAY,
      KNOW,
+/*
      SEE,
      HEAR,
      THINK,
@@ -59,8 +60,8 @@ public enum AUGType {
 */
      IS,    // copula
      LIVE,
-/*
      DIE,
+/*
      THERE_IS,
      BE,    // ... somewhere
 */
@@ -82,12 +83,13 @@ public enum AUGType {
      FAR,
 */
 
-/*
+
      NOT,
+/*
      CAN,
      BECAUSE,
-     IF,
 */
+     IF,
      MAYBE,
 /*
      LIKE,     // ~as~way(~how)

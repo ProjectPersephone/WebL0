@@ -22,7 +22,11 @@ public class Lexicon {
     public static Type Pred;
     public static Type PredOp; // really means takes sentence as operand, e.g. SAY, THINK, etc.
     public static Type Quoter; // SAY, THINK ....
-    public static Type Arg; // SAY, THINK ....
+    // public static Type Arg; // SAY, THINK ....
+    public static Type Cond; // IF, BECAUSE
+    public static Type Conseq;
+    public static Type CondS;
+    public static Type PredPred;
 
     private static TreeSet<Type> insert(String w) {
         TreeSet<Type> l = new TreeSet<Type>();
@@ -73,7 +77,7 @@ public class Lexicon {
         }
         Tab.trace(true);
 
-//        Type something = Type.of (AUGType.SOMETHING,null,null);
+        Type something = Type.of (AUGType.SOMETHING,null,null);
 //        Type sometime = O_(S,S);  //  Main.hs "tomorrow", should be same as c
 //        Type somewhere = Type.of (AUGType.SOMEWHERE,null,null);
         Type someone = Type.of (AUGType.SOMEONE,null,null);
@@ -87,12 +91,18 @@ public class Lexicon {
         Type live = Type.of (AUGType.LIVE,null,null);
         Type true_ = Type.of (AUGType.TRUE,null,null);
         Type maybe = Type.of (AUGType.MAYBE,null,null);
+        Type if_ = Type.of (AUGType.IF,null,null);
+        Type this_ = Type.of(AUGType.THIS,null,null);
 
         S = true_;
-        Pred = maybe;
+        Pred = maybe;  // just hacking here
         PredOp = O_(S,Pred);
-        Quoter = O_(Pred,S);
-        Arg = O_(O_(maybe,S),S);
+        Quoter = O_(Pred,S);    // iffy
+        // Arg = O_(O_(maybe,S),S);
+        Cond = O_(S,S);
+        Conseq = O_(S,Cond);
+        CondS = O_(Cond,S);
+        PredPred = O_(Pred,Pred);
 
 /* I */
         Set<Type> I = types_for("I");
@@ -101,21 +111,27 @@ public class Lexicon {
 ////        I.add (O_(p1, S)); // too general, but anyway
 /* YOU,
    SOMEONE, */
-        types_for("SOMEONE").add(O_(maybe, true_)); // someone can be good, bad; do thing, etc.
+        types_for("SOMEONE").add(O_(Pred, S)); // someone can be good, bad; do thing, etc.
 //        types_for("SOMEONE").add(O_(O_(say,true_),say)); // someone can say something maybe true
 //        types_for("SOMEONE").add(O_(live,true_));
 /*
    SOMETHING, */
-//        TreeSet<Type> st = types_for ("SOMETHING");
+        TreeSet<Type> st = types_for ("SOMETHING");
 //        st.add (O_(say,O_(say,true_)));   // can say something, though a something can't say things
-////        st.add (T);
+        st.add(O_(is,Pred));
+        st.add(O_(Pred,S));
+        st.add(O_(bad,something)); // something that's bad is still something
+        st.add(O_(good,something)); // same for good thing
 /* BODY,
    PEOPLE,
    KIND,
    PART,
    WORDS,
-
-   THIS,
+*/
+//   THIS,
+        TreeSet<Type> a_this = types_for("THIS");
+        a_this.add(O_(something,something));
+/*
    THE_SAME,
    OTHER,
    ONE,
@@ -134,18 +150,37 @@ public class Lexicon {
    A_SHORT_TIME,
    BEFORE,
    AFTER,
+*/
+//   WANT,
+        TreeSet<Type> how_to_want = types_for ("WANT");
+        how_to_want.add(O_(something, Pred));
+        how_to_want.add(PredPred);      // predicated predicate like "WANT [to] KNOW <something>"
+        how_to_want.add(O_(this_,Pred));
 
-   WANT,
-   DONT_WANT,
+//   DONT_WANT,
+        TreeSet<Type> how_to_not_want = types_for ("DONT_WANT");
+        how_to_not_want.add(O_(something, Pred));       // ???
+        how_to_not_want.add(PredPred);      // ???
+        how_to_not_want.add(O_(this_,Pred));
+
+/*
    FEEL,
-   DO,
-   SAY, */
+*/
+//   DO,
+        TreeSet<Type> how_to_do = types_for ("DO");
+        how_to_do.add (O_(something,Pred));
+//   SAY,
         TreeSet<Type> how_to_say = types_for ("SAY");
 //        how_to_say.add (O_(something, say)); // just raw SOMETHING, but need SOMETHING LIKE WORD(S)
-        how_to_say.add (O_(true_, maybe));       // for actual statement, maybe need a "MAYBE TRUE"
+        how_to_say.add (O_(S, Pred));       // for actual statement, maybe need a "MAYBE TRUE"
+        how_to_say.add (O_(something,Pred));    // "SAY SOMETHING", but dangerous: could mean you could say an object
 //        how_to_say.add (O_(live, say));
 ////        how_to_say.add (O_(someone, S));
-/* KNOW,
+/* KNOW, */
+        TreeSet<Type> how_to_know = types_for ("KNOW");
+        how_to_know.add (O_(something, Pred));
+        how_to_know.add(Pred); // e.g., "I [NOT/don't] KNOW"/"I KNOW" ???
+/*
    SEE,
    HEAR,
    THINK, */ 
@@ -154,16 +189,20 @@ public class Lexicon {
    IS,    // copula */
         TreeSet<Type> is_ = types_for("IS");
 ////        is.add (O_(someone,p1));
-////        is.add (O_(something,p1));
+        is_.add (O_(something,Pred));
+        is_.add (O_(someone,Pred));             // may need to distinguish person IS from thing IS
 ////        is.add (cop);                   // ???????????
-        is_.add(O_(good,maybe)); // MAYBE type as predicate type
+        is_.add(O_(good,Pred));
+        is_.add(O_(bad,Pred));
 //        is_.add(O_(someone,is));  // Makes "someone is"->S, but it will be discarded as nonsensical unless alone
 //        is_.add(O_(say,is)); // e.g. say (someone is good) -> someone is saying an "is"
 /* LIVE, */
  //       types_for("LIVE").add(O_(someone,live));
-        types_for("LIVE").add(maybe);
+        types_for("LIVE").add(Pred);
 /*
-   DIE,
+   DIE, */
+        types_for("DIE").add(Pred);
+/*
    THERE_IS,
    BE,    // ... somewhere */
 ////        TreeSet<Type> be = types_for("BE");
@@ -181,13 +220,15 @@ public class Lexicon {
    ON_ONE_SIDE,
    NEAR,
    FAR,
-
-   NOT,
+*/
+//   NOT,
+        types_for ("NOT").add(PredPred);
+/*
    CAN,
    BECAUSE, */
 ////        types_for("BECAUSE").add(osc);
-/* IF, */
-////        types_for ("IF").add(osc);
+// IF,
+        types_for ("IF").add(O_(S,Cond)); // guessing from Haskell code
 /* MAYBE,
    LIKE,
    VERY,
@@ -196,11 +237,17 @@ public class Lexicon {
    SMALL,
    BIG,
    BAD, */
-////        types_for ("BAD").add(a);
+        TreeSet<Type> how_to_be_bad = types_for ("BAD");
+        how_to_be_bad.add(O_(something,something));
+        how_to_be_bad.add(O_(someone,someone));
+
 ////                types_for("BAD").add(O_(is,O_(is, bad)));
 /* GOOD, */
 ////        types_for("GOOD").add (a);
 ////                types_for("GOOD").add(O_(is,O_(is, good)));
+        TreeSet<Type> how_to_be_good = types_for ("GOOD");
+        how_to_be_good.add(O_(something,something));
+        how_to_be_good.add(O_(someone,someone));
 /* TRUE
 */
 

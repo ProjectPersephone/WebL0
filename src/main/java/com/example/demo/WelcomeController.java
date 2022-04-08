@@ -187,6 +187,7 @@ public class WelcomeController {
             }
             TypedTree tt = tt_ls.get(0);
             Tab.ln (wordCount + " words in " + text.getLiteral() + ": " + tt.str());
+            Tab.reset();
             try {
                 String pl = tt.prolog();
                  myFileWriter.write(pl);
