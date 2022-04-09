@@ -2,6 +2,8 @@ package com.example.demo;
 
 import org.junit.jupiter.api.Assertions;
 
+import ch.qos.logback.core.joran.conditional.ElseAction;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -11,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 // import java.security.cert.X509CRLEntry; // How'd this get here????????????
 import java.util.*;
 import java.util.Set;
+
+import javax.swing.text.DefaultStyledDocument.ElementSpec;
 
 import com.example.demo.Order;
 import com.example.demo.AUGType;
@@ -60,110 +64,120 @@ Tab.trace (save);
         else Tab.ln ("tt.tree.after = null");
     }
 
-    static String sentence (TypedTree before, TypedTree after, TypedTree arg) {
-        Tab.ln ("sentence:");
+    static String sentence1 (TypedTree before, TypedTree after, TypedTree arg) {
+        Tab.ln ("sentence1:");
         String s ="";
         if (before.types.contains(Lexicon.CondS)) {
             Tab.ln ("before: Conds");
-            s += pl (after,arg);
+            s += pl1 (after,arg);
             s += " :- ";
-            s += pl (before.tree.after, arg);
+            s += pl1 (before.tree.after, arg);
         } else { 
             Tab.ln ("before: not CondS");
-            if (after != null && after.tree.atom != null)
-                s += after.tree.atom.toLowerCase();
-            s += pl (after, before);
+            s += pl1 (after, before);
         }
         return s;
     }
 
-    private static String pl(TypedTree tt, TypedTree arg) {
-        Tab.ln("pl:");
+    private static Boolean substantive (TypedTree tt) {
+        Type t = get_type(tt);
+        if (tt != null)
+            Tab.ln ("substantive: tt=" + tt.str());
+        Boolean r = (t.x == Lexicon.Someone || t.x == Lexicon.Something);
+        Tab.ln ("returning " + r);
+        return r;
+    }
+
+    private static Type get_type(TypedTree tt) {
+        assertEquals(1,tt.types.size());
+
+        Type type = null; // shut up "may not be initialized" warning
+        for (Type ttx : tt.types) type = ttx; // only way to pull out the singleton?
+        return type;
+    }
+
+    private static String pl1(TypedTree tt, TypedTree arg) {
+        Tab.ln("pl1:");
+
         String s = "";
         assertNotNull(tt);
         assertNotNull(tt.tree);
-        assertEquals(1,tt.types.size());
 
+        Type type = get_type(tt); // to shut up "may not be initialized" warning
+  
+        lookit("*** ", type,tt, arg);
+        String atom = tt.tree.atom;
         TypedTree before = tt.tree.before;
         TypedTree after = tt.tree.after;
 
         if (tt.types.contains(Lexicon.S) || tt.types.contains(Lexicon.PredOp)) { lookit("PredOp/S", Lexicon.PredOp,tt, arg);
-            s += sentence (before, after, arg);                                  Tab.ln ("s = " + s);                               
-        } else if (tt.types.contains(Lexicon.Pred)) {                            lookit("Pred", Lexicon.Pred,tt, arg);
-            s += arg.tree.atom.toLowerCase();                                    Tab.ln ("s = " + s);           
-        } else if (tt.types.contains(Lexicon.Quoter)) {                          lookit("Quoter", Lexicon.Quoter,tt, arg);
-            if (before != null) // needed??? *************************
-                s += before.tree.atom.toLowerCase(); // hopefully...
-            s += "(";
-            if (arg != null && arg.tree.atom != null)
-                s += arg.tree.atom.toLowerCase();
-            else
-                s += "[*arg== null*]";
-            if (after != null) {
-                s += ",";
-                s += pl (after, arg);
-            }
-            s += ")";                                                         Tab.ln ("s = " + s);                        
-        } 
-        else if (tt.types.contains(Lexicon.Cond)) {                           lookit("Cond", Lexicon.Cond,tt, arg);
-            s += sentence (before,after,arg);
-/*
-            s += pl (before,null);
-            s += " :- ";
-            s += pl (after,null);
-            s += "<Cond>";
-*/                                                                            Tab.ln ("s = " + s);             
-        } else if (tt.types.contains(Lexicon.Conseq)) {                       lookit("Conseq", Lexicon.Cond,tt, arg);
-            s += sentence (before,after,arg);                                 Tab.ln ("s = " + s);
-
-        } else if (tt.types.contains(Lexicon.PredPred)) {                     lookit("PredPred", Lexicon.PredPred,tt, arg);
+            s += sentence1 (before, after, arg);                                  Tab.ln ("s = " + s); 
+        } else                
+        if (tt.types.contains(Lexicon.Cond)) {                           lookit("Cond", Lexicon.Cond,tt, arg);
+            s += sentence1 (before,after,arg);                                Tab.ln ("s = " + s);             
+        } else
+        if (tt.types.contains(Lexicon.Conseq)) {                       lookit("Conseq", Lexicon.Cond,tt, arg);
+            s += sentence1 (before,after,arg);                                 Tab.ln ("s = " + s);
+        } else
+        if (tt.types.contains(Lexicon.PredPred)) {                     lookit("PredPred", Lexicon.PredPred,tt, arg);
             if (tt.tree.atom != null)
                 s += tt.tree.atom.toLowerCase();
             if (before != null)
-                s += pl (before, null);
+                s += pl1 (before, null);
             if (after != null)
-                s += "(" + pl (after,arg) + ")";
+                s += "(" + pl1 (after,arg) + ")";
                                                                               Tab.ln ("s = " + s);
-    // *** NOT SURE THIS ONE IS NEEDED **************/
-    
-        } /* else if (tt.types.contains(Lexicon.QualifiedThing)) {               lookit("QualifiedThing", Lexicon.QualifiedThing,tt, arg);
-            s += "<";
-            if (tt.tree.atom != null)
-                s += tt.tree.atom.toLowerCase();
-            if (before != null)
-                s += pl (before,null);
-            s += "+";
-            if (after != null)
-                s += pl(after,null);
-            s += ">";
-                                                                              Tab.ln ("s = " + s);
-        }
-    */
-        else {                                                                lookit ("*General case", Lexicon.S,tt, arg);
-            if (tt.tree.atom != null) {
-                s += tt.tree.atom.toLowerCase();
+        }  else
+        if (type.x == Lexicon.Pred) {
+            if (atom == null) {
+                Tab.ln ("Pred op null -> complex");
+                s += pl1 (before,null) + "(";                                    Tab.ln ("s = " + s);
             } else {
-                if (before != null)
-                    s += pl (before,null);
-                if (after != null)
-                    s += "(" + pl (after,null) + ")";
+                Tab.ln ("Pred op = " + atom);
+                s += atom + "(";                                   Tab.ln ("s = " + s);
             }
-                                                                              Tab.ln ("s = " + s);                                                   
+            if (arg != null) {
+                s += pl1 (arg, null);                                    Tab.ln ("s = " + s);
+            }
+            if (after != null) {
+                if (arg != null) s += ",";                                     Tab.ln ("s = " + s);
+                s += pl1 (after, null);                                     Tab.ln ("s = " + s);
+            }
+            s += ")";                                     Tab.ln ("s = " + s);
+        } else
+        if (atom == null && type.y == Lexicon.Someone) {
+            Tab.ln ("atom == null && type.y == Lexicon.Someone");
+            s += pl1 (after, before);                                   Tab.ln ("s = " + s);
+        } else
+        if (type.y == Lexicon.Pred && after != null) {
+            Tab.ln("type.y == Lexicon.Pred && after != null");
+            if (atom == null) {
+                if (substantive(after)) {
+                    s += pl1 (before,after);                                    Tab.ln ("s = " + s);
+                } else {
+                    s += pl1 (after,before);                                    Tab.ln ("s = " + s);
+                }
+            } else
+                s += pl1 (after,before);                                    Tab.ln ("s = " + s);
+        } else {
+            Tab.ln("Default");
+            Tab.ln ("atom = " + atom);
+            if (atom != null)
+                s += atom;                                    Tab.ln ("s = " + s);
+            if (arg != null)
+                s += "(" + pl1 (arg,null) + ")";
         }
-
         return s;
     }
-       
+
     public String prolog() {
-  //      return prolog_ (this);
-  //      return this.prolog (true) + ".\n";
-        String s = pl (this, null);
-        Tab.ln ("--------------------- pl output -----------------");
-        Tab.ln (s);
-        Tab.ln ("-------------------------------------------------");
-        return s;
-    }
 
+        Tab.ln ("********************* pl1 traces ****************");
+        String s1 = pl1 (this,null);
+        Tab.ln ("====== pl1 output: " + s1);
+        Tab.ln ("-------------------------------------------------");
+        return s1;
+    }
 
     public String str() {
         String s = tree.str() + "[";

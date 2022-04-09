@@ -1,1 +1,0 @@
-say(i,is(i,good(someone)))

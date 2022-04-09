@@ -134,11 +134,11 @@ public class WelcomeController {
         v.indented.show();
 
         JSONArray ja_new = v.toJSON();
-        System.out.println ("Array of JSON parses with blocks=" + ja_new);
+        Tab.ln ("Array of JSON parses with blocks=" + ja_new);
 
         String jas = ja_new.toString();
 
-        System.out.println ("Array of JSON parses=" + jas);
+        Tab.ln ("Array of JSON parses=" + jas);
 
         model.addAttribute("message", jas);
         model.addAttribute("post", post);
@@ -179,6 +179,8 @@ public class WelcomeController {
             int wordCount = text.getLiteral().split("\\W+").length; // ???
             String Str_nw = text.getLiteral();
             Sentence S = new Sentence (Str_nw);
+            Tab.reset();
+            Tab.trace(false);
             Cache C = Cache.cache (S);
             LinkedList<TypedTree> tt_ls = C.get(0,0);
             if (tt_ls.isEmpty()) {
@@ -188,6 +190,7 @@ public class WelcomeController {
             TypedTree tt = tt_ls.get(0);
             Tab.ln (wordCount + " words in " + text.getLiteral() + ": " + tt.str());
             Tab.reset();
+            Tab.trace(true);
             try {
                 String pl = tt.prolog();
                  myFileWriter.write(pl);
@@ -196,6 +199,7 @@ public class WelcomeController {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
             }
+            Tab.trace(false);
             indented.add (tt);
         }
 

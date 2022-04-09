@@ -21,12 +21,17 @@ public class Lexicon {
     public static Type S;
     public static Type Pred;
     public static Type PredOp; // really means takes sentence as operand, e.g. SAY, THINK, etc.
-    public static Type Quoter; // SAY, THINK ....
+    public static Type Subst; // SAY, THINK ....
     // public static Type Arg; // SAY, THINK ....
     public static Type Cond; // IF, BECAUSE
     public static Type Conseq;
     public static Type CondS;
     public static Type PredPred;
+    public static Type Good;
+    public static Type Bad;
+    public static Type Someone;
+    public static Type Something;
+
 
     private static TreeSet<Type> insert(String w) {
         TreeSet<Type> l = new TreeSet<Type>();
@@ -75,7 +80,7 @@ public class Lexicon {
 
             types_for(sym).add(Type.of (t,null,null));
         }
-        Tab.trace(true);
+        Tab.trace(false);
 
         Type something = Type.of (AUGType.SOMETHING,null,null);
 //        Type sometime = O_(S,S);  //  Main.hs "tomorrow", should be same as c
@@ -95,23 +100,34 @@ public class Lexicon {
         Type this_ = Type.of(AUGType.THIS,null,null);
 
         S = true_;
-        Pred = maybe;  // just hacking here
+        // S = O_(say,this_);
+
+        Pred = maybe;
+        // Pred = O_(O_(maybe,true_),this_); // Predicate something that may be true about something/someone
+
         PredOp = O_(S,Pred);
-        Quoter = O_(Pred,S);    // iffy
-        // Arg = O_(O_(maybe,S),S);
+        Subst = O_(Pred,S);    // iffy
         Cond = O_(S,S);
         Conseq = O_(S,Cond);
         CondS = O_(Cond,S);
         PredPred = O_(Pred,Pred);
+        Good = good;
+        Bad = bad;
+        Someone = someone;
+        Something = something;
 
 /* I */
-        Set<Type> I = types_for("I");
+        TreeSet<Type> I = types_for("I");
 ////        I.add (O_(say, S));
         I.add (someone);
 ////        I.add (O_(p1, S)); // too general, but anyway
 /* YOU,
    SOMEONE, */
-        types_for("SOMEONE").add(O_(Pred, S)); // someone can be good, bad; do thing, etc.
+        TreeSet<Type> so = types_for("SOMEONE");
+        so.add(O_(is,Pred));
+        so.add(O_(Pred, S)); // someone can be good, bad; do thing, etc.
+        so.add(O_(bad,someone));
+        so.add(O_(good,someone));
 //        types_for("SOMEONE").add(O_(O_(say,true_),say)); // someone can say something maybe true
 //        types_for("SOMEONE").add(O_(live,true_));
 /*
@@ -243,8 +259,6 @@ public class Lexicon {
 
 ////                types_for("BAD").add(O_(is,O_(is, bad)));
 /* GOOD, */
-////        types_for("GOOD").add (a);
-////                types_for("GOOD").add(O_(is,O_(is, good)));
         TreeSet<Type> how_to_be_good = types_for ("GOOD");
         how_to_be_good.add(O_(something,something));
         how_to_be_good.add(O_(someone,someone));
@@ -258,6 +272,6 @@ public class Lexicon {
                 Tab.ln ("t=" + t + " string=" + sym + Type.ls_str(types_for(sym)));            
         }
         Tab.ln ("<<<<<<<<<<<<<<<<<<<<< ALL TYPES >>>>>>>>>>>>>>>>>>>>>");
-        System.out.println (Type.all_types());
+        Tab.ln (Type.all_types());
     }
 }
