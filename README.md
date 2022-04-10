@@ -3,9 +3,9 @@ Front and back end for tools using Natural Semantic Metalanguage (NSM), Applicat
 
 It's work in progress. It can parse a little English NSM already.
 
-The research question here is this: can language processing avoid linguistic bias in morphosyntactic variation? My tentative answer is yes. NSM abstract syntax may make it possible to devise a language independent representation for representing language processing, by making NSM itself the basis for algorithmic specification, mediated by any chosen language that gets added to the database. The question arises, however: couldn't that specification resemble only one language, and thus be thought biased toward that language. This question inspired a thought experiment.
+The research question here is this: can language processing avoid linguistic bias in morphosyntactic variation? My tentative answer is yes. NSM abstract syntax may make it possible to devise a languag- independent representation for representing language processing, by making NSM itself the basis for algorithmic specification. Describing languages could be mediated by any chosen language that gets added to the database. The question arises, however: couldn't that specification resemble only one language, and thus be thought biased toward that language? This question inspired a thought experiment.
 
-The Legend of L0
+*The Legend of L0*
 
 Once upon a time, during a period of climate change, a tribe migrating in search of better land and better neighbors camped for the night, at the base of a mountain, only to discover in the morning that one of their little girls was missing.
 
@@ -35,4 +35,4 @@ Unfortunately, people also started lying again. But you can't have everything.
 
 THE END
 
-If we imagine that L0 had a binary system of symbols, with no inflection or agglutination, with parts of speech determine  by word order, this still leaves a number of degrees of freedom, such as whether the sentence pattern would be SOV, SVO, OVS; and the exact binary coding of words. What I think suffices for this thought experiment is that L0 is not any particular language, but isn't any less expressive than any other language, because of the power of NSM primes and reductive paraphrase. The very fact (?) that nothing like it has ever existed, but also that, under the Legend scenario above, it probably could exist (whether in the distant past, the far future, or in some unexplored area of the world even today), is enough to establish that a binary representation of NSM isn't inherently biased toward any particular language.
+Even if we imagine that L0 had a binary system of symbols, with no inflection or agglutination, with parts of speech determined only by word order, this still leaves a number of degrees of freedom, such as whether the sentence pattern would be SOV, SVO, OVS; and the exact binary coding of words. What I think suffices for this thought experiment is that L0 is not any particular language, but isn't any less expressive than any other language, because of the power of NSM primes and reductive paraphrase. The very fact (?) that nothing like it has ever existed, but also that, under the Legend scenario above, it probably _could_ exist (whether in the distant past, the far future, or even in some unexplored area of the world  today), is enough to establish that a binary representation of NSM isn't inherently biased toward any particular language.
