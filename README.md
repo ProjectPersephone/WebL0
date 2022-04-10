@@ -7,7 +7,7 @@ The research question here is this: can language processing avoid linguistic bia
 
 The question arises, however: couldn't that specification resemble only one language, and thus be thought biased toward that language? This question inspired a thought experiment.
 
-*The Legend of L0*
+### *The Legend of L0*
 
 Once upon a time, during a period of climate change, a tribe migrating in search of better land and better neighbors camped for the night, at the base of a mountain, only to discover in the morning that one of their little girls was missing.
 
