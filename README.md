@@ -15,7 +15,7 @@ They traced her footprints up a mountain slope, up into snow. At the top of a ri
 
 So the whole clan gathered at the top of the slope, and one by one, they all slid down. Then they descended further into a veritable Land of Milk and Honey. What they didn't know, however, is that they were also descending into a pit of zoonotic viruses.
 
-The animals were easy game. Some seemed almost blind, deaf, or both, and clumsy. Unfortunately, eating this meet began to infect the tribe.
+The animals were easy game. Some seemed almost blind, deaf, or both, and clumsy. Unfortunately, eating this meat began to infect the tribe.
 
 The first infection paralyzed their vocal cords. They hastily devised a sign language, and a crude clay-tablet cuneiform system. But something was lacking: communication in real time, over distances. So they also devised a very stripped-down whistle language.
 
