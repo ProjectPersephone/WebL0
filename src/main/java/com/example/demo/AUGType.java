@@ -55,9 +55,8 @@ public enum AUGType {
      THINK,
 */
 
-/*
+
      HAPPEN,
-*/
      IS,    // copula
      LIVE,
      DIE,
@@ -85,8 +84,8 @@ public enum AUGType {
 
 
      NOT,
-/*
      CAN,
+/*
      BECAUSE,
 */
      IF,

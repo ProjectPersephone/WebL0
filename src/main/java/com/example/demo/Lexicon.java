@@ -106,7 +106,7 @@ public class Lexicon {
         // Pred = O_(O_(maybe,true_),this_); // Predicate something that may be true about something/someone
 
         PredOp = O_(S,Pred);
-        Subst = O_(Pred,S);    // iffy
+        Subst = O_(O_(Pred,S),S);    // iffy
         Cond = O_(S,S);
         Conseq = O_(S,Cond);
         CondS = O_(Cond,S);
@@ -201,8 +201,11 @@ public class Lexicon {
    HEAR,
    THINK, */ 
 ////        types_for ("THINK").add (p1);
-/* HAPPEN,
-   IS,    // copula */
+// HAPPEN,
+        TreeSet<Type> how_to_happen = types_for("HAPPEN");
+        how_to_happen.add(O_(someone,Pred));   // happen TO someone
+        how_to_happen.add(Pred);        // too broad -- a person can't happen to you, for example
+//   IS,    // copula not BE (SOMEWHERE) */
         TreeSet<Type> is_ = types_for("IS");
 ////        is.add (O_(someone,p1));
         is_.add (O_(something,Pred));
@@ -239,8 +242,10 @@ public class Lexicon {
 */
 //   NOT,
         types_for ("NOT").add(PredPred);
+
+//   CAN,
+        types_for("CAN").add(PredPred);    // too broad, just a start
 /*
-   CAN,
    BECAUSE, */
 ////        types_for("BECAUSE").add(osc);
 // IF,

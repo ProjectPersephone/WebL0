@@ -36,6 +36,7 @@ import java.util.Set;
 
 import com.example.demo.Cache;
 import com.example.demo.Tab;
+import com.example.demo.NSMprolog;
 
 
 @Controller
@@ -97,6 +98,8 @@ public class WelcomeController {
 
     @PostMapping("/edit")
     public String save(Post post, Model model) {
+        NSMprolog npl = new NSMprolog(AUGType.IF);  // ************ just to make sure something works
+        
         Tab.reset();
 
         if (post == null) {

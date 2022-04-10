@@ -64,17 +64,37 @@ Tab.trace (save);
         else Tab.ln ("tt.tree.after = null");
     }
 
+    static String start_paren() {
+        return "(";
+    }
+
+    static String end_paren() {
+        return ")";
+    }
+
+    static String add_arg(String arg) {
+        return arg;
+    }
+
+    static String parenthesize(String arg) {
+        String s = "";
+        s += start_paren();
+        s += add_arg (arg);
+        s += end_paren();
+        return s;
+    }
+
     static String sentence1 (TypedTree before, TypedTree after, TypedTree arg) {
         Tab.ln ("sentence1:");
         String s ="";
         if (before.types.contains(Lexicon.CondS)) {
             Tab.ln ("before: Conds");
-            s += pl1 (after,arg);
-            s += " :- ";
-            s += pl1 (before.tree.after, arg);
+            s += add_arg (pl1 (after,arg));
+            s += " :- ";            // NSMprolog API entry? ??????????????????????????????????????
+            s += add_arg (pl1 (before.tree.after, arg));
         } else { 
             Tab.ln ("before: not CondS");
-            s += pl1 (after, before);
+            s += add_arg (pl1 (after, before));
         }
         return s;
     }
@@ -96,6 +116,7 @@ Tab.trace (save);
         return type;
     }
 
+    // probably redundant code in here, needs analysis and trimming
     private static String pl1(TypedTree tt, TypedTree arg) {
         Tab.ln("pl1:");
 
@@ -103,69 +124,81 @@ Tab.trace (save);
         assertNotNull(tt);
         assertNotNull(tt.tree);
 
-        Type type = get_type(tt); // to shut up "may not be initialized" warning
+        Type type = get_type(tt);
   
         lookit("*** ", type,tt, arg);
         String atom = tt.tree.atom;
         TypedTree before = tt.tree.before;
         TypedTree after = tt.tree.after;
 
-        if (tt.types.contains(Lexicon.S) || tt.types.contains(Lexicon.PredOp)) { lookit("PredOp/S", Lexicon.PredOp,tt, arg);
-            s += sentence1 (before, after, arg);                                  Tab.ln ("s = " + s); 
-        } else                
-        if (tt.types.contains(Lexicon.Cond)) {                           lookit("Cond", Lexicon.Cond,tt, arg);
-            s += sentence1 (before,after,arg);                                Tab.ln ("s = " + s);             
-        } else
-        if (tt.types.contains(Lexicon.Conseq)) {                       lookit("Conseq", Lexicon.Cond,tt, arg);
-            s += sentence1 (before,after,arg);                                 Tab.ln ("s = " + s);
-        } else
+        if (tt.types.contains(Lexicon.S)
+         || tt.types.contains(Lexicon.PredOp)
+         || tt.types.contains(Lexicon.Cond)
+         || tt.types.contains(Lexicon.Conseq)) {                       lookit("<*>", Lexicon.PredOp,tt, arg);
+            s += add_arg (sentence1 (before, after, arg));             Tab.ln ("s = " + s); 
+        }  else
         if (tt.types.contains(Lexicon.PredPred)) {                     lookit("PredPred", Lexicon.PredPred,tt, arg);
-            if (tt.tree.atom != null)
-                s += tt.tree.atom.toLowerCase();
-            if (before != null)
-                s += pl1 (before, null);
-            if (after != null)
-                s += "(" + pl1 (after,arg) + ")";
-                                                                              Tab.ln ("s = " + s);
+            if (atom != null)   { s += add_arg(tt.tree.atom);          Tab.ln ("(1)s = " + s);
+            }
+            if (before != null) { s += add_arg(pl1 (before, null));     Tab.ln ("(2)s = " + s);
+            }
+            if (after != null)  { s += parenthesize(pl1 (after,arg));     Tab.ln ("(3)s = " + s);
+            }
         }  else
         if (type.x == Lexicon.Pred) {
             if (atom == null) {
                 Tab.ln ("Pred op null -> complex");
-                s += pl1 (before,null) + "(";                                    Tab.ln ("s = " + s);
+                s += add_arg(pl1 (before,null));
+                s += start_paren();                            Tab.ln ("(4)s = " + s);
             } else {
                 Tab.ln ("Pred op = " + atom);
-                s += atom + "(";                                   Tab.ln ("s = " + s);
+                s += add_arg(atom);
+                s += start_paren();                                        Tab.ln ("(5)s = " + s);
             }
             if (arg != null) {
-                s += pl1 (arg, null);                                    Tab.ln ("s = " + s);
+                s += add_arg(pl1 (arg, null));                                    Tab.ln ("(6)s = " + s);
             }
             if (after != null) {
-                if (arg != null) s += ",";                                     Tab.ln ("s = " + s);
-                s += pl1 (after, null);                                     Tab.ln ("s = " + s);
+                if (arg != null) { s += ",";                             Tab.ln ("(7)s = " + s);
+                }
+                s += add_arg(pl1 (after, null));                                  Tab.ln ("(8)s = " + s);
             }
-            s += ")";                                     Tab.ln ("s = " + s);
+            s += end_paren();                                                   Tab.ln ("(9)s = " + s);
+        }  else
+        if (tt.types.contains(Lexicon.Subst)) {
+            Tab.ln ("Subst: <stub>");
+            if (atom != null) {
+                s += add_arg(atom);                                              Tab.ln ("s = " + s);
+            } else {
+                if (substantive(after)) { s += add_arg(pl1 (before,after));      Tab.ln ("s = " + s);
+                } else {                  s += add_arg(pl1 (after,before));      Tab.ln ("s = " + s);
+                }
+            }
         } else
         if (atom == null && type.y == Lexicon.Someone) {
             Tab.ln ("atom == null && type.y == Lexicon.Someone");
-            s += pl1 (after, before);                                   Tab.ln ("s = " + s);
+            s += add_arg(pl1 (after, before));                                   Tab.ln ("s = " + s);
         } else
-        if (type.y == Lexicon.Pred && after != null) {
+        if (type.y == Lexicon.Pred && after != null) {      // was for x + good/bad / good/bad + x
             Tab.ln("type.y == Lexicon.Pred && after != null");
             if (atom == null) {
                 if (substantive(after)) {
-                    s += pl1 (before,after);                                    Tab.ln ("s = " + s);
+                    s += add_arg(pl1 (before,after));                                    Tab.ln ("s = " + s);
                 } else {
-                    s += pl1 (after,before);                                    Tab.ln ("s = " + s);
+                    s += add_arg(pl1 (after,before));                                    Tab.ln ("s = " + s);
                 }
             } else
-                s += pl1 (after,before);                                    Tab.ln ("s = " + s);
+                s += add_arg(pl1 (after,before));                                    Tab.ln ("s = " + s);
         } else {
-            Tab.ln("Default");
-            Tab.ln ("atom = " + atom);
-            if (atom != null)
-                s += atom;                                    Tab.ln ("s = " + s);
-            if (arg != null)
-                s += "(" + pl1 (arg,null) + ")";
+            Tab.ln("Default:");  Tab.ln ("atom = " + atom);
+            if (atom != null) {
+                s += add_arg(atom);                                    Tab.ln ("(d1)s = " + s);
+            }
+            if (arg != null) {
+                s += start_paren();
+                s += pl1 (arg,null);
+                s += end_paren();                           Tab.ln ("(d2)s = " + s);
+            }
         }
         return s;
     }
