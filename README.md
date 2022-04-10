@@ -31,7 +31,7 @@ The climate began to change again, however, and their previously-rich ecosystem 
 
 When she made her way back home, she informed everyone: it could be better outside. Let's try. They moved up and out. In the outside world, other people took pity on them. What those people didn't know, however, is that the new arrivals carried disabling diseases. Not long after, almost all of humanity, except the original clan and a few adopted members, died of starvation, unable to adapt to all of the infections at once. Over many generations, however, people evolved resistance to the diseases, until the zoonotic viruses were little worse than passenger viruses. Language revived in whistle form and sign language form, and finally humanity regained the use of its vocal cords and full manual dexterity.
 
-Language variation appeared quickly, and pretty soon everyone was speaking dialects of L0, some of them even mutually unintelligible, and all of them somewhat more flowery. L0 regained a spoken variety, and, though it was still grammatically quite sparely furnished, was at least very useful in translating and teaching the burgeoning languages with their ever-increasing variety.
+Language variation appeared quickly, and pretty soon everyone was speaking dialects of L0, some of them even mutually unintelligible, and all of them somewhat more flowery. L0 regained a spoken variety, and, though it was still grammatically quite sparely furnished, it was at least very useful in translating and teaching the burgeoning languages with their ever-increasing variety.
 
 Unfortunately, people also started lying again. But you can't have everything.
 
