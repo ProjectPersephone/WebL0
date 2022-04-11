@@ -3,9 +3,9 @@ Front- and back-end for tools using Natural Semantic Metalanguage (NSM), Applica
 
 It's work in progress. It can parse a little English NSM already.
 
-The research question here is this: can language processing avoid linguistic bias in morphosyntactic variation? My tentative answer: yes. NSM abstract syntax may make it possible to devise a language-independent representation for digital language processing, by making NSM itself the basis for algorithmic specification. Description of languages could be mediated by any chosen language that gets added to the database.
+The research question here is this: can language processing avoid linguistic bias in morphosyntactic variation? My tentative answer: yes. NSM abstract syntax may make it possible to devise a language-independent representation for natural language processing, by making NSM itself the basis for algorithmic specification. Description of languages could be mediated by any chosen language that gets added to the database.
 
-The question arises, however: couldn't that specification resemble only one language, and thus be biased toward that language? This question inspired a thought experiment.
+A more pointed question arises, however: couldn't that specification resemble only one language, and thus be biased toward that language? This question inspired a thought experiment.
 
 ### *The Legend of L0*
 
@@ -31,9 +31,9 @@ The climate began to change again, however, and their previously-rich ecosystem 
 
 When she made her way back home, she informed everyone: it could be better outside. Let's try. They moved up and out. In the outside world, other people took them for zombies at first, but then took pity on them, and finally admired them: they were so cooperative! And, when their grip-language was decoded: So honest!
 
-What those people didn't know, however, is that the new arrivals carried these disabling zoonotic viruses. Not long after, almost all of humanity, except the original clan and a few adopted members, died of starvation in a kind of zoonotic-virus Zombie Apocalypse, because the pandemic spread outran any understanding of how to cope: most people were unable to adapt to all of the disabilities at once. Over many generations, however, people who remained evolved resistance to the diseases, until the  viruses were little more than harmless passenger viruses. Language revived in whistle form and sign language form, and finally humanity regained the use of its vocal cords and full manual dexterity.
+What the outside-world people didn't know, however, is that the new arrivals carried these disabling zoonotic viruses. Not long after, almost all of humanity, except the original clan and a few adopted members, died of starvation in a kind of zoonotic-virus Zombie Apocalypse, because the pandemic outran understanding of how to cope: most people couldn't adapt to all of the disabilities at once. Over many generations, however, people who remained evolved resistance to the diseases, until the  viruses were little more than harmless passenger viruses. Hearing came back first, and language revived in whistle form and sign language form, and finally humanity regained the use of its vocal cords and full manual dexterity.
 
-Language variation appeared quickly, and pretty soon everyone was speaking dialects of L0, some of them even mutually unintelligible, and all of them somewhat more flowery. L0 regained a spoken variety soonest, and it was at least very useful in translating and teaching the burgeoning languages with their ever-increasing variety.
+Language variation appeared quickly, and pretty soon everyone was speaking dialects of L0, some of them even mutually unintelligible, and all of them somewhat more flowery. L0 regained a spoken variety soonest, and it was at least very useful in learning, translating, and teaching the burgeoning languages with their ever-increasing variety.
 
 Unfortunately, people also started lying again. But you can't have everything.
 
