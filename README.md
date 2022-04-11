@@ -3,9 +3,9 @@ Front- and back-end for tools using Natural Semantic Metalanguage (NSM), Applica
 
 It's work in progress. It can parse a little English NSM already.
 
-The research question here is this: can language processing avoid linguistic bias in morphosyntactic variation? My tentative answer is yes. NSM abstract syntax may make it possible to devise a language-independent representation for digital language processing, by making NSM itself the basis for algorithmic specification. Description of languages could be mediated by any chosen language that gets added to the database.
+The research question here is this: can language processing avoid linguistic bias in morphosyntactic variation? My tentative answer: yes. NSM abstract syntax may make it possible to devise a language-independent representation for digital language processing, by making NSM itself the basis for algorithmic specification. Description of languages could be mediated by any chosen language that gets added to the database.
 
-The question arises, however: couldn't that specification resemble only one language, and thus be thought biased toward that language? This question inspired a thought experiment.
+The question arises, however: couldn't that specification resemble only one language, and thus be biased toward that language? This question inspired a thought experiment.
 
 ### *The Legend of L0*
 
