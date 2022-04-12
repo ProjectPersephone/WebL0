@@ -11,7 +11,7 @@ A more pointed question arises, however: couldn't that specification resemble on
 
 Once upon a time, during a period of climate change, a tribe migrating in search of better land and better neighbors camped for the night, at the base of a mountain, only to discover in the morning that one of their little girls was missing.
 
-They traced her footprints up a mountain slope, up into snow. At the top of a ridge, they found themselves looking down into a very deep caldera, lushly forested. They also found themselves looking down a very steep, icy slope. The little girl was at the snow line. "I can't climb back up!", she cried. "It's too icy!"
+They traced her footprints up a mountain slope, up into snow. At the top of a ridge, they found themselves looking down into a very deep caldera, lushly forested, with the cries of animals echoing off the caldera walls. They also found themselves looking down a very steep, icy slope. The little girl was at the snow line. "I can't climb back up!", she cried. "It's too icy! But I found berries down there!"
 
 So the whole clan gathered at the top of the slope, and one by one, they all slid down. Then they descended further into a veritable Land of Milk and Honey. What they didn't know, however, is that they were also descending into a pit of zoonotic viruses.
 
