@@ -26,8 +26,10 @@ public enum AUGType {
      TWO,
      MUCH,
      ALL,
+*/
      SOME,
-     LITTLE,
+/*
+     LITTLE,   // FEW??
 */
 
 /*
@@ -54,7 +56,6 @@ public enum AUGType {
      HEAR,
      THINK,
 */
-
 
      HAPPEN,
      IS,    // copula

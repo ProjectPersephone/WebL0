@@ -36,7 +36,7 @@ import java.util.Set;
 
 import com.example.demo.Cache;
 import com.example.demo.Tab;
-import com.example.demo.NSMprolog;
+import com.example.demo.Compound;
 
 
 @Controller
@@ -98,8 +98,8 @@ public class WelcomeController {
 
     @PostMapping("/edit")
     public String save(Post post, Model model) {
-        NSMprolog npl = new NSMprolog(AUGType.IF);  // ************ just to make sure something works
-        
+        Compound npl = new Compound(AUGType.IF);  // ************ just to make sure something works
+
         Tab.reset();
 
         if (post == null) {
@@ -134,7 +134,14 @@ public class WelcomeController {
         doc.accept(v);
         v.indented.show();
         v.indented.postprocess();  // cross fingers ...
+        Tab.reset();
+//        Tab.trace(true);
         v.indented.show();
+//        Tab.trace(false);
+
+        Tab.trace(true);
+        TypedTree.nested_pp(v.indented);
+        Tab.trace(false);
 
         JSONArray ja_new = v.toJSON();
         Tab.ln ("Array of JSON parses with blocks=" + ja_new);
@@ -187,7 +194,7 @@ public class WelcomeController {
             Cache C = Cache.cache (S);
             LinkedList<TypedTree> tt_ls = C.get(0,0);
             if (tt_ls.isEmpty()) {
-                Tab.ln ("visit: empy tt_ls");
+                Tab.ln ("visit: empty tt_ls");
                 return;
             }
             TypedTree tt = tt_ls.get(0);
@@ -196,6 +203,7 @@ public class WelcomeController {
             Tab.trace(true);
             try {
                 String pl = tt.prolog();
+                pl += " ,,, ";
                  myFileWriter.write(pl);
                  Tab.ln("*** Wrote " + pl + " to " + prolog_output_filename + " ***");
             } catch (IOException e) {

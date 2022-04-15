@@ -75,6 +75,8 @@ public class NestedLines {   // helpful here to add Exceptions
         return r;
     }
 
+    // convert indentations to actual nesting:
+
     public void postprocess() {
         Tab.ln ("Entering postprocess():");
         if (lines.isEmpty()) {

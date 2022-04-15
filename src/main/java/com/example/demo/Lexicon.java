@@ -100,7 +100,7 @@ public class Lexicon {
         Type this_ = Type.of(AUGType.THIS,null,null);
 
         S = true_;
-        // S = O_(say,this_);
+        // S = O_(say,this_);   // or someone can think this?
 
         Pred = maybe;
         // Pred = O_(O_(maybe,true_),this_); // Predicate something that may be true about something/someone
