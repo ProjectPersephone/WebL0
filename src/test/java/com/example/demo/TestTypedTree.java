@@ -30,7 +30,7 @@ public class TestTypedTree {
 
         Sentence S = new Sentence (st);
 
-        Tab.ln (Type.all_types());
+        Tab.ln (Valence.all_valences());
 
         Tab.reset();
 

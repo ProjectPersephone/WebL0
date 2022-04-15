@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.*;
 
 import com.example.demo.Order;
-import com.example.demo.AUGType;
-import com.example.demo.Type;
+import com.example.demo.Nucleus;
+import com.example.demo.Valence;
 import com.example.demo.TypedTree;
 import com.example.demo.Lexicon;
 
@@ -36,7 +36,7 @@ public class Sentence {
         String[] sa = s.split(" ");
         assertNotNull (sa);
         for (String w : sa) {
-            Set<Type> tl = Lexicon.types_for (w);
+            Set<Valence> tl = Lexicon.valences_for (w);
             if (tl == null) {
                 Tab.ln ("Word w=" + w + " not in Lexicon");
             }

@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Assertions;
 import java.util.*;
 
 import com.example.demo.Order;
-import com.example.demo.AUGType;
-import com.example.demo.Type;
+import com.example.demo.Nucleus;
+import com.example.demo.Valence;
 import com.example.demo.TypedTree;
 import com.example.demo.Sentence;
 import com.example.demo.Split;

@@ -8,28 +8,28 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.*;
 
-import com.example.demo.Type;
+import com.example.demo.Valence;
 import com.example.demo.TypedTree;
 
 public class Compound {
     private static Stack<Compound> stack = new Stack<Compound>();
     private static LinkedList<Compound> compounds = new LinkedList<Compound>();
 
-    AUGType type;       // maybe an initial "if" is ":-"???
+    Nucleus type;       // maybe an initial "if" is ":-"???
     LinkedList<Compound> args; // if null, not a predicate, just an atom
     
-    public Compound(AUGType t) {
+    public Compound(Nucleus t) {
         type = t;
         args = new LinkedList<Compound>();
     }
 
     // add to end of node list at top-of-stack
-    public static void add(AUGType t) {
+    public static void add(Nucleus t) {
         Compound npl = new Compound(t);
         stack.peek().args.add(npl);
     }
 
-    public static void sublist_start(AUGType t) {
+    public static void sublist_start(Nucleus t) {
         Compound ex_tos = stack.peek();
         Compound npl = stack.push(new Compound(t));
         ex_tos.args.add(npl);

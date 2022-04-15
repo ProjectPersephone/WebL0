@@ -98,7 +98,7 @@ public class WelcomeController {
 
     @PostMapping("/edit")
     public String save(Post post, Model model) {
-        Compound npl = new Compound(AUGType.IF);  // ************ just to make sure something works
+        Compound npl = new Compound(Nucleus.IF);  // ************ just to make sure something works
 
         Tab.reset();
 
@@ -260,7 +260,7 @@ public class WelcomeController {
         return order.toString();
     }
 
-    public static JSONObject TypeToJSON(Type ty) {
+    public static JSONObject TypeToJSON(Valence ty) {
         JSONObject o = new JSONObject();
         o.put ("type", ty.toString());
         return o;
@@ -283,9 +283,9 @@ public class WelcomeController {
     public static JSONObject TypedTreeToJSON (TypedTree tt) {
         JSONObject o = new JSONObject();
         o.put ("tree", TreeToJSON (tt.tree));
-        Set<Type> ls_ty = tt.types;
+        Set<Valence> ls_ty = tt.types;
         JSONArray a = new JSONArray();
-        Iterator<Type> ty_it = ls_ty.iterator();
+        Iterator<Valence> ty_it = ls_ty.iterator();
         while (ty_it.hasNext()) {
             JSONObject ot = TypeToJSON (ty_it.next());
             a.add (ot);

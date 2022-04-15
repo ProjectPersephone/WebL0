@@ -17,8 +17,8 @@ import java.util.Set;
 import javax.swing.text.DefaultStyledDocument.ElementSpec;
 
 import com.example.demo.Order;
-import com.example.demo.AUGType;
-import com.example.demo.Type;
+import com.example.demo.Nucleus;
+import com.example.demo.Valence;
 import com.example.demo.Tree;
 import com.example.demo.Splits;
 import com.example.demo.Lexicon;
@@ -29,7 +29,7 @@ import com.example.demo.Tab;
 public class TypedTree implements Comparable<TypedTree> {
 
     Tree tree; // these are actually 1-for-1 with TypedTree nodes    
-    Set<Type> types;
+    Set<Valence> types;
 
     public int compareTo(TypedTree tt) {
   
@@ -48,9 +48,9 @@ public class TypedTree implements Comparable<TypedTree> {
             return 1;
     }
 
-    static void lookit (String internal_name, Type t, TypedTree tt, TypedTree arg) {
+    static void lookit (String internal_name, Valence t, TypedTree tt, TypedTree arg) {
         Tab.ln ("Type " + internal_name +": " + t);
-        Tab.ln ("tt.types=" + Type.ls_str(tt.types));
+        Tab.ln ("tt.types=" + Valence.ls_str(tt.types));
 
         if (arg != null) Tab.ln ("arg = " + arg.str());
         else Tab.ln ("arg = null");
@@ -64,16 +64,16 @@ public class TypedTree implements Comparable<TypedTree> {
         else Tab.ln ("tt.tree.after = null");
     }
 
-    private static Type get_type(TypedTree tt) {
+    private static Valence get_type(TypedTree tt) {
         assertEquals(1,tt.types.size());
 
-        Type type = null; // shut up "may not be initialized" warning
-        for (Type ttx : tt.types) type = ttx; // only way to pull out the singleton?
+        Valence type = null; // shut up "may not be initialized" warning
+        for (Valence ttx : tt.types) type = ttx; // only way to pull out the singleton?
         return type;
     }
 
     private static Boolean substantive (TypedTree tt) {
-        Type t = get_type(tt);
+        Valence t = get_type(tt);
         if (tt != null)
             Tab.ln ("substantive: tt=" + tt.str());
         Boolean r = (t.x == Lexicon.Someone || t.x == Lexicon.Something);
@@ -112,7 +112,7 @@ public class TypedTree implements Comparable<TypedTree> {
         assertNotNull(tt);
         assertNotNull(tt.tree);
 
-        Type type = get_type(tt);
+        Valence type = get_type(tt);
   
         lookit("*** ", type,tt, arg);
         String atom = tt.tree.atom;
@@ -200,7 +200,7 @@ public class TypedTree implements Comparable<TypedTree> {
     }
     static LinkedList<Compound>
     add_ls_arg(LinkedList<Compound> npl, String atom) {
-        AUGType tl = AUGType.valueOf(atom);
+        Nucleus tl = Nucleus.valueOf(atom);
         Compound np = new Compound(tl);
         npl.add(np);
         return npl;
@@ -218,7 +218,7 @@ public class TypedTree implements Comparable<TypedTree> {
         if (before.types.contains(Lexicon.CondS)) {
             Tab.ln ("before: Conds");
             LinkedList<Compound> if_constr = new LinkedList<Compound>();
-            Compound an_if = new Compound(AUGType.IF);
+            Compound an_if = new Compound(Nucleus.IF);
             if_constr.add(an_if);
             an_if.args = add_ls_arg (an_if.args, pl (before.tree.after, arg));
             an_if.args = add_ls_arg (an_if.args, pl (after,arg));
@@ -238,7 +238,7 @@ public class TypedTree implements Comparable<TypedTree> {
         assertNotNull(tt);
         assertNotNull(tt.tree);
 
-        Type type = get_type(tt);
+        Valence type = get_type(tt);
   
         lookit("*** ", type,tt, arg);
         String atom = tt.tree.atom;
@@ -321,17 +321,26 @@ public class TypedTree implements Comparable<TypedTree> {
 
     public String prolog() {
         Tab.push_trace(false);
+        /*
         Tab.ln ("********************* pl1 traces ****************");
         String s1 = pl1 (this,null);
         Tab.ln ("====== pl output: " + s1);
         /*
         return s1;
         */
+        Tab.pop_trace();
 
+        Tab.push_trace(true);
+        if (this.types.size() > 1) {
+            Tab.ln ("Looks like unreduced (maybe single) atom " + this.tree.atom);
+            return this.tree.atom;
+        }
+        Tab.pop_trace();
+
+        Tab.push_trace(false);
         Tab.ln ("-------------------------------------------------");
         LinkedList<Compound> npl = pl(this,null);
         String pps = Compound.pp(npl);
-
         Tab.pop_trace();
 
         Tab.ln ("%%%%%%%%%%% PP output %%%%%%%%%%%%%%%%%%%%%%%%%%%%");
@@ -343,11 +352,15 @@ public class TypedTree implements Comparable<TypedTree> {
         LinkedList<Compound> nlp;
 
         for (Line Li : L) {
-            Tab.ln (Li.line.str());
+            Tab.ln ("nested_pp_helper: Li.line = " + Li.line.str());
+            if (Li.line.types.size() > 1) {
+                Tab.ln ("Looks like unreduced type for atom " + Li.line.tree.atom);
+                return;
+            }
             Tab.push_trace(false);
             LinkedList<Compound> npl = pl(Li.line,null);
             Tab.pop_trace();
-            Tab.ln("Prolog-ish form: " + npl.toString());
+            Tab.ln(npl.toString());
             if (Li.block != null && Li.block.size() > 0) {
                 nested_pp_helper (Li.block);
             }
@@ -362,16 +375,14 @@ public class TypedTree implements Comparable<TypedTree> {
     public String str() {
         String s = tree.str() + "[";
         assertNotNull (types);
-        Iterator<Type> ti = types.iterator();
+        Iterator<Valence> ti = types.iterator();
         while (ti.hasNext()) {
-            Type t = ti.next();
+            Valence t = ti.next();
             s += t.toString();
             if (ti.hasNext()) s += " ";
         }
         return s + "]";
     }
-
-
 
     // some ghastly printers that should go away with a transition
     // to the TrellisCache.
@@ -420,14 +431,14 @@ public class TypedTree implements Comparable<TypedTree> {
         return s + "]";
     }
 
-    public TypedTree (Tree p_tree, Set<Type> p_types) {
+    public TypedTree (Tree p_tree, Set<Valence> p_types) {
         assertNotNull (p_tree);
         assertNotNull (p_types);
         tree = p_tree;
         types = p_types;
     }
 
-    public TypedTree (Tree p_tree, Type t) {
+    public TypedTree (Tree p_tree, Valence t) {
         assertNotNull (p_tree);
         tree = p_tree;
         types = new TreeSet<>();
@@ -442,66 +453,66 @@ public class TypedTree implements Comparable<TypedTree> {
 
         Tab.ln ("Over " + this_ttree.types); Tab.o__();
         
-        for (Type t_this : this_ttree.types) {
+        for (Valence t_this : this_ttree.types) {
 
-            TreeSet<Type> lx;
+            TreeSet<Valence> lx;
 
-            Tab.ln (t_this.toString() + Type.ls_str (Lexicon.types_for(t_this.toString())) + "...applying...");
-            if (t_this.type == AUGType.O) {
-                lx = new TreeSet<Type>();                           Tab.ln ("...to  = " + t_this + " with just " + Type.ls_str(lx));
+            Tab.ln (t_this.toString() + Valence.ls_str (Lexicon.valences_for(t_this.toString())) + "...applying...");
+            if (t_this.n == Nucleus.O) {
+                lx = new TreeSet<Valence>();                           Tab.ln ("...to  = " + t_this + " with just " + Valence.ls_str(lx));
                 lx.add (t_this);
             } else {
-                lx = Lexicon.types_for(t_this.toString());          Tab.ln ("...to  = " + t_this + " including " + Type.ls_str(lx));
+                lx = Lexicon.valences_for(t_this.toString());          Tab.ln ("...to  = " + t_this + " including " + Valence.ls_str(lx));
             }
 
-            for (Type t_this_x : lx) 
-//          Type t_this_x = t_this;
+            for (Valence t_this_x : lx) 
+//          Valence t_this_x = t_this;
                 { // for all Oxy in this ttree
 
-                Tab.ln ("...to these: " + Type.ls_str (other_ttree.types)); Tab.o__();
-                for (Type t_other : other_ttree.types) {
+                Tab.ln ("...to these: " + Valence.ls_str (other_ttree.types)); Tab.o__();
+                for (Valence t_other : other_ttree.types) {
 
-                    // Type t_other_y = t_other;
+                    // valence t_other_y = t_other;
 /*
-                    TreeSet<Type> ly;
+                    TreeSet<Valence> ly;
                     
-                    if (t_other.type == AUGType.O) {
-                        ly = new TreeSet<Type>();
+                    if (t_other.n == Nucleus.O) {
+                        ly = new TreeSet<Valence>();
                         boolean ok = ly.add (t_other);
                         assertTrue(ok);
                         assertTrue(ly.contains(t_other));
                         Tab.ln ("Listing out ly:");
-                        for (Type xxx : ly) {
+                        for (Valence xxx : ly) {
                             Tab.ln ("...in ly: " + xxx);
                         }                           
-                                                                    Tab.ln ("...to  = " + t_other + " with just " + Type.ls_str(ly));
+                                                                    Tab.ln ("...to  = " + t_other + " with just " + Valence.ls_str(ly));
                     } else {
-                        ly = Lexicon.types_for(t_other.toString()); Tab.ln ("...to  = " + t_other + " including " + Type.ls_str(ly));
+                        ly = Lexicon.valences_for(t_other.toString()); Tab.ln ("...to  = " + t_other + " including " + Valence.ls_str(ly));
                     }
                     
                                                                     Tab.o__();
-                    for (Type t_other_y : ly)
-*/                  Type t_other_y = t_other;
+                    for (Valence t_other_y : ly)
+*/                  Valence t_other_y = t_other;
                                             {
                                                                     Tab.ln ("t_other_y loop");
-                        Type r = t_this_x.fxy (t_other_y);
+                        Valence r = t_this_x.fxy (t_other_y);
                         if (r == null) {                            Tab.ln ("...exiting");
                             continue;
                         }
                         Tab.o__();
 /*
-                        Type x = t_this_x.x;
+                        Valence x = t_this_x.x;
                         if (x == null) {
                             Tab.ln ("But " + t_this_x + " x = null, t_other =" + t_other);
                             x = t_other_y.x; // Try it --------------------------------------------
                         }
 */                      
-                        Type x = t_this_x;                                                                      Tab.ln ("x = " + x.toString());
+                        Valence x = t_this_x;                                                                      Tab.ln ("x = " + x.toString());
                         
-                        TypedTree new_before = new TypedTree (this_ttree.tree,  Type.of (AUGType.O, x, r) );    Tab.ln ("new_before=" + new_before.str());
+                        TypedTree new_before = new TypedTree (this_ttree.tree,  Valence.of (Nucleus.O, x, r) );    Tab.ln ("new_before=" + new_before.str());
                         TypedTree new_after =  new TypedTree (other_ttree.tree, x );                            Tab.ln ("new_after=" + new_after.str());
 
-                        Set<Type> ls_type2 = new TreeSet<>();
+                        Set<Valence> ls_type2 = new TreeSet<>();
                         ls_type2.add(r);
                         TypedTree new_tt =new TypedTree (
                                             new Tree (order, new_before, new_after),

@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.*;
 
-import com.example.demo.AUGType;
-import com.example.demo.Type;
+import com.example.demo.Nucleus;
+import com.example.demo.Valence;
 
 public class TestType {
     @Test

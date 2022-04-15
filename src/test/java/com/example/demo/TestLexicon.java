@@ -8,24 +8,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
 
-import com.example.demo.Type;
+import com.example.demo.Valence;
 import com.example.demo.TypedTree;
 import com.example.demo.Lexicon;
 
 public class TestLexicon {
 
     public static void print_word (String w) {
-        Set<Type> types = Lexicon.types_for (w);
-        Iterator<Type> ti = types.iterator();
+        Set<Valence> types = Lexicon.valences_for (w);
+        Iterator<Valence> ti = types.iterator();
         while (ti.hasNext()) {
-            Type t = ti.next();
+            Valence t = ti.next();
             System.out.println ("TestLexicon on '" + w + "': t=" + t);
         }
     }
 
 // only works if word w has only one type associated
-    public static void readback (String w, Type t) {
-        Set<Type> w_types = Lexicon.types_for (w);
+    public static void readback (String w, Valence t) {
+        Set<Valence> w_types = Lexicon.valences_for (w);
         assertNotNull(w_types);
         assertEquals(w_types.size(),1);
 /* change to "set" kills this:

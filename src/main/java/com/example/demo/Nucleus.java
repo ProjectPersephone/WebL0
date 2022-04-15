@@ -1,9 +1,9 @@
 package com.example.demo;
 
-public enum AUGType {
+public enum Nucleus {
 //     T,        // from paper; should try to eliminate
 //     S,        // predicates could reduce to this??? check
-     O,        // combinator op
+     O,        // combinator op // should this still be here?
 
      I,
 //     YOU,
@@ -24,12 +24,10 @@ public enum AUGType {
      OTHER,
      ONE,
      TWO,
-     MUCH,
+     MUCH_MANY,
      ALL,
-*/
      SOME,
-/*
-     LITTLE,   // FEW??
+     LITTLE_FEW,
 */
 
 /*
@@ -58,12 +56,12 @@ public enum AUGType {
 */
 
      HAPPEN,
-     IS,    // copula
+     BE,    // copula
      LIVE,
      DIE,
 /*
      THERE_IS,
-     BE,    // ... somewhere
+     BE_SOMEWHERE,
 */
 
 /*
