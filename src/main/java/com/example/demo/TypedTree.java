@@ -73,123 +73,14 @@ public class TypedTree implements Comparable<TypedTree> {
     }
 
     private static Boolean substantive (TypedTree tt) {
-        Valence t = get_type(tt);
+        Valence v = get_type(tt);
         if (tt != null)
             Tab.ln ("substantive: tt=" + tt.str());
-        Boolean r = (t.x == Atom.Someone || t.x == Atom.Something);
+        Boolean r = (v.x == Atom.Someone || v.x == Atom.Something);
         Tab.ln ("returning " + r);
         return r;
     }
 
-    static String start_paren()       { return "("; }
-    static String end_paren()         { return ")"; }
-    static String add_arg(String arg) { return arg;
-    }
-    static String parenthesize(String arg) {
-        return start_paren() + add_arg (arg) + end_paren();
-    }
-
-    static String sentence1 (TypedTree before, TypedTree after, TypedTree arg) {
-        Tab.ln ("sentence1:");
-        String s ="";
-        if (before.types.contains(Atom.CondS)) {
-            Tab.ln ("before: Conds");
-            s += add_arg (pl1 (after,arg));
-            s += " :- ";            // Compound API entry? ??????????????????????????????????????
-            s += add_arg (pl1 (before.tree.after, arg));
-        } else { 
-            Tab.ln ("before: not CondS");
-            s += add_arg (pl1 (after, before));
-        }
-        return s;
-    }
-
-    // probably redundant code in here, needs analysis and trimming
-    private static String pl1(TypedTree tt, TypedTree arg) {
-        Tab.ln("pl1:");
-
-        String s = "";
-        assertNotNull(tt);
-        assertNotNull(tt.tree);
-
-        Valence type = get_type(tt);
-  
-        lookit("*** ", type,tt, arg);
-        String lexeme = tt.tree.lexeme;
-        TypedTree before = tt.tree.before;
-        TypedTree after = tt.tree.after;
-
-        if (tt.types.contains(Atom.S)
-         || tt.types.contains(Atom.PredOp)
-         || tt.types.contains(Atom.Cond)
-         || tt.types.contains(Atom.Conseq)) {                       lookit("<*>", Atom.PredOp,tt, arg);
-            s += add_arg (sentence1 (before, after, arg));             Tab.ln ("s = " + s); 
-        }  else
-        if (tt.types.contains(Atom.PredPred)) {                     lookit("PredPred", Atom.PredPred,tt, arg);
-            if (lexeme != null)   { s += add_arg(tt.tree.lexeme);          Tab.ln ("(1)s = " + s);
-            }
-            if (before != null) { s += add_arg(pl1 (before, null));     Tab.ln ("(2)s = " + s);
-            }
-            if (after != null)  { s += parenthesize(pl1 (after,arg));     Tab.ln ("(3)s = " + s);
-            }
-        }  else
-        if (type.x == Atom.Pred) {
-            if (lexeme == null) {
-                Tab.ln ("Pred op null -> complex");
-                s += add_arg(pl1 (before,null));
-                s += start_paren();                            Tab.ln ("(4)s = " + s);
-            } else {
-                Tab.ln ("Pred op = " + lexeme);
-                s += add_arg(lexeme);
-                s += start_paren();                                        Tab.ln ("(5)s = " + s);
-            }
-            if (arg != null) {
-                s += add_arg(pl1 (arg, null));                                    Tab.ln ("(6)s = " + s);
-            }
-            if (after != null) {
-                if (arg != null) { s += ",";                             Tab.ln ("(7)s = " + s);
-                }
-                s += add_arg(pl1 (after, null));                                  Tab.ln ("(8)s = " + s);
-            }
-            s += end_paren();                                                   Tab.ln ("(9)s = " + s);
-        }  else
-        if (tt.types.contains(Atom.Subst)) {
-            Tab.ln ("Subst: <stub>");
-            if (lexeme != null) {
-                s += add_arg(lexeme);                                              Tab.ln ("s = " + s);
-            } else {
-                if (substantive(after)) { s += add_arg(pl1 (before,after));      Tab.ln ("s = " + s);
-                } else {                  s += add_arg(pl1 (after,before));      Tab.ln ("s = " + s);
-                }
-            }
-        } else
-        if (lexeme == null && type.y == Atom.Someone) {
-            Tab.ln ("lexeme == null && type.y == Lexicon.Someone");
-            s += add_arg(pl1 (after, before));                                   Tab.ln ("s = " + s);
-        } else
-        if (type.y == Atom.Pred && after != null) {      // was for x + good/bad / good/bad + x
-            Tab.ln("type.y == Lexicon.Pred && after != null");
-            if (lexeme == null) {
-                if (substantive(after)) {
-                    s += add_arg(pl1 (before,after));                                    Tab.ln ("s = " + s);
-                } else {
-                    s += add_arg(pl1 (after,before));                                    Tab.ln ("s = " + s);
-                }
-            } else
-                s += add_arg(pl1 (after,before));                                    Tab.ln ("s = " + s);
-        } else {
-            Tab.ln("Default:");  Tab.ln ("lexeme = " + lexeme);
-            if (lexeme != null) {
-                s += add_arg(lexeme);                                    Tab.ln ("(d1)s = " + s);
-            }
-            if (arg != null) {
-                s += start_paren();
-                s += pl1 (arg,null);
-                s += end_paren();                           Tab.ln ("(d2)s = " + s);
-            }
-        }
-        return s;
-    }
 
     static LinkedList<Compound> start_list(LinkedList<Compound> t)       { return new LinkedList<Compound>(); }
     static LinkedList<Compound> end_list(LinkedList<Compound> npl)         { return npl; }
@@ -320,16 +211,6 @@ public class TypedTree implements Comparable<TypedTree> {
 
 
     public String prolog() {
-        Tab.push_trace(false);
-        /*
-        Tab.ln ("********************* pl1 traces ****************");
-        String s1 = pl1 (this,null);
-        Tab.ln ("====== pl output: " + s1);
-        /*
-        return s1;
-        */
-        Tab.pop_trace();
-
         Tab.push_trace(true);
         if (this.types.size() > 1) {
             Tab.ln ("Looks like unreduced (maybe single) lexeme " + this.tree.lexeme);
@@ -349,8 +230,6 @@ public class TypedTree implements Comparable<TypedTree> {
     }
 
     private static void nested_pp_helper(LinkedList<Line> L) {
-        LinkedList<Compound> nlp;
-
         for (Line Li : L) {
             Tab.ln ("nested_pp_helper: Li.line = " + Li.line.str());
             if (Li.line.types.size() > 1) {
@@ -431,16 +310,16 @@ public class TypedTree implements Comparable<TypedTree> {
         return s + "]";
     }
 
-    public TypedTree (Tree p_tree, Set<Valence> p_types) {
-        assertNotNull (p_tree);
-        assertNotNull (p_types);
-        tree = p_tree;
-        types = p_types;
+    public TypedTree (Tree tree, Set<Valence> types) {
+        assertNotNull (tree);
+        assertNotNull (types);
+        this.tree = tree;
+        this.types = types;
     }
 
-    public TypedTree (Tree p_tree, Valence t) {
-        assertNotNull (p_tree);
-        tree = p_tree;
+    public TypedTree (Tree tree, Valence t) {
+        assertNotNull (tree);
+        this.tree = tree;
         types = new TreeSet<>();
         types.add (t);
     }
@@ -458,7 +337,7 @@ public class TypedTree implements Comparable<TypedTree> {
             TreeSet<Valence> lx;
 
             Tab.ln (t_this.toString() + Valence.ls_str (Atom.valences_for(t_this.toString())) + "...applying...");
-            if (t_this.n == Nucleus.O) {
+            if (t_this.n == Nucleus.O_) {
                 lx = new TreeSet<Valence>();                           Tab.ln ("...to  = " + t_this + " with just " + Valence.ls_str(lx));
                 lx.add (t_this);
             } else {
@@ -471,45 +350,18 @@ public class TypedTree implements Comparable<TypedTree> {
 
                 Tab.ln ("...to these: " + Valence.ls_str (other_ttree.types)); Tab.o__();
                 for (Valence t_other : other_ttree.types) {
-
-                    // valence t_other_y = t_other;
-/*
-                    TreeSet<Valence> ly;
-                    
-                    if (t_other.n == Nucleus.O) {
-                        ly = new TreeSet<Valence>();
-                        boolean ok = ly.add (t_other);
-                        assertTrue(ok);
-                        assertTrue(ly.contains(t_other));
-                        Tab.ln ("Listing out ly:");
-                        for (Valence xxx : ly) {
-                            Tab.ln ("...in ly: " + xxx);
-                        }                           
-                                                                    Tab.ln ("...to  = " + t_other + " with just " + Valence.ls_str(ly));
-                    } else {
-                        ly = Lexicon.valences_for(t_other.toString()); Tab.ln ("...to  = " + t_other + " including " + Valence.ls_str(ly));
-                    }
-                    
-                                                                    Tab.o__();
-                    for (Valence t_other_y : ly)
-*/                  Valence t_other_y = t_other;
-                                            {
+                  Valence t_other_y = t_other;
+                        {
                                                                     Tab.ln ("t_other_y loop");
                         Valence r = t_this_x.fxy (t_other_y);
                         if (r == null) {                            Tab.ln ("...exiting");
                             continue;
                         }
                         Tab.o__();
-/*
-                        Valence x = t_this_x.x;
-                        if (x == null) {
-                            Tab.ln ("But " + t_this_x + " x = null, t_other =" + t_other);
-                            x = t_other_y.x; // Try it --------------------------------------------
-                        }
-*/                      
+                
                         Valence x = t_this_x;                                                                      Tab.ln ("x = " + x.toString());
                         
-                        TypedTree new_before = new TypedTree (this_ttree.tree,  Valence.of (Nucleus.O, x, r) );    Tab.ln ("new_before=" + new_before.str());
+                        TypedTree new_before = new TypedTree (this_ttree.tree,  Valence.of (Nucleus.O_, x, r) );    Tab.ln ("new_before=" + new_before.str());
                         TypedTree new_after =  new TypedTree (other_ttree.tree, x );                            Tab.ln ("new_after=" + new_after.str());
 
                         Set<Valence> ls_type2 = new TreeSet<>();

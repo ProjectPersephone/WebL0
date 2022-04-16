@@ -27,7 +27,7 @@ public class Valence implements Comparable<Valence> {
 
         if (this != t) {
             Tab.ln ("comparing " + t  + " to " + this);
-            if (n == Nucleus.O && t.n == Nucleus.O) {
+            if (n == Nucleus.O_ && t.n == Nucleus.O_) {
                 Tab.ln ("Both t and this are O-type");
                 assertNotNull(x);
                 assertNotNull(y);
@@ -53,7 +53,7 @@ public class Valence implements Comparable<Valence> {
     public Valence fxy(Valence q) {
         assertNotNull(q);
 
-        if (n == Nucleus.O) {
+        if (n == Nucleus.O_) {
             if (x.compareTo(q) == 0) {
                 Tab.ln (this.toString() + "." + "fxy(" + q.toString() + ") = y =" + y.toString());
                 return y;
@@ -82,7 +82,7 @@ public class Valence implements Comparable<Valence> {
     public String toString() {
         String s = this.n.name();
 
-        if (n == Nucleus.O) {
+        if (n == Nucleus.O_) {
             assertNotNull (x);
             assertNotNull (y);
             return s + "(+" + x.toString() + "=" + y.toString() + ")";
@@ -96,7 +96,7 @@ public class Valence implements Comparable<Valence> {
 
         Valence tr = new Valence (n, t_x, t_y);
 // boolean tmp = Tab.trace(false);     // avoid a million compare traces
-        if (n == Nucleus.O) { 
+        if (n == Nucleus.O_) { 
             for (Valence t : uniques) {        // list may get huge, but not during initialization at least
                 if (tr.compareTo(t) == 0)
                     return t;

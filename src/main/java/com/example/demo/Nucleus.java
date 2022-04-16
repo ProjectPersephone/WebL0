@@ -3,7 +3,7 @@ package com.example.demo;
 public enum Nucleus {
 //     T,        // from paper; should try to eliminate
 //     S,        // predicates could reduce to this??? check
-     O,        // combinator op // should this still be here?
+     O_,        // combinator op // should this still be here?
 
      I,
 //     YOU,

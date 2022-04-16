@@ -11,36 +11,37 @@ import java.util.*;
 import com.example.demo.Valence;
 import com.example.demo.TypedTree;
 
+// Actually more like "element of a compound" -- is there a way to say that in chemistry
 public class Compound {
     private static Stack<Compound> stack = new Stack<Compound>();
     private static LinkedList<Compound> compounds = new LinkedList<Compound>();
 
-    Nucleus type;       // maybe an initial "if" is ":-"???
+    Nucleus n;       // maybe an initial "if" is ":-"???
     LinkedList<Compound> args; // if null, not a predicate, just an atom
     
-    public Compound(Nucleus t) {
-        type = t;
+    public Compound(Nucleus n) {
+        this.n = n;
         args = new LinkedList<Compound>();
     }
 
     // add to end of node list at top-of-stack
-    public static void add(Nucleus t) {
-        Compound npl = new Compound(t);
+    public static void add(Nucleus n) {
+        Compound npl = new Compound(n);
         stack.peek().args.add(npl);
     }
 
-    public static void sublist_start(Nucleus t) {
+    public static void sublist_start(Nucleus n) {
         Compound ex_tos = stack.peek();
-        Compound npl = stack.push(new Compound(t));
+        Compound npl = stack.push(new Compound(n));
         ex_tos.args.add(npl);
     }
 
     public String toString() {
-        return type.toString() + args.toString();
+        return n.toString() + args.toString();
     }
 
     public String pp1() {
-        String s = type.toString();
+        String s = n.toString();
         if (!args.isEmpty()) {
             String sep = "(";
             for (Compound np : args) {

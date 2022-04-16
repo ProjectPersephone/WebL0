@@ -1,6 +1,3 @@
-// Lexicon.java -- should probably be folded in Type, since primes
-// and the basic grammar types initialized here are really types.
-
 package com.example.demo;
 
 import org.junit.jupiter.api.Assertions;
@@ -14,24 +11,24 @@ import java.util.*;
 import com.example.demo.Valence;
 import com.example.demo.TypedTree;
 
+// "Element" probably better, with "Atom" being a single instance of an Element,
+//    "Compound" combinations of Atoms,
+//    and "Molecule" being a stable definition of a Compound
 public class Atom {
-    private
-        static // should allow multiple lexicons but for now, just one for English NSM
-           HashMap<String,TreeSet<Valence>> map;
+    private static HashMap<String,TreeSet<Valence>> map;
     public static Valence S;
     public static Valence Pred;
     public static Valence PredOp; // really means takes sentence as operand, e.g. SAY, THINK, etc.
     public static Valence Subst; // SAY, THINK ....
-    // public static Type Arg; // SAY, THINK ....
     public static Valence Cond; // IF, BECAUSE
     public static Valence Conseq;
     public static Valence CondS;
     public static Valence PredPred;
+
     public static Valence Good;
     public static Valence Bad;
     public static Valence Someone;
     public static Valence Something;
-
 
     private static TreeSet<Valence> insert(String w) {
         TreeSet<Valence> l = new TreeSet<Valence>();
@@ -44,25 +41,12 @@ public class Atom {
     }
 
     public static Valence O_(Valence x, Valence y) {
-            return Valence.of(Nucleus.O, x, y);
+            return Valence.of(Nucleus.O_, x, y);
     }
 
     public Atom() {
 
         map = new HashMap<String,TreeSet<Valence>>();
-
-        // English-specific:
-
-//        Type T = Type.term();
-//        Type S = Type.sentence();
-//        AUGType O = AUGType.O;
-        /*
-        Type a = O_(T,T); // OTT is like an adjective
-        Type c = O_(S,S);
-        Type p1  = O_(T,S); // e.g., is
-        Type cop = O_(a,p1);
-        Type osc = O_(S,c);
-        */
 
 //  somewhether IF
 //  somemuch(?) MANY -- quantifier
@@ -71,15 +55,15 @@ public class Atom {
 
         Tab.reset();
         Tab.trace(false);
-        for (Nucleus t : Nucleus.values()) {
-            String sym = t.toString();
-            if (t == Nucleus.O)
+
+        for (Nucleus n : Nucleus.values()) {
+            String sym = n.toString();
+            if (n == Nucleus.O_)
                 continue;
-
             insert (sym);
-
-            valences_for(sym).add(Valence.of (t,null,null));
+            valences_for(sym).add(Valence.of (n,null,null));
         }
+
         Tab.trace(false);
 
         Valence something = Valence.of (Nucleus.SOMETHING,null,null);
@@ -275,7 +259,7 @@ public class Atom {
 
         for (Nucleus t : Nucleus.values()) {
                 String sym = t.toString();
-                if (t == Nucleus.O)
+                if (t == Nucleus.O_)
                         continue;
                 Tab.ln ("t=" + t + " string=" + sym + Valence.ls_str(valences_for(sym)));            
         }
