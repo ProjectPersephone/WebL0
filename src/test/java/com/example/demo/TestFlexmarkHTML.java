@@ -109,7 +109,7 @@ public class TestFlexmarkHTML {
         Tab.reset();
         Tab.ln ("\n----------- Flexmark/Jsoup tryout ------------------\n");
         
-        Lexicon l = new Lexicon();
+        Atom l = new Atom();
 
         MutableDataSet options = new MutableDataSet();
 

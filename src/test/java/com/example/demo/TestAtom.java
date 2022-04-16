@@ -10,12 +10,12 @@ import java.util.*;
 
 import com.example.demo.Valence;
 import com.example.demo.TypedTree;
-import com.example.demo.Lexicon;
+import com.example.demo.Atom;
 
-public class TestLexicon {
+public class TestAtom {
 
     public static void print_word (String w) {
-        Set<Valence> types = Lexicon.valences_for (w);
+        Set<Valence> types = Atom.valences_for (w);
         Iterator<Valence> ti = types.iterator();
         while (ti.hasNext()) {
             Valence t = ti.next();
@@ -25,7 +25,7 @@ public class TestLexicon {
 
 // only works if word w has only one type associated
     public static void readback (String w, Valence t) {
-        Set<Valence> w_types = Lexicon.valences_for (w);
+        Set<Valence> w_types = Atom.valences_for (w);
         assertNotNull(w_types);
         assertEquals(w_types.size(),1);
 /* change to "set" kills this:
@@ -36,7 +36,7 @@ public class TestLexicon {
 
     @Test
     public void main() throws Exception {
-        Lexicon d = new Lexicon();
+        Atom d = new Atom();
         /*
         Type T = Type.term();
         AUGType O = AUGType.O;

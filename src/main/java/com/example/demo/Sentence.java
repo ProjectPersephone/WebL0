@@ -11,7 +11,7 @@ import com.example.demo.Order;
 import com.example.demo.Nucleus;
 import com.example.demo.Valence;
 import com.example.demo.TypedTree;
-import com.example.demo.Lexicon;
+import com.example.demo.Atom;
 
 public class Sentence {
     public LinkedList<TypedTree> tt_list;
@@ -36,7 +36,7 @@ public class Sentence {
         String[] sa = s.split(" ");
         assertNotNull (sa);
         for (String w : sa) {
-            Set<Valence> tl = Lexicon.valences_for (w);
+            Set<Valence> tl = Atom.valences_for (w);
             if (tl == null) {
                 Tab.ln ("Word w=" + w + " not in Lexicon");
             }

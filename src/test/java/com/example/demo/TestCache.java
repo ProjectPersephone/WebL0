@@ -72,7 +72,7 @@ public class TestCache {
     @Test
     public void main() throws Exception {
         Tab.reset();
-        Lexicon l = new Lexicon();
+        Atom l = new Atom();
         LinkedList<TypedTree> l_tt;
 
         String Str_2w = "SAY SOMETHING";

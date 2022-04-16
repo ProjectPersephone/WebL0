@@ -43,7 +43,7 @@ import com.example.demo.Compound;
 @RequestMapping("/")
 public class WelcomeController {
 
-    private static Lexicon L = new Lexicon();
+    private static Atom L = new Atom();
     private static FileWriter myFileWriter;
     String prolog_output_filename = "output.pl";
 
@@ -270,7 +270,7 @@ public class WelcomeController {
         JSONObject o = new JSONObject();
         o.put ("order", OrderToJSON (t.order));
         if (t.order == Order.NEITHER) {
-            o.put ("atom", t.atom); 
+            o.put ("atom", t.lexeme); 
         } else {
             JSONObject b = TypedTreeToJSON (t.before);
             JSONObject a = TypedTreeToJSON (t.after);

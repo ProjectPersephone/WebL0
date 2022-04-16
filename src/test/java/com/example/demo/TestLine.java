@@ -22,7 +22,7 @@ public class TestLine  {
     @Test
     public void main () {
         Tab.reset();
-        Lexicon l = new Lexicon();
+        Atom l = new Atom();
         Tab.ln ("----- TestRPline ------");
         String Str_3 = "I IS BAD";
         Sentence S = new Sentence (Str_3);

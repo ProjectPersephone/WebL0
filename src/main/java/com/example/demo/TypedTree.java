@@ -21,7 +21,7 @@ import com.example.demo.Nucleus;
 import com.example.demo.Valence;
 import com.example.demo.Tree;
 import com.example.demo.Splits;
-import com.example.demo.Lexicon;
+import com.example.demo.Atom;
 import com.example.demo.Compound;
 
 import com.example.demo.Tab;
@@ -55,7 +55,7 @@ public class TypedTree implements Comparable<TypedTree> {
         if (arg != null) Tab.ln ("arg = " + arg.str());
         else Tab.ln ("arg = null");
 
-        Tab.ln ("tt.tree.atom="+tt.tree.atom);
+        Tab.ln ("tt.tree.lexeme="+tt.tree.lexeme);
 
         if (tt.tree.before != null) Tab.ln ("tt.tree.before = " + tt.tree.before.str());
         else Tab.ln ("tt.tree.before = null");
@@ -76,7 +76,7 @@ public class TypedTree implements Comparable<TypedTree> {
         Valence t = get_type(tt);
         if (tt != null)
             Tab.ln ("substantive: tt=" + tt.str());
-        Boolean r = (t.x == Lexicon.Someone || t.x == Lexicon.Something);
+        Boolean r = (t.x == Atom.Someone || t.x == Atom.Something);
         Tab.ln ("returning " + r);
         return r;
     }
@@ -92,7 +92,7 @@ public class TypedTree implements Comparable<TypedTree> {
     static String sentence1 (TypedTree before, TypedTree after, TypedTree arg) {
         Tab.ln ("sentence1:");
         String s ="";
-        if (before.types.contains(Lexicon.CondS)) {
+        if (before.types.contains(Atom.CondS)) {
             Tab.ln ("before: Conds");
             s += add_arg (pl1 (after,arg));
             s += " :- ";            // Compound API entry? ??????????????????????????????????????
@@ -115,32 +115,32 @@ public class TypedTree implements Comparable<TypedTree> {
         Valence type = get_type(tt);
   
         lookit("*** ", type,tt, arg);
-        String atom = tt.tree.atom;
+        String lexeme = tt.tree.lexeme;
         TypedTree before = tt.tree.before;
         TypedTree after = tt.tree.after;
 
-        if (tt.types.contains(Lexicon.S)
-         || tt.types.contains(Lexicon.PredOp)
-         || tt.types.contains(Lexicon.Cond)
-         || tt.types.contains(Lexicon.Conseq)) {                       lookit("<*>", Lexicon.PredOp,tt, arg);
+        if (tt.types.contains(Atom.S)
+         || tt.types.contains(Atom.PredOp)
+         || tt.types.contains(Atom.Cond)
+         || tt.types.contains(Atom.Conseq)) {                       lookit("<*>", Atom.PredOp,tt, arg);
             s += add_arg (sentence1 (before, after, arg));             Tab.ln ("s = " + s); 
         }  else
-        if (tt.types.contains(Lexicon.PredPred)) {                     lookit("PredPred", Lexicon.PredPred,tt, arg);
-            if (atom != null)   { s += add_arg(tt.tree.atom);          Tab.ln ("(1)s = " + s);
+        if (tt.types.contains(Atom.PredPred)) {                     lookit("PredPred", Atom.PredPred,tt, arg);
+            if (lexeme != null)   { s += add_arg(tt.tree.lexeme);          Tab.ln ("(1)s = " + s);
             }
             if (before != null) { s += add_arg(pl1 (before, null));     Tab.ln ("(2)s = " + s);
             }
             if (after != null)  { s += parenthesize(pl1 (after,arg));     Tab.ln ("(3)s = " + s);
             }
         }  else
-        if (type.x == Lexicon.Pred) {
-            if (atom == null) {
+        if (type.x == Atom.Pred) {
+            if (lexeme == null) {
                 Tab.ln ("Pred op null -> complex");
                 s += add_arg(pl1 (before,null));
                 s += start_paren();                            Tab.ln ("(4)s = " + s);
             } else {
-                Tab.ln ("Pred op = " + atom);
-                s += add_arg(atom);
+                Tab.ln ("Pred op = " + lexeme);
+                s += add_arg(lexeme);
                 s += start_paren();                                        Tab.ln ("(5)s = " + s);
             }
             if (arg != null) {
@@ -153,23 +153,23 @@ public class TypedTree implements Comparable<TypedTree> {
             }
             s += end_paren();                                                   Tab.ln ("(9)s = " + s);
         }  else
-        if (tt.types.contains(Lexicon.Subst)) {
+        if (tt.types.contains(Atom.Subst)) {
             Tab.ln ("Subst: <stub>");
-            if (atom != null) {
-                s += add_arg(atom);                                              Tab.ln ("s = " + s);
+            if (lexeme != null) {
+                s += add_arg(lexeme);                                              Tab.ln ("s = " + s);
             } else {
                 if (substantive(after)) { s += add_arg(pl1 (before,after));      Tab.ln ("s = " + s);
                 } else {                  s += add_arg(pl1 (after,before));      Tab.ln ("s = " + s);
                 }
             }
         } else
-        if (atom == null && type.y == Lexicon.Someone) {
-            Tab.ln ("atom == null && type.y == Lexicon.Someone");
+        if (lexeme == null && type.y == Atom.Someone) {
+            Tab.ln ("lexeme == null && type.y == Lexicon.Someone");
             s += add_arg(pl1 (after, before));                                   Tab.ln ("s = " + s);
         } else
-        if (type.y == Lexicon.Pred && after != null) {      // was for x + good/bad / good/bad + x
+        if (type.y == Atom.Pred && after != null) {      // was for x + good/bad / good/bad + x
             Tab.ln("type.y == Lexicon.Pred && after != null");
-            if (atom == null) {
+            if (lexeme == null) {
                 if (substantive(after)) {
                     s += add_arg(pl1 (before,after));                                    Tab.ln ("s = " + s);
                 } else {
@@ -178,9 +178,9 @@ public class TypedTree implements Comparable<TypedTree> {
             } else
                 s += add_arg(pl1 (after,before));                                    Tab.ln ("s = " + s);
         } else {
-            Tab.ln("Default:");  Tab.ln ("atom = " + atom);
-            if (atom != null) {
-                s += add_arg(atom);                                    Tab.ln ("(d1)s = " + s);
+            Tab.ln("Default:");  Tab.ln ("lexeme = " + lexeme);
+            if (lexeme != null) {
+                s += add_arg(lexeme);                                    Tab.ln ("(d1)s = " + s);
             }
             if (arg != null) {
                 s += start_paren();
@@ -199,8 +199,8 @@ public class TypedTree implements Comparable<TypedTree> {
         return npl;
     }
     static LinkedList<Compound>
-    add_ls_arg(LinkedList<Compound> npl, String atom) {
-        Nucleus tl = Nucleus.valueOf(atom);
+    add_ls_arg(LinkedList<Compound> npl, String lexeme) {
+        Nucleus tl = Nucleus.valueOf(lexeme);
         Compound np = new Compound(tl);
         npl.add(np);
         return npl;
@@ -215,7 +215,7 @@ public class TypedTree implements Comparable<TypedTree> {
     sentence (TypedTree before, TypedTree after, TypedTree arg) {
         Tab.ln ("sentence:");
         LinkedList<Compound> s = new LinkedList<Compound>();
-        if (before.types.contains(Lexicon.CondS)) {
+        if (before.types.contains(Atom.CondS)) {
             Tab.ln ("before: Conds");
             LinkedList<Compound> if_constr = new LinkedList<Compound>();
             Compound an_if = new Compound(Nucleus.IF);
@@ -241,31 +241,31 @@ public class TypedTree implements Comparable<TypedTree> {
         Valence type = get_type(tt);
   
         lookit("*** ", type,tt, arg);
-        String atom = tt.tree.atom;
+        String lexeme = tt.tree.lexeme;
         TypedTree before = tt.tree.before;
         TypedTree after = tt.tree.after;
 
-        if (tt.types.contains(Lexicon.S)
-         || tt.types.contains(Lexicon.PredOp)
-         || tt.types.contains(Lexicon.Cond)
-         || tt.types.contains(Lexicon.Conseq)) {                       lookit("<*>", Lexicon.PredOp,tt, arg);
+        if (tt.types.contains(Atom.S)
+         || tt.types.contains(Atom.PredOp)
+         || tt.types.contains(Atom.Cond)
+         || tt.types.contains(Atom.Conseq)) {                       lookit("<*>", Atom.PredOp,tt, arg);
             s = add_ls_arg (s, sentence (before, after, arg));             Tab.ln ("s = " + s); 
         }  else
-        if (tt.types.contains(Lexicon.PredPred)) {                     lookit("PredPred", Lexicon.PredPred,tt, arg);
-            if (atom != null)   { s = add_ls_arg(s, tt.tree.atom);          Tab.ln ("(1)s = " + s);
+        if (tt.types.contains(Atom.PredPred)) {                     lookit("PredPred", Atom.PredPred,tt, arg);
+            if (lexeme != null)   { s = add_ls_arg(s, tt.tree.lexeme);          Tab.ln ("(1)s = " + s);
             }
             if (before != null) { s = add_ls_arg(s, pl (before, null));     Tab.ln ("(2)s = " + s);
             }
             if (after != null)  { s = listify(s, pl (after,arg));     Tab.ln ("(3)s = " + s);
             }
         }  else
-        if (type.x == Lexicon.Pred) {
-            if (atom == null) {
+        if (type.x == Atom.Pred) {
+            if (lexeme == null) {
                 Tab.ln ("Pred op null -> complex");
                 s = add_ls_arg(s, pl (before,null));
             } else {
-                Tab.ln ("Pred op = " + atom);
-                s = add_ls_arg(s, atom);
+                Tab.ln ("Pred op = " + lexeme);
+                s = add_ls_arg(s, lexeme);
             }
             LinkedList<Compound> s1 = start_list(s);                            Tab.ln ("(4)s1 = " + s);
             if (arg != null) {
@@ -279,23 +279,23 @@ public class TypedTree implements Comparable<TypedTree> {
             s.get(0).args.addAll(s1);
             s = end_list(s);                                                   Tab.ln ("(9)s = " + s);
         }  else
-        if (tt.types.contains(Lexicon.Subst)) {
+        if (tt.types.contains(Atom.Subst)) {
             Tab.ln ("Subst: <stub>");
-            if (atom != null) {
-                s = add_ls_arg(s, atom);                                              Tab.ln ("s = " + s);
+            if (lexeme != null) {
+                s = add_ls_arg(s, lexeme);                                              Tab.ln ("s = " + s);
             } else {
                 if (substantive(after)) { s = add_ls_arg(s, pl (before,after));      Tab.ln ("s = " + s);
                 } else {                  s = add_ls_arg(s, pl (after,before));      Tab.ln ("s = " + s);
                 }
             }
         } else
-        if (atom == null && type.y == Lexicon.Someone) {    // SEE IF THIS IS ACTUALLY USED
-            Tab.ln ("atom == null && type.y == Lexicon.Someone");
+        if (lexeme == null && type.y == Atom.Someone) {    // SEE IF THIS IS ACTUALLY USED
+            Tab.ln ("lexeme == null && type.y == Lexicon.Someone");
             s = add_ls_arg(s, pl (after, before));                                   Tab.ln ("s = " + s);
         } else
-        if (type.y == Lexicon.Pred && after != null) {      // was for x + good/bad / good/bad + x
+        if (type.y == Atom.Pred && after != null) {      // was for x + good/bad / good/bad + x
             Tab.ln("type.y == Lexicon.Pred && after != null");
-            if (atom == null) {
+            if (lexeme == null) {
                 if (substantive(after)) {
                     s = add_ls_arg(s, pl (before,after));                                    Tab.ln ("s = " + s);
                 } else {
@@ -304,9 +304,9 @@ public class TypedTree implements Comparable<TypedTree> {
             } else
                 s = add_ls_arg(s, pl (after,before));                                    Tab.ln ("s = " + s);
         } else {
-            Tab.ln("Default:");  Tab.ln ("atom = " + atom);
-            if (atom != null) {
-                s = add_ls_arg(s, atom);                                    Tab.ln ("(d1)s = " + s);
+            Tab.ln("Default:");  Tab.ln ("lexeme = " + lexeme);
+            if (lexeme != null) {
+                s = add_ls_arg(s, lexeme);                                    Tab.ln ("(d1)s = " + s);
             }
             if (arg != null) {
                 LinkedList<Compound> s1 = start_list(s);
@@ -332,8 +332,8 @@ public class TypedTree implements Comparable<TypedTree> {
 
         Tab.push_trace(true);
         if (this.types.size() > 1) {
-            Tab.ln ("Looks like unreduced (maybe single) atom " + this.tree.atom);
-            return this.tree.atom;
+            Tab.ln ("Looks like unreduced (maybe single) lexeme " + this.tree.lexeme);
+            return this.tree.lexeme;
         }
         Tab.pop_trace();
 
@@ -354,7 +354,7 @@ public class TypedTree implements Comparable<TypedTree> {
         for (Line Li : L) {
             Tab.ln ("nested_pp_helper: Li.line = " + Li.line.str());
             if (Li.line.types.size() > 1) {
-                Tab.ln ("Looks like unreduced type for atom " + Li.line.tree.atom);
+                Tab.ln ("Looks like unreduced type for lexeme " + Li.line.tree.lexeme);
                 return;
             }
             Tab.push_trace(false);
@@ -457,12 +457,12 @@ public class TypedTree implements Comparable<TypedTree> {
 
             TreeSet<Valence> lx;
 
-            Tab.ln (t_this.toString() + Valence.ls_str (Lexicon.valences_for(t_this.toString())) + "...applying...");
+            Tab.ln (t_this.toString() + Valence.ls_str (Atom.valences_for(t_this.toString())) + "...applying...");
             if (t_this.n == Nucleus.O) {
                 lx = new TreeSet<Valence>();                           Tab.ln ("...to  = " + t_this + " with just " + Valence.ls_str(lx));
                 lx.add (t_this);
             } else {
-                lx = Lexicon.valences_for(t_this.toString());          Tab.ln ("...to  = " + t_this + " including " + Valence.ls_str(lx));
+                lx = Atom.valences_for(t_this.toString());          Tab.ln ("...to  = " + t_this + " including " + Valence.ls_str(lx));
             }
 
             for (Valence t_this_x : lx) 

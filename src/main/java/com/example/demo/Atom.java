@@ -14,7 +14,7 @@ import java.util.*;
 import com.example.demo.Valence;
 import com.example.demo.TypedTree;
 
-public class Lexicon {
+public class Atom {
     private
         static // should allow multiple lexicons but for now, just one for English NSM
            HashMap<String,TreeSet<Valence>> map;
@@ -47,7 +47,7 @@ public class Lexicon {
             return Valence.of(Nucleus.O, x, y);
     }
 
-    public Lexicon() {
+    public Atom() {
 
         map = new HashMap<String,TreeSet<Valence>>();
 

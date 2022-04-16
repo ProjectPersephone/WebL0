@@ -11,7 +11,7 @@ import java.util.*;
 import com.example.demo.Nucleus;
 import com.example.demo.Valence;
 
-public class TestType {
+public class TestValence {
     @Test
     public void main() throws Exception {
         /*

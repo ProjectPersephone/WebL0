@@ -29,7 +29,7 @@ public class TestSentence {
             assertNotNull(tt);
             Tree t = tt.tree;
             assertEquals(t.order, Order.NEITHER);
-            String as = t.atom;
+            String as = t.lexeme;
             assertNotNull (as);
             assertEquals(a[i],as);
             ++i;
