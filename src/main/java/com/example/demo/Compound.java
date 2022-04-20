@@ -89,19 +89,21 @@ public class Compound {
         return null;
     }
 
-    private Compound get_1_arg() {
+    private Compound get_1st_arg() {
         assertNotNull(this.args);
         LinkedList<Compound> args = this.args;
         assert(0 != args.size());
-        Compound r = args.get(0);                Tab.ln ("get_1_arg returning " + r);
+        Compound r = args.get(0);                // Tab.ln ("get_1_arg returning " + r);
         return r;
     }
 
     private Compound free_var() {
-        Tab.ln ("free_var: this=" + this);
+
         if (n == Nucleus.THIS) {
-            return this.get_1_arg();
+            Tab.ln ("free_var: this=" + this);
+            return this.get_1st_arg();
         }
+        Tab.ln ("not free_var: this=" + this);
         return null;    
     }
 
@@ -122,69 +124,50 @@ public class Compound {
     // Because I don't have just the prolog functor(arg) for "facts"
     // I need to look at where IS(x,y) has been asserted.
     // Better to generalize this to all two-place predicates, and n-place predicates
-    // Need to make it recursive 
-    private static Boolean two_args(HashMap<Nucleus,LinkedList<Compound>> preds, Compound x, Compound y) {
-                                                        Tab.ln ("is_ (" + x + "," + y + "):");
+    // this should be expanded to cover all free variables in x and y, possibly recursively
+
+    private static Boolean try_match(HashMap<Nucleus,LinkedList<Compound>> preds, Nucleus n, Compound x, Compound y) {
+                                                        Tab.ln ("try_match (" + x + "," + y + "):");
         Boolean bind_x1 = false, bind_y1 = false;
         Compound x1, y1;
-                                                        Tab.ln ("Trying x,y=" + x + ", " + y);
-        if (x.free_var() != null) {
-            x1 = x.free_var();
-            bind_x1 = true;
-        } else x1 = x;
-        if (y.free_var() != null) {
-            y1 = y.free_var();
-            bind_y1 = true;
-        } else y1 = y;
+
+        if ((x1 = x.free_var()) != null)
+              bind_x1 = true;
+        else  x1 = x;
+        if ((y1 = y.free_var()) != null)
+              bind_y1 = true;
+        else  y1 = y;
         Boolean r = false;
-        LinkedList<Compound> isness = preds.get(Nucleus.BE);
+        LinkedList<Compound> isness = preds.get(n);
         for (Compound c : isness) {
-            LinkedList<Compound> two_args = c.args;
-            Compound cx1 = two_args.get(0);
-            Compound cy1 = two_args.get(1);
-            
-            // Naive match ==================================
+            Compound cx1 = c.args.get(0);             // needs to be generalized to n
+            Compound cy1 = c.args.get(1);
             if (x1.n == cx1.n && y1.n == cy1.n) {       Tab.ln ("matched " + x1 + " with " + cx1 + " and " + y1 + " with " + cy1);
-                if (bind_x1) { // x has modifier THIS; bind
-                    x.bindings.push(cy1);
-                }
-                if (bind_y1) {
-                    y.bindings.push(cx1);
-                }
+                if (bind_x1) x.bindings.push(cy1);
+                if (bind_y1) y.bindings.push(cx1);
                 r = true;
                 break; // perhaps prematurely
             } else {                                    Tab.ln ("no match of " + x1 + " with " + cx1 + " and " + y1 + " with " + cy1);
             }
-        }
-        Tab.ln ("..." + r);
+        }                                               Tab.ln ("...try_match returning " + r);
         return r;
     }
 
     private Boolean satisfy(HashMap<Nucleus,LinkedList<Compound>> preds) {
-        if (++call_depth > 10) {                            Tab.ln ("call_depth>10, bailing"); return false; } 
-                                                            Tab.ln ("satisfy" + this);
-        if (this.args.isEmpty()) {                          Tab.ln ("no arguments to " + this + "--returning true");
-            return true;
-        }
+                                                                if (++call_depth > 10) { Tab.ln ("call_depth>10, bailing"); return false; } 
+        Boolean r = false;                                      Tab.ln ("satisfy" + this);
         int n_args = args.size();
-        Compound this_arg = this.args.get(0);  // sticking with single-arg case, BE (is_) special case
-        LinkedList<Compound> p_ls = preds.get(n);
-        if (p_ls == null) {                                 Tab.ln (n.toString() + " is no predicate, returning true");
-            return true;
-        }
-        Boolean r = false;
-        for (Compound c : p_ls) {                          assertNotNull(c.args);
-            if (c.args.size() != n_args)
-                continue;
-            Compound arg = c.args.get(0);            Tab.ln ("c=" + c + " arg=" + arg);
-            if (arg == null) {
-                                                            Tab.ln ("c arg = null");
-            } else {                                        Tab.ln ("Calling is_ on " + arg + " and " + this_arg + "...");
-                r = two_args(preds,arg,this_arg);           Tab.ln ("Calling satisfy on " + arg);
-                arg.satisfy(preds);
-            }
-        }
-        --call_depth;
+
+        if (n_args == 0) r = true;
+        else {
+            Compound args_for_this = args.get(0);        // sticking with single-arg case, BE is special case
+            LinkedList<Compound> p_ls = preds.get(n);           Tab.ln("Looking for " + n);
+            for (Compound c : p_ls) {                           assertNotNull(c.args);
+                if (c.args.size() == n_args) {                  // need faster indexing eventually?
+                    Compound c_args = c.args.get(0);     Tab.ln ("c=" + c + " c_args=" + c_args + "Calling try_match on " + c_args + " and " + args_for_this + "...");                                         
+                    r = try_match( preds, Nucleus.BE,           // It's BE because I don't have prolog "facts"; I do it with BE
+                                    c_args, args_for_this );    Tab.ln ("c.n=" + c.n + ": got " + r);
+                    }}}                                         Tab.ln ("...returning " + r);  --call_depth;   
         return r;
     }
 
