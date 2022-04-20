@@ -25,8 +25,8 @@ public class Atom {
     public static Valence CondS;
     public static Valence PredPred;
 
-    public static Valence Good;
-    public static Valence Bad;
+    private static Valence Good;
+    private static Valence Bad;
     public static Valence Someone;
     public static Valence Something;
 
@@ -112,6 +112,7 @@ public class Atom {
         so.add(O_(Pred, S)); // someone can be good, bad; do thing, etc.
         so.add(O_(bad,someone));
         so.add(O_(good,someone));
+        so.add(O_(this_,someone));
 //        valences_for("SOMEONE").add(O_(O_(say,true_),say)); // someone can say something maybe true
 //        valences_for("SOMEONE").add(O_(live,true_));
 /*
@@ -122,6 +123,7 @@ public class Atom {
         st.add(O_(Pred,S));
         st.add(O_(bad,something)); // something that's bad is still something
         st.add(O_(good,something)); // same for good thing
+        so.add(O_(this_,something));
 /* BODY,
    PEOPLE,
    KIND,
@@ -131,6 +133,8 @@ public class Atom {
 //   THIS,
         TreeSet<Valence> a_this = valences_for("THIS");
         a_this.add(O_(something,something));
+        a_this.add(O_(someone,someone));
+        a_this.add(something); // bare THIS
 /*
    THE_SAME,
    OTHER,

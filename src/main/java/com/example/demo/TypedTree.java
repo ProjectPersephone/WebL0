@@ -122,7 +122,8 @@ public class TypedTree implements Comparable<TypedTree> {
     }
 
     // probably redundant code in here, needs analysis and trimming
-    private static LinkedList<Compound> pl(TypedTree tt, TypedTree arg) {
+    public static LinkedList<Compound>
+    pl(TypedTree tt, TypedTree arg) {
         Tab.ln("pl:");
 
         LinkedList<Compound> s = new LinkedList<Compound>();
@@ -171,7 +172,7 @@ public class TypedTree implements Comparable<TypedTree> {
             s = end_list(s);                                                   Tab.ln ("(9)s = " + s);
         }  else
         if (tt.types.contains(Atom.Subst)) {
-            Tab.ln ("Subst: <stub>");
+            Tab.ln ("Subst: ");
             if (lexeme != null) {
                 s = add_ls_arg(s, lexeme);                                              Tab.ln ("s = " + s);
             } else {
@@ -180,7 +181,7 @@ public class TypedTree implements Comparable<TypedTree> {
                 }
             }
         } else
-        if (lexeme == null && type.y == Atom.Someone) {    // SEE IF THIS IS ACTUALLY USED
+        if (lexeme == null && (type.y == Atom.Someone || type.y == Atom.Something)) {
             Tab.ln ("lexeme == null && type.y == Lexicon.Someone");
             s = add_ls_arg(s, pl (after, before));                                   Tab.ln ("s = " + s);
         } else
@@ -231,7 +232,9 @@ public class TypedTree implements Comparable<TypedTree> {
 
     private static void nested_pp_helper(LinkedList<Line> L) {
         for (Line Li : L) {
+            Tab.push_trace(false);
             Tab.ln ("nested_pp_helper: Li.line = " + Li.line.str());
+            Tab.pop_trace();
             if (Li.line.types.size() > 1) {
                 Tab.ln ("Looks like unreduced type for lexeme " + Li.line.tree.lexeme);
                 return;
@@ -248,8 +251,8 @@ public class TypedTree implements Comparable<TypedTree> {
     public static void nested_pp(NestedLines nlp) {
         Tab.ln ("nested_pp:");
         nested_pp_helper (nlp.lines);
+        Compound.load_and_run(nlp);
     }
-    
 
     public String str() {
         String s = tree.str() + "[";

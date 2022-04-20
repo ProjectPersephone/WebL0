@@ -203,7 +203,7 @@ public class WelcomeController {
             Tab.trace(true);
             try {
                 String pl = tt.prolog();
-                pl += " ,,, ";
+                pl += ",\n";
                  myFileWriter.write(pl);
                  Tab.ln("*** Wrote " + pl + " to " + prolog_output_filename + " ***");
             } catch (IOException e) {
