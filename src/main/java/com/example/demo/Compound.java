@@ -89,85 +89,61 @@ public class Compound {
         return null;
     }
 
-    private Compound get_1st_arg() {
-        assertNotNull(this.args);
-        LinkedList<Compound> args = this.args;
-        assert(0 != args.size());
-        Compound r = args.get(0);                // Tab.ln ("get_1_arg returning " + r);
-        return r;
-    }
+    private Boolean just_atom() { return args.isEmpty();  }
+    private Boolean complex()   { return !args.isEmpty(); }
+    private int arity()         { return args.size();     }
 
-    private Compound free_var() {
-
-        if (n == Nucleus.THIS) {
-            Tab.ln ("free_var: this=" + this);
-            return this.get_1st_arg();
-        }
-        Tab.ln ("not free_var: this=" + this);
-        return null;    
-    }
-
-            // OR of all preds
-        //    each pred: an OR of each rule, stopping with the first true
-        //    each rule: an AND of each functor(args)
-
-                // How to infer that "I" matches "THIS[SOMEONE[]]"?
-                // LIVE(I) is recorded
-                // IS(I,SOMEONE) - axiomatic
-                // THIS is seen
-                // SOMEONE is the argument of THIS
-                // so ask IS(I,SOMEONE)
-                // if this is true (it is) bind this THIS to I.
-                // which means we need to construct IS(I,SOMEONE)
-                // then ask if that's true.
-
-    // Because I don't have just the prolog functor(arg) for "facts"
-    // I need to look at where IS(x,y) has been asserted.
-    // Better to generalize this to all two-place predicates, and n-place predicates
-    // this should be expanded to cover all free variables in x and y, possibly recursively
-
-    private static Boolean try_match(HashMap<Nucleus,LinkedList<Compound>> preds, Nucleus n, Compound x, Compound y) {
-                                                        Tab.ln ("try_match (" + x + "," + y + "):");
-        Boolean bind_x1 = false, bind_y1 = false;
-        Compound x1, y1;
-
-        if ((x1 = x.free_var()) != null)
-              bind_x1 = true;
-        else  x1 = x;
-        if ((y1 = y.free_var()) != null)
-              bind_y1 = true;
-        else  y1 = y;
-        Boolean r = false;
-        LinkedList<Compound> isness = preds.get(n);
-        for (Compound c : isness) {
-            Compound cx1 = c.args.get(0);             // needs to be generalized to n
-            Compound cy1 = c.args.get(1);
-            if (x1.n == cx1.n && y1.n == cy1.n) {       Tab.ln ("matched " + x1 + " with " + cx1 + " and " + y1 + " with " + cy1);
-                if (bind_x1) x.bindings.push(cy1);
-                if (bind_y1) y.bindings.push(cx1);
+    private static Boolean unify (HashMap<Nucleus,LinkedList<Compound>> ps, Compound T1, Compound T2) {
+        Boolean r = false;                                  Tab.ln ("unify (" + T1 + ", " + T2 + "):");
+        if (T1.just_atom() && T2.just_atom()) {             Tab.ln ("unified: " + T1.n + " == " + T2.n);
+            r = (T1.n == T2.n);
+        } else
+        if (T1.n == Nucleus.THIS) {                         Tab.ln ("var THIS for T1=" + T1);
+            r = (T2 == T1.bindings.push(T2));               // instantiate, and r <- true
+        } else
+        if (T2.n == Nucleus.THIS) {                         Tab.ln ("var THIS for T2=" + T2);
+            r = (T1 == T2.bindings.push(T1));
+        } else
+        if (T1.complex() && T2.complex()
+         && T1.arity() == T2.arity()
+         && T1.n == T2.n) {                                 Tab.ln ("Try unifying " + T1 + " with " + T2);
+                Iterator<Compound> T1i = T1.args.iterator();
+                Iterator<Compound> T2i = T2.args.iterator();
                 r = true;
-                break; // perhaps prematurely
-            } else {                                    Tab.ln ("no match of " + x1 + " with " + cx1 + " and " + y1 + " with " + cy1);
-            }
-        }                                               Tab.ln ("...try_match returning " + r);
+                while (T1i.hasNext())  {
+                    if (!unify (ps, T1i.next(), T2i.next())) {  Tab.ln ("Failed to unify two args to unify");
+                        r = false;
+                        break;
+                    }}}                                     Tab.ln ("unify=" + r);
         return r;
     }
 
     private Boolean satisfy(HashMap<Nucleus,LinkedList<Compound>> preds) {
                                                                 if (++call_depth > 10) { Tab.ln ("call_depth>10, bailing"); return false; } 
-        Boolean r = false;                                      Tab.ln ("satisfy" + this);
+        Boolean r = false;                                      Tab.ln ("satisfy (" + this + ")");
         int n_args = args.size();
 
         if (n_args == 0) r = true;
-        else {
-            Compound args_for_this = args.get(0);        // sticking with single-arg case, BE is special case
+        else if (n == Nucleus.BE) {                             Tab.ln ("BE: Try unifying " + args.get(0) + " with " + args.get(1));
+            r = unify (preds, args.get(0), args.get(1));
+            Tab.ln ("Could require special treatment in RPs, if they are chained IFs");
+            Tab.ln ("not testing BE but asserting it.");
+        } else
+        if (n == Nucleus.IF) {
+            Tab.ln ("Hit IF, trying cond " + args.get(0));
+            if (args.get(0).satisfy (preds)) {
+                Tab.ln ("cond true, at least");
+                Tab.ln ("assert consequent in this scope, at least");
+                Tab.ln ("side effect on preds, so failure means unwinding somewhere");
+                r = args.get(1).satisfy (preds);
+            }
+        } else {
             LinkedList<Compound> p_ls = preds.get(n);           Tab.ln("Looking for " + n);
             for (Compound c : p_ls) {                           assertNotNull(c.args);
-                if (c.args.size() == n_args) {                  // need faster indexing eventually?
-                    Compound c_args = c.args.get(0);     Tab.ln ("c=" + c + " c_args=" + c_args + "Calling try_match on " + c_args + " and " + args_for_this + "...");                                         
-                    r = try_match( preds, Nucleus.BE,           // It's BE because I don't have prolog "facts"; I do it with BE
-                                    c_args, args_for_this );    Tab.ln ("c.n=" + c.n + ": got " + r);
-                    }}}                                         Tab.ln ("...returning " + r);  --call_depth;   
+                if (c.args.size() == n_args) {                  Tab.ln ("c=" + c +" -- calling unify on this=" + this);                                         
+                    if (unify( preds, this, c )) {              Tab.ln ("c=" + c + " unified with " + this);
+                        r = true;
+                    }}}}                                        Tab.ln ("...returning " + r);  --call_depth;   
         return r;
     }
 
@@ -177,6 +153,7 @@ public class Compound {
         Tab.ln ("----------- load_and_run: Compound.run: calling build: ---------------");
         Compound c = build (nlp.lines);
         Tab.ln ("----------- load_and_run: Dump of compound ---------------------------");
+        Tab.ln("TO DO: nested sentences");
         for (Compound ci : compound) {
             Tab.ln (ci.toString());
         }

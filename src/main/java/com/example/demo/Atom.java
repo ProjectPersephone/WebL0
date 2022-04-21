@@ -105,8 +105,12 @@ public class Atom {
 ////        I.add (O_(say, S));
         I.add (someone);
 ////        I.add (O_(p1, S)); // too general, but anyway
-/* YOU,
-   SOMEONE, */
+
+/* YOU, */
+        TreeSet<Valence> you = valences_for("YOU");
+        you.add (someone);
+
+ /*  SOMEONE, */
         TreeSet<Valence> so = valences_for("SOMEONE");
         so.add(O_(is,Pred));
         so.add(O_(Pred, S)); // someone can be good, bad; do thing, etc.

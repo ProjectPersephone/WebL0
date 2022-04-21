@@ -6,7 +6,7 @@ public enum Nucleus {
      O_,        // combinator op // should this still be here?
 
      I,
-//     YOU,
+     YOU,
      SOMEONE,
      SOMETHING,
 /*
