@@ -101,12 +101,22 @@ public class TypedTree implements Comparable<TypedTree> {
          add_ls_arg (new_npl,arg);
          return end_list(new_npl);
     }
+    static LinkedList<Compound> funkify(String functor, LinkedList<Compound> arg) {
+        LinkedList<Compound> s = start_list(null); // 
+
+        Tab.ln ("funkify: functor = " + functor + " arg = " + arg);
+        add_ls_arg (s, functor);
+        s.get(0).args.addAll(arg);
+
+        Tab.ln ("funkify: returning " + s);
+        return s;
+    }
 
     static LinkedList<Compound>
     sentence (TypedTree before, TypedTree after, TypedTree arg) {
         Tab.ln ("sentence:");
         LinkedList<Compound> s = new LinkedList<Compound>();
-        if (before.types.contains(Atom.CondS)) {
+        if (before != null && before.types.contains(Atom.CondS)) {
             Tab.ln ("before: Conds");
             LinkedList<Compound> if_constr = new LinkedList<Compound>();
             Compound an_if = new Compound(Nucleus.IF);
@@ -138,39 +148,23 @@ public class TypedTree implements Comparable<TypedTree> {
         TypedTree after = tt.tree.after;
 
         if (tt.types.contains(Atom.S)
-         || tt.types.contains(Atom.PredOp)
          || tt.types.contains(Atom.Cond)
-         || tt.types.contains(Atom.Conseq)) {                       lookit("<*>", Atom.PredOp,tt, arg);
+         || tt.types.contains(Atom.Conseq)) {                       lookit("<*>", Atom.S,tt, arg);
             s = add_ls_arg (s, sentence (before, after, arg));             Tab.ln ("s = " + s); 
-        }  else
-        if (tt.types.contains(Atom.PredPred)) {                     lookit("PredPred", Atom.PredPred,tt, arg);
-            if (lexeme != null)   { s = add_ls_arg(s, tt.tree.lexeme);          Tab.ln ("(1)s = " + s);
-            }
-            if (before != null) { s = add_ls_arg(s, pl (before, null));     Tab.ln ("(2)s = " + s);
-            }
-            if (after != null)  { s = listify(s, pl (after,arg));     Tab.ln ("(3)s = " + s);
-            }
-        }  else
-        if (type.x == Atom.Pred) {
-            if (lexeme == null) {
-                Tab.ln ("Pred op null -> complex");
-                s = add_ls_arg(s, pl (before,null));
+        } else
+        if (tt.types.contains(Atom.Pred)
+         || tt.types.contains(Atom.ModPred)) {                       lookit("Pred", Atom.Pred,tt, arg);
+            if (lexeme != null) {
+                String functor = lexeme;
+                LinkedList<Compound> a = pl (arg, null);
+                s = funkify (functor, a);         Tab.ln ("s=funkify("+lexeme+","+arg+")="+s);
             } else {
-                Tab.ln ("Pred op = " + lexeme);
-                s = add_ls_arg(s, lexeme);
+                String functor = after.tree.lexeme;
+                s = funkify (functor, pl (arg, null));
+                functor = before.tree.lexeme;
+                s = funkify (functor, s);
             }
-            LinkedList<Compound> s1 = start_list(s);                            Tab.ln ("(4)s1 = " + s);
-            if (arg != null) {
-                s1 = add_ls_arg(s1, pl (arg, null));                                    Tab.ln ("(6)s1 = " + s);
-            }
-            if (after != null) {
-                if (arg != null) { // s += ",";                             Tab.ln ("(7)s = " + s);
-                }
-                s1= add_ls_arg(s1, pl (after, null));                                  Tab.ln ("(8)s1 = " + s);
-            }
-            s.get(0).args.addAll(s1);
-            s = end_list(s);                                                   Tab.ln ("(9)s = " + s);
-        }  else
+        } else
         if (tt.types.contains(Atom.Subst)) {
             Tab.ln ("Subst: ");
             if (lexeme != null) {
@@ -196,16 +190,23 @@ public class TypedTree implements Comparable<TypedTree> {
             } else
                 s = add_ls_arg(s, pl (after,before));                                    Tab.ln ("s = " + s);
         } else {
-            Tab.ln("Default:");  Tab.ln ("lexeme = " + lexeme);
-            if (lexeme != null) {
-                s = add_ls_arg(s, lexeme);                                    Tab.ln ("(d1)s = " + s);
-            }
+            Tab.ln("Default:");     lookit("<*>", Atom.S,tt, arg);
+
+            // s = add_ls_arg (s, sentence (before, after, arg)) // could be infinite loop???
+
             if (arg != null) {
-                LinkedList<Compound> s1 = start_list(s);
-                s1 = pl (arg,null);
-                s1 = end_list(s1);                          
-                s.get(0).args.addAll(s1);                               Tab.ln ("(d2)s = " + s);
+                if (before != null) {
+                    String functor = before.tree.lexeme;
+                    LinkedList<Compound> a = pl (after, arg);
+                    s = funkify (functor, a);
+                }
+                else {
+                    String functor = lexeme;
+                    LinkedList<Compound> a = pl (arg, null);
+                    s = funkify (functor, a);
+                }
             }
+            else s = add_ls_arg (s, lexeme);
         }
         return s;
     }
@@ -219,7 +220,7 @@ public class TypedTree implements Comparable<TypedTree> {
         }
         Tab.pop_trace();
 
-        Tab.push_trace(false);
+        Tab.push_trace(true);
         Tab.ln ("-------------------------------------------------");
         LinkedList<Compound> npl = pl(this,null);
         String pps = Compound.pp(npl);

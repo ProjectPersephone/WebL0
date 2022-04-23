@@ -114,7 +114,12 @@ public class Compound {
                     if (!unify (ps, T1i.next(), T2i.next())) {  Tab.ln ("Failed to unify two args to unify");
                         r = false;
                         break;
-                    }}}                                     Tab.ln ("unify=" + r);
+                    }
+                if (r) {
+                    Tab.ln ("all args bound for "+T1+" and "+ T2);
+                }
+            }
+        }                                     Tab.ln ("unify=" + r);
         return r;
     }
 
@@ -124,11 +129,7 @@ public class Compound {
         int n_args = args.size();
 
         if (n_args == 0) r = true;
-        else if (n == Nucleus.BE) {                             Tab.ln ("BE: Try unifying " + args.get(0) + " with " + args.get(1));
-            r = unify (preds, args.get(0), args.get(1));
-            Tab.ln ("Could require special treatment in RPs, if they are chained IFs");
-            Tab.ln ("not testing BE but asserting it.");
-        } else
+        else
         if (n == Nucleus.IF) {
             Tab.ln ("Hit IF, trying cond " + args.get(0));
             if (args.get(0).satisfy (preds)) {
@@ -139,21 +140,23 @@ public class Compound {
             }
         } else {
             LinkedList<Compound> p_ls = preds.get(n);           Tab.ln("Looking for " + n);
+            if (p_ls != null) {
             for (Compound c : p_ls) {                           assertNotNull(c.args);
-                if (c.args.size() == n_args) {                  Tab.ln ("c=" + c +" -- calling unify on this=" + this);                                         
+                if (c.args.size() == n_args) {                  Tab.ln ("c=" + c +" -- calling unify on this=" + this);            
                     if (unify( preds, this, c )) {              Tab.ln ("c=" + c + " unified with " + this);
                         r = true;
-                    }}}}                                        Tab.ln ("...returning " + r);  --call_depth;   
+                    }}}}}                                       Tab.ln ("...returning " + r);  --call_depth;   
         return r;
     }
 
     public static void load_and_run(NestedLines nlp) {
         Line last = nlp.lines.removeLast(); // last line will be query, for now
 
+        compound.clear();  // should probably do this only on a 'clear' bool param to load_and_run
+
         Tab.ln ("----------- load_and_run: Compound.run: calling build: ---------------");
         Compound c = build (nlp.lines);
         Tab.ln ("----------- load_and_run: Dump of compound ---------------------------");
-        Tab.ln("TO DO: nested sentences");
         for (Compound ci : compound) {
             Tab.ln (ci.toString());
         }
@@ -191,5 +194,16 @@ public class Compound {
         Boolean r = query.satisfy (preds);
         Tab.ln ("satisfy returned " + r + " possibly for stupid reasons");
         Tab.ln ("query now=" + query);
+        Tab.ln ("~~~~~~~~~~~~~~~~ TO DO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        Tab.ln ("I get to do these things:");
+        Tab.ln ("Implement");
+        Tab.ln ("  CAN - should be simple; looks almost done already!");
+        Tab.ln ("  NOT - need to prove negation works in queries");
+        Tab.ln ("  multiline rules -- chained IFs inserted or ...");
+        Tab.ln ("  call -- may require meta, using WORDS as a handle on Compounds");
+        Tab.ln ("Figure out where my Prolog comb rule fits into the flow");
+        Tab.ln ("    (Maybe as first-level check on app()/combine() success, intrasentially?");
+        Tab.ln ("Red Queen arithmetic");
+        Tab.ln ("A Run button, to get query output on web page");
     }
 }

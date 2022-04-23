@@ -18,12 +18,11 @@ public class Atom {
     private static HashMap<String,TreeSet<Valence>> map;
     public static Valence S;
     public static Valence Pred;
-    public static Valence PredOp; // really means takes sentence as operand, e.g. SAY, THINK, etc.
     public static Valence Subst; // SAY, THINK ....
     public static Valence Cond; // IF, BECAUSE
     public static Valence Conseq;
     public static Valence CondS;
-    public static Valence PredPred;
+    public static Valence ModPred;
 
     private static Valence Good;
     private static Valence Bad;
@@ -89,12 +88,12 @@ public class Atom {
         Pred = maybe;
         // Pred = O_(O_(maybe,true_),this_); // Predicate something that may be true about something/someone
 
-        PredOp = O_(S,Pred);
         Subst = O_(O_(Pred,S),S);    // iffy
+
         Cond = O_(S,S);
         Conseq = O_(S,Cond);
         CondS = O_(Cond,S);
-        PredPred = O_(Pred,Pred);
+        ModPred = O_(Pred,Pred);
         Good = good;
         Bad = bad;
         Someone = someone;
@@ -165,13 +164,11 @@ public class Atom {
 //   WANT,
         TreeSet<Valence> how_to_want = valences_for ("WANT");
         how_to_want.add(O_(something, Pred));
-        how_to_want.add(PredPred);      // predicated predicate like "WANT [to] KNOW <something>"
         how_to_want.add(O_(this_,Pred));
 
 //   DONT_WANT,
         TreeSet<Valence> how_to_not_want = valences_for ("DONT_WANT");
         how_to_not_want.add(O_(something, Pred));       // ???
-        how_to_not_want.add(PredPred);      // ???
         how_to_not_want.add(O_(this_,Pred));
 
 /*
@@ -236,10 +233,10 @@ public class Atom {
    FAR,
 */
 //   NOT,
-        valences_for ("NOT").add(PredPred);
+        valences_for ("NOT").add(ModPred);
 
 //   CAN,
-        valences_for("CAN").add(PredPred);    // too broad, just a start
+        valences_for("CAN").add(ModPred);    // too broad, just a start
 /*
    BECAUSE, */
 ////        valences_for("BECAUSE").add(osc);
