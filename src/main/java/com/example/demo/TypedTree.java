@@ -112,6 +112,16 @@ public class TypedTree implements Comparable<TypedTree> {
         return s;
     }
 
+    static LinkedList<Compound> funkify2(String functor, LinkedList<Compound> a1, LinkedList<Compound> a2) {
+        LinkedList<Compound> s = start_list(null); // 
+        Tab.ln ("funkify: functor = " + functor + " a1 = " + a1 + " a2 = " + a2);
+        add_ls_arg (s, functor);
+        s.get(0).args.addAll(a1);
+        s.get(0).args.addAll(a2);
+
+        return s;
+    }
+
     static LinkedList<Compound>
     sentence (TypedTree before, TypedTree after, TypedTree arg) {
         Tab.ln ("sentence:");
@@ -150,7 +160,8 @@ public class TypedTree implements Comparable<TypedTree> {
         if (tt.types.contains(Atom.S)
          || tt.types.contains(Atom.Cond)
          || tt.types.contains(Atom.Conseq)) {                       lookit("<*>", Atom.S,tt, arg);
-            s = add_ls_arg (s, sentence (before, after, arg));             Tab.ln ("s = " + s); 
+            s = add_ls_arg (s, sentence (before, after, arg));
+            Tab.ln ("...s = " + s); 
         } else
         if (tt.types.contains(Atom.Pred)
          || tt.types.contains(Atom.ModPred)) {                       lookit("Pred", Atom.Pred,tt, arg);
@@ -160,10 +171,12 @@ public class TypedTree implements Comparable<TypedTree> {
                 s = funkify (functor, a);         Tab.ln ("s=funkify("+lexeme+","+arg+")="+s);
             } else {
                 String functor = after.tree.lexeme;
-                s = funkify (functor, pl (arg, null));
+                if (arg != null)
+                    s = funkify (functor, pl (arg, null));
                 functor = before.tree.lexeme;
                 s = funkify (functor, s);
             }
+            Tab.ln ("" + Atom.Pred + "/" + Atom.ModPred + ": s="+s);
         } else
         if (tt.types.contains(Atom.Subst)) {
             Tab.ln ("Subst: ");
@@ -174,6 +187,7 @@ public class TypedTree implements Comparable<TypedTree> {
                 } else {                  s = add_ls_arg(s, pl (after,before));      Tab.ln ("s = " + s);
                 }
             }
+            Tab.ln ("Subst: s=" + s);
         } else
         if (lexeme == null && (type.y == Atom.Someone || type.y == Atom.Something)) {
             Tab.ln ("lexeme == null && type.y == Lexicon.Someone");
@@ -197,16 +211,23 @@ public class TypedTree implements Comparable<TypedTree> {
             if (arg != null) {
                 if (before != null) {
                     String functor = before.tree.lexeme;
-                    LinkedList<Compound> a = pl (after, arg);
-                    s = funkify (functor, a);
+                    LinkedList<Compound> a1 = pl(arg, null);
+                    LinkedList<Compound> a2 = pl (after, null);   // this arg not making it through
+                    s = funkify2 (functor, a1, a2);                   Tab.ln ("Default: arg and before not null");
+                                                                Tab.ln ("arg=" + arg.str() + " before="
+                                                                            + before.str()
+                                                                            + " after =" + after.str());
                 }
                 else {
                     String functor = lexeme;
                     LinkedList<Compound> a = pl (arg, null);
-                    s = funkify (functor, a);
+                    s = funkify (functor, a);                   Tab.ln ("Default: arg not null before is null case");
                 }
             }
-            else s = add_ls_arg (s, lexeme);
+            else {
+                s = add_ls_arg (s, lexeme);                     Tab.ln ("Default: are null case");
+            }
+            Tab.ln ("Default: returning s=" + s);
         }
         return s;
     }

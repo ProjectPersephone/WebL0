@@ -197,6 +197,7 @@ public class Compound {
         Tab.ln ("~~~~~~~~~~~~~~~~ TO DO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         Tab.ln ("I get to do these things:");
         Tab.ln ("Implement");
+        Tab.ln ("  cleaner handling of unrecognized words");
         Tab.ln ("  CAN - should be simple; looks almost done already!");
         Tab.ln ("  NOT - need to prove negation works in queries");
         Tab.ln ("  multiline rules -- chained IFs inserted or ...");
