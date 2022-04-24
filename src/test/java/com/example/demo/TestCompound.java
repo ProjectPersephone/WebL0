@@ -26,7 +26,7 @@ public class TestCompound {
 
         Tab.reset();
         Tab.trace(true);
-        Tab.ln ("**** TestTypedTree ****");
+        Tab.ln ("**** TestCompound ****");
 
         Sentence S = new Sentence (st);
 

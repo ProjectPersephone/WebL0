@@ -20,8 +20,58 @@ public class Compound {
 
     Nucleus n;       // maybe an initial "if" is ":-"???
     LinkedList<Compound> args; // if null, not a predicate, just an atom
-    Stack<Compound> bindings = new Stack<Compound>(); // outer stack: scope; inner set: bonds
+
+    // binding -- link a THIS to a Compound that satisfies. But this should be
+    // done in a context, discarded if there is no unification.
+    // This can be done as a stack of contexts -- collections of bindings,
+    // from THIS to Compound.
+
+    private class Bond {
+        public Compound nom;
+        public Compound val;
+
+        private Bond (Compound n, Compound v) { nom = n; val = v; }
+
+        public String toString() {
+            return "Bond:<" + nom.toString() + "," + val.toString() + ">";
+        }
+    };
+
+    private class Context {
+        LinkedList<Bond> bonds;
+
+        public Context() {
+            bonds = new LinkedList<Bond>();
+        }
+
+        public Bond put (Compound n, Compound v) {
+            Bond b = new Bond (n,v);
+            bonds.add (b);
+            return b;
+        }
+
+        public String toString() {
+            String s = "CTX:[";
+            String sep = "";
+
+            for (Bond b : bonds) {
+                s += (sep + b.toString());
+                sep = ",";
+            }
+            s += "]";
+
+            return s;
+        }
+    };
+
+    private static Stack<Context> bindings = new Stack<Context>(); // outer stack: scope; inner set: bonds
                                             // maybe applies only to THIS (alone or as qualifier)
+
+    static void show_bindings() {
+        Tab.ln ("bindings:");
+        Tab.ln ("Top of stack: " + bindings.peek());
+    }
+
     static private int call_depth = 0;
     
     public Compound(Nucleus n) {
@@ -43,8 +93,6 @@ public class Compound {
 
     public String toString() {
         String s = n.toString() + ":" + args.toString();
-        if (!bindings.isEmpty())
-            s += "[=" + bindings + "]";
         return s;
     }
 
@@ -99,10 +147,12 @@ public class Compound {
             r = (T1.n == T2.n);
         } else
         if (T1.n == Nucleus.THIS) {                         Tab.ln ("var THIS for T1=" + T1);
-            r = (T2 == T1.bindings.push(T2));               // instantiate, and r <- true
+            bindings.peek().put (T1,T2);
+            r = true;
         } else
         if (T2.n == Nucleus.THIS) {                         Tab.ln ("var THIS for T2=" + T2);
-            r = (T1 == T2.bindings.push(T1));
+            bindings.peek().put (T2,T1);
+            r = true;
         } else
         if (T1.complex() && T2.complex()
          && T1.arity() == T2.arity()
@@ -124,7 +174,7 @@ public class Compound {
     }
 
     private Boolean satisfy0 (HashMap<Nucleus,LinkedList<Compound>> preds) {
-        Boolean r = false;                                      Tab.ln ("satisfy (" + this + ")");
+        Boolean r = false;                                  Tab.ln ("satisfy (" + this + ")");
         int n_args = args.size(); 
 
         LinkedList<Compound> p_ls = preds.get(n);           Tab.ln("Looking for " + n);
@@ -132,15 +182,14 @@ public class Compound {
                                                             Tab.ln("  ...finding " + p_ls);
                                                             Tab.ln("n_args=" + n_args);
         if (p_ls != null) {
-        for (Compound c : p_ls) {                           assertNotNull(c.args);
+            for (Compound c : p_ls) {                       assertNotNull(c.args);
                                                             Tab.ln("c="+c);
                                                             Tab.ln("c.n="+c.n);
                                                             Tab.ln("c.args.size()=" + c.args.size());
-            
-            if (c.args.size() == n_args) {                  Tab.ln ("c=" + c +" -- calling unify on this=" + this);            
-                if (unify( preds, this, c )) {              Tab.ln ("c=" + c + " unified with " + this);
-                    r = true;
-                }}}}  
+                if (c.args.size() == n_args) {              Tab.ln ("c=" + c +" -- calling unify on this=" + this);            
+                    if (unify( preds, this, c )) {          Tab.ln ("c=" + c + " unified with " + this);
+                        r = true;
+        }}}}  
 
         return r;
     }
@@ -187,7 +236,14 @@ public class Compound {
     public static void load_and_run(NestedLines nlp) {
         Line last = nlp.lines.removeLast(); // last line will be query, for now
 
+        Compound __ = new Compound(Nucleus.THIS);
+        Compound.bindings.push(__.new Context());
+
         compound.clear();  // should probably do this only on a 'clear' bool param to load_and_run
+
+        Tab.ln ("------------ initial bindings ----------------------------------------");
+
+        Tab.ln ("bindings = " + bindings);
 
         Tab.ln ("----------- load_and_run: Compound.run: calling build: ---------------");
         Compound c = build (nlp.lines);
@@ -231,10 +287,12 @@ public class Compound {
         Tab.ln ("------------------- run: try running ------------------------");
 
         call_depth = 0;
+        Tab.ln ("Bindings before running query:" + bindings);
         Tab.ln ("query=" + query);
         Boolean r = query.satisfy (preds);
         Tab.ln ("satisfy returned " + r + " possibly for stupid reasons");
         Tab.ln ("query now=" + query);
+        Tab.ln ("Bindings now: " + bindings);
         Tab.ln ("~~~~~~~~~~~~~~~~ TO DO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         Tab.ln ("I get to do these things:");
         Tab.ln ("Implement");
