@@ -13,7 +13,7 @@ import com.example.demo.Splits;
 public class TestSplits {
     @Test
     public void main() throws Exception {
-        Sentence S = new Sentence("I IS BAD");
+        Sentence S = new Sentence("I BE BAD");
         Splits splits = new Splits(S.tt_list);
         assertEquals (2,splits.all_splits.size());
 //        S = new Sentence ("a b c");

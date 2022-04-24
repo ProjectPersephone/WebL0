@@ -17,7 +17,7 @@ import com.example.demo.Sentence;
 public class TestSentence {
     @Test
     public void main() throws Exception {
-        String[] a = {"BAD","IS"};
+        String[] a = {"BAD","BE"};
         Sentence s = new Sentence(new String(a[0] + " " + a[1]));
         assertNotNull(s);
         LinkedList<TypedTree> l = s.tt_list;

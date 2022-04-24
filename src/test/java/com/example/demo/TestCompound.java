@@ -9,10 +9,10 @@ import java.util.*;
 
 import com.example.demo.Sentence;
 import com.example.demo.TypedTree;
+import com.example.demo.Compound;
 import com.example.demo.Tab;
 
-public class TestTypedTree {
-
+public class TestCompound {
     @Test
     public void main() throws Exception {
 //        String st = "THIS BE BIG";
@@ -28,16 +28,20 @@ public class TestTypedTree {
         Tab.trace(true);
         Tab.ln ("**** TestTypedTree ****");
 
-        Tab.push_trace(false);
-
         Sentence S = new Sentence (st);
 
         Tab.ln (Valence.all_valences());
 
+        Tab.reset();
+
         Tab.ln ("Sentence \"" + st + "\" is TypeTree list of length="
              + S.tt_list.size ());
+
+    Tab.trace(true);
         
         LinkedList<TypedTree> tl = TypedTree.typed_trees(S.tt_list);
+    
+    Tab.trace(true);
 
         Tab.ln ("TestTypedTree: Length of typed_trees = " + tl.size());
 
@@ -46,8 +50,6 @@ public class TestTypedTree {
             TypedTree tt = li.next();
             Tab.ln ("typed tree: " + tt.str());
         }
-
-        Tab.pop_trace();
 
         Tab.ln ("TestTypedTree: exiting");
     }

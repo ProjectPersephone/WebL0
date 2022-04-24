@@ -116,12 +116,44 @@ public class Compound {
                         break;
                     }
                 if (r) {
-                    Tab.ln ("all args bound for "+T1+" and "+ T2);
+                    Tab.ln ("all args bound for " + T1 +" and "+ T2);
                 }
             }
         }                                     Tab.ln ("unify=" + r);
         return r;
     }
+
+    private Boolean satisfy0 (HashMap<Nucleus,LinkedList<Compound>> preds) {
+        Boolean r = false;                                      Tab.ln ("satisfy (" + this + ")");
+        int n_args = args.size(); 
+
+        LinkedList<Compound> p_ls = preds.get(n);           Tab.ln("Looking for " + n);
+                                                            Tab.ln("  in preds=" + preds);
+                                                            Tab.ln("  ...finding " + p_ls);
+                                                            Tab.ln("n_args=" + n_args);
+        if (p_ls != null) {
+        for (Compound c : p_ls) {                           assertNotNull(c.args);
+                                                            Tab.ln("c="+c);
+                                                            Tab.ln("c.n="+c.n);
+                                                            Tab.ln("c.args.size()=" + c.args.size());
+            
+            if (c.args.size() == n_args) {                  Tab.ln ("c=" + c +" -- calling unify on this=" + this);            
+                if (unify( preds, this, c )) {              Tab.ln ("c=" + c + " unified with " + this);
+                    r = true;
+                }}}}  
+
+        return r;
+    }
+
+    private static void add_pred(HashMap<Nucleus,LinkedList<Compound>> preds, Compound c) {
+        LinkedList<Compound> l = preds.get(c.n);
+        if (l == null) {
+            l = new LinkedList<Compound>();
+            preds.put(c.n, l);
+        }
+        l.add (c);
+    }
+
 
     private Boolean satisfy(HashMap<Nucleus,LinkedList<Compound>> preds) {
                                                                 if (++call_depth > 10) { Tab.ln ("call_depth>10, bailing"); return false; } 
@@ -136,16 +168,19 @@ public class Compound {
                 Tab.ln ("cond true, at least");
                 Tab.ln ("assert consequent in this scope, at least");
                 Tab.ln ("side effect on preds, so failure means unwinding somewhere");
-                r = args.get(1).satisfy (preds);
+                Compound c = args.get(1);
+                if (c.n == Nucleus.IF) {
+                    r = c.satisfy (preds); // what if c.n == BE, or other assertion?
+                    Tab.ln ("chained IF, preds now " + preds);
+                } else {
+                    Tab.ln ("Adding c.n " + c.n + " c.args " + c.args);
+                    add_pred (preds, c);
+                    r = true;
+                    Tab.ln ("not chained IF, preds now " + preds);
+                }
             }
-        } else {
-            LinkedList<Compound> p_ls = preds.get(n);           Tab.ln("Looking for " + n);
-            if (p_ls != null) {
-            for (Compound c : p_ls) {                           assertNotNull(c.args);
-                if (c.args.size() == n_args) {                  Tab.ln ("c=" + c +" -- calling unify on this=" + this);            
-                    if (unify( preds, this, c )) {              Tab.ln ("c=" + c + " unified with " + this);
-                        r = true;
-                    }}}}}                                       Tab.ln ("...returning " + r);  --call_depth;   
+        } else r = satisfy0(preds);
+                                     Tab.ln ("...returning " + r);  --call_depth;   
         return r;
     }
 
@@ -168,12 +203,18 @@ public class Compound {
         // functor(args): hash table with functor as key
 
         for (Compound ci : compound) {
-            LinkedList<Compound> ne = preds.get(ci.n);
-            if (ne == null) {
-                ne = new LinkedList<Compound>();
+
+            if (ci.n == Nucleus.IF) {           Tab.ln ("ci="+ci + " hit IF, trying add...");
+                if (ci.satisfy (preds)) {  // make sure consequent is asserted within scope
+                    Tab.ln ("adding <ci.n,ci>=<" + ci.n + "," + ci + "> to preds");
+                    add_pred (preds, ci);
+                }
+                else
+                    Tab.ln ("...failed");
+            } else {
+                Tab.ln ("adding <ci.n,ne>=<" + ci.n + "," + ci + "> to preds");
+                add_pred (preds, ci);
             }
-            ne.add(ci);
-            preds.put (ci.n, ne);
         }
 
         Tab.ln ("------------------- load_and_run: predicates --------------------------");
@@ -197,14 +238,19 @@ public class Compound {
         Tab.ln ("~~~~~~~~~~~~~~~~ TO DO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         Tab.ln ("I get to do these things:");
         Tab.ln ("Implement");
-        Tab.ln ("  cleaner handling of unrecognized words");
+
         Tab.ln ("  CAN - should be simple; looks almost done already!");
         Tab.ln ("  NOT - need to prove negation works in queries");
         Tab.ln ("  multiline rules -- chained IFs inserted or ...");
         Tab.ln ("  call -- may require meta, using WORDS as a handle on Compounds");
+
         Tab.ln ("Figure out where my Prolog comb rule fits into the flow");
         Tab.ln ("    (Maybe as first-level check on app()/combine() success, intrasentially?");
+
         Tab.ln ("Red Queen arithmetic");
+
+        Tab.ln ("Cleaner handling of unrecognized words");
+        Tab.ln ("Change Title to Query");
         Tab.ln ("A Run button, to get query output on web page");
     }
 }
