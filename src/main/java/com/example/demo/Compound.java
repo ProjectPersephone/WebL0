@@ -42,9 +42,11 @@ public class Compound {
 
         public Context() {
             bonds = new LinkedList<Bond>();
+            Tab.ln ("new Context created, bonds.size()=" + bonds.size());
         }
 
         public Bond put (Compound n, Compound v) {
+            Tab.ln ("new binding being added, n=" + n + " v=" + v);
             Bond b = new Bond (n,v);
             bonds.add (b);
             return b;
@@ -236,10 +238,11 @@ public class Compound {
     public static void load_and_run(NestedLines nlp) {
         Line last = nlp.lines.removeLast(); // last line will be query, for now
 
-        Compound __ = new Compound(Nucleus.THIS);
-        Compound.bindings.push(__.new Context());
-
+        bindings.clear();
         compound.clear();  // should probably do this only on a 'clear' bool param to load_and_run
+        Compound __ = new Compound(Nucleus.THIS);   // awkward, but need a Compound instance to do this....
+        Compound.bindings.push(__.new Context());
+        __ = null;  // sooner GC?
 
         Tab.ln ("------------ initial bindings ----------------------------------------");
 
