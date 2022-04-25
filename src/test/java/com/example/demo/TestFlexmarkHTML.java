@@ -96,7 +96,7 @@ public class TestFlexmarkHTML {
             Tab.ln ("td: " + tdText);
         }
 
-        Tab.trace(true);
+        Tab.trace(false);
         Tab.ln ("\ndoc.toString output:");
         String prettyHtml = doc.toString();
         Tab.ln(prettyHtml);

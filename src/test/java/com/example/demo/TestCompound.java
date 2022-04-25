@@ -15,42 +15,46 @@ import com.example.demo.Tab;
 public class TestCompound {
     @Test
     public void main() throws Exception {
-//        String st = "THIS BE BIG";
-//        String st = "I BE ILL";
-//        String st = "I BE BECAUSE I THINK";
-//        String st = "BECAUSE I THINK I BE";
-//        String st = "I BE";
-//        String st = "I THINK";
-//        String st = "IF I THINK I BE";
-        String st = "I SAY SOMETHING";
 
         Tab.reset();
         Tab.trace(true);
         Tab.ln ("**** TestCompound ****");
 
-        Sentence S = new Sentence (st);
+        Compound c = new Compound(Nucleus.BE);
+        c.args.add (new Compound(Nucleus.I));
+        c.args.add (new Compound(Nucleus.GOOD));
 
-        Tab.ln (Valence.all_valences());
+        Tab.ln ("c=" + c);
 
-        Tab.reset();
+        LinkedList<Compound> ua = c.unbound_vars();
 
-        Tab.ln ("Sentence \"" + st + "\" is TypeTree list of length="
-             + S.tt_list.size ());
+        Tab.ln ("ua=" + ua);
 
-    Tab.trace(true);
-        
-        LinkedList<TypedTree> tl = TypedTree.typed_trees(S.tt_list);
-    
-    Tab.trace(true);
+        assertEquals (0, ua.size());
 
-        Tab.ln ("TestTypedTree: Length of typed_trees = " + tl.size());
+        c.args.clear();
+        c.args.add (new Compound(Nucleus.I));
+        Compound t = new Compound(Nucleus.THIS);
+        c.args.add (t);
+        t.args.add (new Compound(Nucleus.SOMEONE));
 
-        Iterator<TypedTree> li = tl.iterator();
-        while (li.hasNext()) {
-            TypedTree tt = li.next();
-            Tab.ln ("typed tree: " + tt.str());
-        }
+        Tab.ln ("c should have " + t);
+        ua = c.unbound_vars();
+        Tab.ln ("ua="+ua);
+        Tab.ln ("ua.size()=" + ua.size());
+        assertEquals (0, ua.size());
 
-        Tab.ln ("TestTypedTree: exiting");
+        c.args.clear();
+        c.args.add (new Compound (Nucleus.I));
+        c.args.add (new Compound (Nucleus.SOMEONE));
+
+        Tab.ln ("c="+c);
+
+        ua = c.unbound_vars ();
+        Tab.ln ("ua="+ua);
+        assertEquals(1,ua.size());
+
+
+        Tab.ln ("ua=" + ua);
     }
 }

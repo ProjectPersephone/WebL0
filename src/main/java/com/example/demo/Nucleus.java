@@ -26,12 +26,12 @@ public enum Nucleus {
      TWO,
      MUCH_MANY,
      ALL,
-     SOME,
+     SOME,  // can be wh-word "how much" and then SOME as unbound/bound var?
      LITTLE_FEW,
 */
 
 /*
-     TIME,
+     TIME_WHEN, // SOMETIME
      NOW,
      MOMENT,
      FOR_SOME_TIME,  // (for) some time, could be "a time" or "for some time"?
@@ -71,8 +71,9 @@ public enum Nucleus {
      INSIDE,
 */
 
-/*
+
      SOMEWHERE,
+/*
      HERE,
      ABOVE,
      BELOW,

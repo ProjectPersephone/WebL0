@@ -109,7 +109,7 @@ public class TestCache {
 
         Sentence S_2w = new Sentence(Str_2w);
 
-        Tab.trace(true);
+        Tab.trace(false);
         Cache A22 = Cache.cache(S_2w.tt_list);
         assertEquals (2,A22.c.size());
         l_tt = A22.c.get(0).get(0);
@@ -150,7 +150,7 @@ if (false) {    // really need to construct without call to cache()
         }
 
         Tab.reset();
-        Tab.trace (true);
+        Tab.trace (false);
 
         Sentence S_3w = new Sentence (Str_3w);
         assertNotNull (S_3w);
