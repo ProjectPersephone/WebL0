@@ -27,10 +27,12 @@ public class Compound {
     Nucleus n;       // maybe an initial "if" is ":-"???
     LinkedList<Compound> args; // if null, not a predicate, just an atom
     Compound next = null;  // in a sequence of compounds, the next one
+    Compound block;     // actually a linked list; this is the head
 
             public Compound(Nucleus n) {
                 this.n = n;
                 args = new LinkedList<Compound>();
+                block = null;
             }
 
             public String toString() {
@@ -513,16 +515,14 @@ public class Compound {
                 break;
             }
 
-            if (Li.block != null && Li.block.size() > 0) {
-                blk = build (Li.block);
-            }
-
             // Just calling TypedTree on an Li.line thats just IF <cond>
             // will apparently throw out the IF.
 
             Tab.push_trace(false);
              LinkedList<Compound> npl = TypedTree.pl(Li.line,null);
             Tab.pop_trace();
+
+  
                                                         Tab.ln("build: npl=" + npl.toString());
                                                         Tab.ln("Adding to compound...");
             for (Compound c : npl) {
@@ -532,12 +532,16 @@ public class Compound {
                     run_list_end_ptr.next = c;
                 run_list_end_ptr = c;
             }
+
+            if (Li.block != null && Li.block.size() > 0) {
+                run_list_end_ptr.block = build (Li.block);
+            }
         }
         return run_list;
     }
 
 
-    public static void load_and_run(NestedLines nlp) {
+    public static LinkedList<Compound> load_and_run(NestedLines nlp) {
 
         Tab.reset();
         Tab.trace(true);
@@ -600,8 +604,8 @@ public class Compound {
         Tab.ln ("I get to do these things:");
         Tab.ln ("Implement");
 
-        Tab.ln ("  CAN - looks almost done already!");
-        Tab.ln ("  NOT - need to prove negation works in queries");
+        Tab.ln ("  CAN - done!");
+        Tab.ln ("  NOT - seems OK");
         Tab.ln ("  multiline rules -- chained IFs inserted or ...");
         Tab.ln ("  call -- may require meta, using WORDS as a handle on Compounds");
 
@@ -613,6 +617,17 @@ public class Compound {
         Tab.ln ("Cleaner handling of unrecognized words");
         Tab.ln ("Change Title to Query");
         Tab.ln ("A Run button, to get query output on web page");
+
+        Set<Nucleus> keys = bindings.peek().preds.keySet();
+        LinkedList<Compound> whats_true = new LinkedList<Compound>();
+        for (Nucleus n : keys) {
+            LinkedList<Compound> cl = bindings.peek().preds.get(n);
+            whats_true.addAll (cl);
+        }
+        Tab.ln(""); Tab.ln("");
+        Tab.ln ("whats_true="+whats_true);
+
+        return whats_true;
     }
 }
 

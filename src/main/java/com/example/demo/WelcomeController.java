@@ -96,11 +96,40 @@ public class WelcomeController {
         Tab.ln ("markdownToParses: doc.toString() = " + s);
     }
 
+    @GetMapping("/run")
+    public String mainRun(@RequestParam(name="name", required = false, defaultValue = "Ahmed") String name) {
+        System.out.println ("Hit run ...");
+        /*
+        Post p = new Post();
+        String h = "<h1>Blah</h1>";
+        p.setHtml(h);
+        model.addAttribute("post", p);
+        */
+
+        return "run";
+    }
+
+    @PostMapping("/run")
+    public String run(Post post, Model model) {
+        Tab.reset();
+        Tab.push_trace(true);
+
+        if (post == null) {
+            Tab.ln ("save: post is null, strangely....");
+        }
+
+        String content = post.getContent();
+
+        Tab.ln ("In /run, content = " + content);
+        Tab.pop_trace();
+        return ("run");
+    }
+
     @PostMapping("/edit")
     public String save(Post post, Model model) {
-        Compound npl = new Compound(Nucleus.IF);  // ************ just to make sure something works
 
         Tab.reset();
+        Tab.push_trace(true);
 
         if (post == null) {
             Tab.ln ("save: post is null, strangely....");
@@ -112,14 +141,9 @@ public class WelcomeController {
 
         if (content == null) {
             model.addAttribute("post", null);
+            Tab.pop_trace();
             return "saved";
         }
-
-        String h = markdownToHTML(content); // linebreaks lost even tho editor keeps
-        String[] lines = content.split("\\R");
-        // String s = ""; // this really needs to be an array of strings
-                        // and processed as such on the template side
-        post.setHtml(h);
 
 //        markdownToParses (content);
         try {
@@ -143,6 +167,25 @@ public class WelcomeController {
         TypedTree.nested_pp(v.indented);
         Tab.trace(false);
 
+        LinkedList<Compound> results = Compound.load_and_run(v.indented);
+
+        Tab.ln ("");
+        Tab.ln ("---------------------------------------------------------------");
+        Tab.ln ("Results: " + results);
+        Tab.ln ("---------------------------------------------------------------");
+
+        String h = markdownToHTML(content); // linebreaks lost even tho editor keeps
+        String[] lines = content.split("\\R");
+        // String s = ""; // this really needs to be an array of strings
+                        // and processed as such on the template side
+        
+        h += "<i>Answer:</i><p>";
+        for (Compound c : results) {
+            h += c.toString() + "<br>";
+        }
+        h += "</p>";
+        post.setHtml(h);
+
         JSONArray ja_new = v.toJSON();
         Tab.ln ("Array of JSON parses with blocks=" + ja_new);
 
@@ -160,6 +203,7 @@ public class WelcomeController {
             e.printStackTrace();
         }
 
+        Tab.pop_trace();
         return "saved";
     }
 

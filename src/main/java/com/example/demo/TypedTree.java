@@ -293,7 +293,6 @@ public class TypedTree implements Comparable<TypedTree> {
     public static void nested_pp(NestedLines nlp) {
         Tab.ln ("nested_pp:");
         nested_pp_helper (nlp.lines);
-        Compound.load_and_run(nlp);
     }
 
     public String str() {
