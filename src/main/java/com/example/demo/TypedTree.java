@@ -106,7 +106,8 @@ public class TypedTree implements Comparable<TypedTree> {
 
         Tab.ln ("funkify: functor = " + functor + " arg = " + arg);
         add_ls_arg (s, functor);
-        s.get(0).args.addAll(arg);
+        if (arg != null)
+            s.get(0).args.addAll(arg);
 
         Tab.ln ("funkify: returning " + s);
         return s;
@@ -136,7 +137,10 @@ public class TypedTree implements Comparable<TypedTree> {
             s = if_constr;
         } else { 
             Tab.ln ("before: not CondS");
-            s = add_ls_arg (s, pl (after, before));
+            if (after  != null) Tab.ln ("   after="+after.str()); else Tab.ln ("   after=null");
+            if (before != null) Tab.ln ("   before="+before.str()); else Tab.ln ("   before=null");
+            if (arg    != null) Tab.ln ("   arg="+arg.str()); else Tab.ln ("   arg=null");
+            s = add_ls_arg (s, pl (after, before)); // 
         }
         return s;
     }
@@ -164,10 +168,12 @@ public class TypedTree implements Comparable<TypedTree> {
             Tab.ln ("...s = " + s); 
         } else
         if (tt.types.contains(Atom.Pred)
-         || tt.types.contains(Atom.ModPred)) {                       lookit("Pred", Atom.Pred,tt, arg);
+         || tt.types.contains(Atom.ModPred)) {                        lookit("Pred/ModPred", Atom.Pred,tt, arg);
             if (lexeme != null) {
                 String functor = lexeme;
-                LinkedList<Compound> a = pl (arg, null);
+                LinkedList<Compound> a = null;
+                if (arg != null)
+                     a = pl (arg, null);
                 s = funkify (functor, a);         Tab.ln ("s=funkify("+lexeme+","+arg+")="+s);
             } else {
                 String functor = after.tree.lexeme;
@@ -177,6 +183,20 @@ public class TypedTree implements Comparable<TypedTree> {
                 s = funkify (functor, s);
             }
             Tab.ln ("" + Atom.Pred + "/" + Atom.ModPred + ": s="+s);
+        } else 
+        if (tt.types.contains(Atom.PredS)) {
+            String functor;
+            if (after != null) {
+                functor = after.tree.lexeme;
+                LinkedList<Compound> an_arg = pl(arg,null);
+                if (functor != null)
+                    s = funkify (functor, pl(arg,null));
+                else
+                    s = an_arg;
+                functor = before.tree.lexeme;
+                s = funkify (functor, s);
+            }
+                else s = funkify (lexeme, pl(arg, null));
         } else
         if (tt.types.contains(Atom.Subst)) {
             Tab.ln ("Subst: ");

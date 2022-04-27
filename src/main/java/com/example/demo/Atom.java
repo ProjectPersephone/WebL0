@@ -23,6 +23,7 @@ public class Atom {
     public static Valence Conseq;
     public static Valence CondS;
     public static Valence ModPred;
+    public static Valence PredS;
 
     private static Valence Good;
     private static Valence Bad;
@@ -93,11 +94,16 @@ public class Atom {
         Cond = O_(S,S);
         Conseq = O_(S,Cond);
         CondS = O_(Cond,S);
-        ModPred = O_(Pred,Pred);
+        ModPred = O_(Pred,Pred);        // really needed?????????????????????????????
+        PredS = O_(Pred,S);
         Good = good;
         Bad = bad;
         Someone = someone;
         Something = something;
+        //
+        // still no O_(maybe,true)
+        // this is why it goes into default
+        //
 
 /* I */
         TreeSet<Valence> I = valences_for("I");
@@ -113,6 +119,7 @@ public class Atom {
         TreeSet<Valence> so = valences_for("SOMEONE");
         so.add(O_(is,Pred));
         so.add(O_(Pred, S)); // someone can be good, bad; do thing, etc.
+        so.add(O_(ModPred, S));
         so.add(O_(bad,someone));
         so.add(O_(good,someone));
         so.add(O_(this_,someone));
