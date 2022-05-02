@@ -16,6 +16,8 @@ public class Valence implements Comparable<Valence> {
     Valence x;
     Valence y;
 
+    String label;
+
     // not crazy about this, because it's O(n), n=# of nodes in tree
     // but only in some terribly bad case
 
@@ -77,24 +79,42 @@ public class Valence implements Comparable<Valence> {
         this.n = n;
         x = one;
         y = the_other;
+        label = null;
+    }
+
+    public Valence(Nucleus n, Valence one, Valence the_other, String label) {
+        Tab.ln ("******** Valence constructor called:" + n + "," + one + "," + the_other);
+        this.n = n;
+        x = one;
+        y = the_other;
+        this.label = label;
     }
 
     public String toString() {
+
+        if (label != null) {
+            return label;
+        }
+
         String s = this.n.name();
 
         if (n == Nucleus.O_) {
             assertNotNull (x);
             assertNotNull (y);
-            return s + "(+" + x.toString() + "=" + y.toString() + ")";
+            return s + "(+" + x.toString() + "⥅" + y.toString() + ")";
         }
         else
             return s;
     }
 
     static public Valence of (Nucleus n, Valence t_x, Valence t_y) {
+        return Valence.of (n, t_x, t_y, null);
+    }
+
+    static public Valence of (Nucleus n, Valence t_x, Valence t_y, String label) {
         Tab.ln ("Trying insert of " + n + "," + t_x + ", " + t_y);
 
-        Valence tr = new Valence (n, t_x, t_y);
+        Valence tr = new Valence (n, t_x, t_y, label);
 // boolean tmp = Tab.trace(false);     // avoid a million compare traces
         if (n == Nucleus.O_) { 
             for (Valence t : uniques) {        // list may get huge, but not during initialization at least
@@ -114,10 +134,6 @@ public class Valence implements Comparable<Valence> {
         uniques.add (tr);
 
         Tab.ln ("**************** Valence.of: created " + tr + "***********");
-
-        if (tr.x != null && tr.x.n == Nucleus.BE && tr.y != null && tr.y.n == Nucleus.GOOD) {
-            Tab.ln ("==== in Valence of creation, tr = " + tr.hashCode() + "==========================");
-        }
 
         return tr;
     }

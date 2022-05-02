@@ -44,12 +44,20 @@ public class Atom {
             return Valence.of(Nucleus.O_, x, y);
     }
 
+    public static Valence map (Valence x, Valence y, String label) {
+            return Valence.of (Nucleus.O_, x, y, label);
+    }
+
+    public static Valence O_(Valence x, Valence y, String label) {
+            return Valence.of (Nucleus.O_, x, y, label);
+    }
+
     public Atom() {
 
         map = new HashMap<String,TreeSet<Valence>>();
 
 //  somewhether IF
-//  somemuch(?) MANY -- quantifier
+//  somemuch(?) SOME -- quantifier
 //  -- evaluator/goodness -- "somewhat"
 //  -- intensifier - very
 
@@ -79,23 +87,34 @@ public class Atom {
         Valence is = Valence.of (Nucleus.BE,null,null);
         Valence live = Valence.of (Nucleus.LIVE,null,null);
         Valence true_ = Valence.of (Nucleus.TRUE,null,null);
-        Valence maybe = Valence.of (Nucleus.MAYBE,null,null);
+
         Valence if_ = Valence.of (Nucleus.IF,null,null);
         Valence this_ = Valence.of(Nucleus.THIS,null,null);
+        Valence maybe = Valence.of(Nucleus.MAYBE, null, null);
 
-        S = true_;
+        // S = true_;
+        S = map (true_,true_, "S"); // for now
+        
         // S = O_(say,this_);   // or someone can think this?
 
-        Pred = maybe;
+        //
+        // Valence maybe = Valence.of (Nucleus.MAYBE,null,null);
+        // Pred = Valence.of (Nucleus.MAYBE,null,null,"Pred");
+        Pred = map (maybe,maybe, "Pred");
+
+        PredS = map (Pred, S, "PredS");
+
+        // Pred = maybe;
+
         // Pred = O_(O_(maybe,true_),this_); // Predicate something that may be true about something/someone
 
-        Subst = O_(O_(Pred,S),S);    // iffy
+        Subst = map (PredS, S, "Subst");    // iffy
 
-        Cond = O_(S,S);
-        Conseq = O_(S,Cond);
-        CondS = O_(Cond,S);
-        ModPred = O_(Pred,Pred);        // really needed?????????????????????????????
-        PredS = O_(Pred,S);
+        Cond = map (S,S, "Cond");
+        Conseq = map (S,Cond, "Conseq");
+        CondS = map (Cond,S, "CondS");
+        ModPred = map (Pred,Pred, "ModPred");        // really needed?????????????????????????????
+
         Good = good;
         Bad = bad;
         Someone = someone;
