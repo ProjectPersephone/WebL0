@@ -19,7 +19,6 @@ import javax.swing.text.DefaultStyledDocument.ElementSpec;
 import com.example.demo.Order;
 import com.example.demo.Nucleus;
 import com.example.demo.Valence;
-import com.example.demo.Tree;
 import com.example.demo.Splits;
 import com.example.demo.Atom;
 import com.example.demo.Compound;
