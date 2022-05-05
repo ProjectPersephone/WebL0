@@ -511,7 +511,7 @@ public class Compound {
         for (Line Li : L) {
             Compound blk = null;
 
-            if (Li.line.types.size() > 1) {                 Tab.ln ("build: Looks like unreduced type for lexeme " + Li.line.tree.lexeme);
+            if (Li.line.types.size() > 1) {                 Tab.ln ("build: Looks like unreduced type for lexeme " + Li.line.lexeme);
                 break;
             }
 

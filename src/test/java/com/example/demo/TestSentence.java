@@ -27,9 +27,8 @@ public class TestSentence {
         while (li.hasNext()) {
             TypedTree tt = li.next();
             assertNotNull(tt);
-            Tree t = tt.tree;
-            assertEquals(t.order, Order.NEITHER);
-            String as = t.lexeme;
+            assertEquals(tt.order, Order.NEITHER);
+            String as = tt.lexeme;
             assertNotNull (as);
             assertEquals(a[i],as);
             ++i;

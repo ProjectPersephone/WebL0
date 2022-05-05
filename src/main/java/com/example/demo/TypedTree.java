@@ -28,8 +28,16 @@ import com.example.demo.Tab;
 
 public class TypedTree implements Comparable<TypedTree> {
 
-    Tree tree; // these are actually 1-for-1 with TypedTree nodes    
+    //-- Tree tree; // these are actually 1-for-1 with TypedTree nodes    
     Set<Valence> types;
+
+    Order order; // order of application that yielded this tree node
+
+    String lexeme; // presumptuous, but is it morpheme, morph, ...? Ultimately, phone? ???
+                    // https://en.wikipedia.org/wiki/Emic_unit
+
+    TypedTree before; // forward application
+    TypedTree after;  // backward application 
 
     public int compareTo(TypedTree tt) {
   
@@ -55,13 +63,13 @@ public class TypedTree implements Comparable<TypedTree> {
         if (arg != null) Tab.ln ("arg = " + arg.str());
         else Tab.ln ("arg = null");
 
-        Tab.ln ("tt.tree.lexeme="+tt.tree.lexeme);
+        Tab.ln ("tt.lexeme="+tt.lexeme);
 
-        if (tt.tree.before != null) Tab.ln ("tt.tree.before = " + tt.tree.before.str());
-        else Tab.ln ("tt.tree.before = null");
+        if (tt.before != null) Tab.ln ("tt.before = " + tt.before.str());
+        else Tab.ln ("tt.before = null");
 
-        if (tt.tree.after != null) Tab.ln ("tt.tree.after = " + tt.tree.after.str());
-        else Tab.ln ("tt.tree.after = null");
+        if (tt.after != null) Tab.ln ("tt.after = " + tt.after.str());
+        else Tab.ln ("tt.after = null");
     }
 
     private static Valence get_type(TypedTree tt) {
@@ -132,7 +140,7 @@ public class TypedTree implements Comparable<TypedTree> {
             LinkedList<Compound> if_constr = new LinkedList<Compound>();
             Compound an_if = new Compound(Nucleus.IF);
             if_constr.add(an_if);
-            an_if.args = add_ls_arg (an_if.args, pl (before.tree.after, arg));
+            an_if.args = add_ls_arg (an_if.args, pl (before.after, arg));
             an_if.args = add_ls_arg (an_if.args, pl (after,arg));
             s = if_constr;
         } else { 
@@ -152,14 +160,14 @@ public class TypedTree implements Comparable<TypedTree> {
 
         LinkedList<Compound> s = new LinkedList<Compound>();
         assertNotNull(tt);
-        assertNotNull(tt.tree);
+
 
         Valence type = get_type(tt);
   
         lookit("*** ", type,tt, arg);
-        String lexeme = tt.tree.lexeme;
-        TypedTree before = tt.tree.before;
-        TypedTree after = tt.tree.after;
+        String lexeme = tt.lexeme;
+        TypedTree before = tt.before;
+        TypedTree after = tt.after;
 
         if (tt.types.contains(Atom.S)
          || tt.types.contains(Atom.Cond)
@@ -176,10 +184,10 @@ public class TypedTree implements Comparable<TypedTree> {
                      a = pl (arg, null);
                 s = funkify (functor, a);         Tab.ln ("s=funkify("+lexeme+","+arg+")="+s);
             } else {
-                String functor = after.tree.lexeme;
+                String functor = after.lexeme;
                 if (arg != null)
                     s = funkify (functor, pl (arg, null));
-                functor = before.tree.lexeme;
+                functor = before.lexeme;
                 s = funkify (functor, s);
             }
             Tab.ln ("" + Atom.Pred + "/" + Atom.ModPred + ": s="+s);
@@ -187,13 +195,13 @@ public class TypedTree implements Comparable<TypedTree> {
         if (tt.types.contains(Atom.PredS)) {
             String functor;
             if (after != null) {
-                functor = after.tree.lexeme;
+                functor = after.lexeme;
                 LinkedList<Compound> an_arg = pl(arg,null);
                 if (functor != null)
                     s = funkify (functor, pl(arg,null));
                 else
                     s = an_arg;
-                functor = before.tree.lexeme;
+                functor = before.lexeme;
                 s = funkify (functor, s);
             }
                 else s = funkify (lexeme, pl(arg, null));
@@ -230,7 +238,7 @@ public class TypedTree implements Comparable<TypedTree> {
 
             if (arg != null) {
                 if (before != null) {
-                    String functor = before.tree.lexeme;
+                    String functor = before.lexeme;
                     LinkedList<Compound> a1 = pl(arg, null);
                     LinkedList<Compound> a2 = pl (after, null);   // this arg not making it through
                     s = funkify2 (functor, a1, a2);                   Tab.ln ("Default: arg and before not null");
@@ -256,8 +264,8 @@ public class TypedTree implements Comparable<TypedTree> {
     public String prolog() {
         Tab.push_trace(true);
         if (this.types.size() > 1) {
-            Tab.ln ("Looks like unreduced (maybe single) lexeme " + this.tree.lexeme);
-            return this.tree.lexeme;
+            Tab.ln ("Looks like unreduced (maybe single) lexeme " + this.lexeme);
+            return this.lexeme;
         }
         Tab.pop_trace();
 
@@ -278,7 +286,7 @@ public class TypedTree implements Comparable<TypedTree> {
             Tab.ln ("nested_pp_helper: Li.line = " + Li.line.str());
             Tab.pop_trace();
             if (Li.line.types.size() > 1) {
-                Tab.ln ("Looks like unreduced type for lexeme " + Li.line.tree.lexeme);
+                Tab.ln ("Looks like unreduced type for lexeme " + Li.line.lexeme);
                 return;
             }
             Tab.push_trace(false);
@@ -295,8 +303,18 @@ public class TypedTree implements Comparable<TypedTree> {
         nested_pp_helper (nlp.lines);
     }
 
+    public String tree_str () {
+        String s = order.name();
+        if (s == "BEFORE") s = "<:";
+        else s = ">:";
+        if (order == Order.NEITHER)
+            return "~:\"" + lexeme + "\"";
+        else
+            return s + "(" + before.str() + "," + after.str() + ")";
+    }
+
     public String str() {
-        String s = tree.str() + "[";
+        String s = tree_str() + "[";
         assertNotNull (types);
         Iterator<Valence> ti = types.iterator();
         while (ti.hasNext()) {
@@ -354,18 +372,22 @@ public class TypedTree implements Comparable<TypedTree> {
         return s + "]";
     }
 
-    public TypedTree (Tree tree, Set<Valence> types) {
-        assertNotNull (tree);
+    public TypedTree (Set<Valence> types, Order order, String lexeme, TypedTree before, TypedTree after) {
         assertNotNull (types);
-        this.tree = tree;
         this.types = types;
+        this.order = order;
+        this.lexeme = lexeme;
+        this.before = before;
+        this.after  = after;
     }
 
-    public TypedTree (Tree tree, Valence t) {
-        assertNotNull (tree);
-        this.tree = tree;
+    public TypedTree (Valence t, Order order, String lexeme, TypedTree before, TypedTree after) {
         types = new TreeSet<>();
         types.add (t);
+        this.order = order;
+        this.lexeme = lexeme;
+        this.before = before;
+        this.after  = after;
     }
 
     public static Set<TypedTree>
@@ -405,15 +427,24 @@ public class TypedTree implements Comparable<TypedTree> {
                 
                         Valence x = t_this_x;                                                                      Tab.ln ("x = " + x.toString());
                         
-                        TypedTree new_before = new TypedTree (this_ttree.tree,  Valence.of (Nucleus.O_, x, r) );    Tab.ln ("new_before=" + new_before.str());
-                        TypedTree new_after =  new TypedTree (other_ttree.tree, x );                            Tab.ln ("new_after=" + new_after.str());
+                        TypedTree new_before = new TypedTree (
+                                                    Valence.of (Nucleus.O_, x, r),
+                                                    this_ttree.order,
+                                                    this_ttree.lexeme,
+                                                    this_ttree.before,
+                                                    this_ttree.after );                     Tab.ln ("new_before=" + new_before.str());
+                        
+                        TypedTree new_after =  new TypedTree (
+                                                    x,
+                                                    other_ttree.order,
+                                                    other_ttree.lexeme,
+                                                    other_ttree.before,
+                                                    other_ttree.after);                     Tab.ln ("new_after=" + new_after.str());
 
                         Set<Valence> ls_type2 = new TreeSet<>();
                         ls_type2.add(r);
-                        TypedTree new_tt =new TypedTree (
-                                            new Tree (order, new_before, new_after),
-                                            ls_type2
-                                        );
+                        TypedTree new_tt =new TypedTree (ls_type2, order, null, new_before, new_after);
+
                                                                                        Tab.ln ("-Adding new_tt = " + new_tt.str());
                         result.add (new_tt);
                         Tab.__o();

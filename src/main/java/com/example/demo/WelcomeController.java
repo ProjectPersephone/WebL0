@@ -310,7 +310,7 @@ public class WelcomeController {
         return o;
     }
 
-    public static JSONObject TreeToJSON(Tree t) {
+    public static JSONObject TreeToJSON(TypedTree t) {
         JSONObject o = new JSONObject();
         o.put ("order", OrderToJSON (t.order));
         if (t.order == Order.NEITHER) {
@@ -326,7 +326,7 @@ public class WelcomeController {
 
     public static JSONObject TypedTreeToJSON (TypedTree tt) {
         JSONObject o = new JSONObject();
-        o.put ("tree", TreeToJSON (tt.tree));
+        o.put ("tree", TreeToJSON (tt));
         Set<Valence> ls_ty = tt.types;
         JSONArray a = new JSONArray();
         Iterator<Valence> ty_it = ls_ty.iterator();
