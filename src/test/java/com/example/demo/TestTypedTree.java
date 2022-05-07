@@ -14,12 +14,27 @@ import com.example.demo.Tab;
 public class TestTypedTree {
 
     static void check_parents (TypedTree tt) {
+        Tab.ln ("check_parents(" + tt.str() + ")");
         if (tt.before != null) {
-            assertEquals (tt.before.parent, tt);
+            assertNotNull (tt.before.parent);
+            if (tt.before.parent != tt) {
+                Tab.ln ("check_parent: tt = " + tt.str() + " but tt.before.parent = " + tt.before.parent.str());
+                assertEquals (tt.before.parent, tt);
+            }
+            check_parents (tt.before);
+            assertEquals (tt.before.twin(), tt.after);
         }
         if (tt.after != null) {
-            assertEquals (tt.after.parent, tt);
+            assertNotNull (tt.after.parent);
+            if (tt.after.parent != tt) {
+                Tab.ln ("check_parent: tt = " + tt.str() + " but tt.after.parent = " + tt.after.parent.str());
+                assertEquals (tt.after.parent, tt);
+            }
+            check_parents (tt.after);
+            assertEquals (tt.after.twin(), tt.before);
         }
+
+
     }
 
     @Test
@@ -34,7 +49,6 @@ public class TestTypedTree {
         String st[] = { "I LIVE",
                         "I SAY SOMETHING",
                         "I BE GOOD",
-                        "I BE BECAUSE I THINK"
                     };
 
         Tab.reset();
@@ -51,7 +65,7 @@ public class TestTypedTree {
             Tab.ln ("Sentence \"" + st + "\" is TypeTree list of length="
                 + S.tt_list.size ());
             
-            LinkedList<TypedTree> tl = TypedTree.typed_trees(null, S.tt_list);
+            LinkedList<TypedTree> tl = TypedTree.typed_trees(S.tt_list);
 
             Tab.ln ("TestTypedTree: Length of typed_trees = " + tl.size());
 

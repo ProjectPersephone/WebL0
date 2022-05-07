@@ -42,7 +42,7 @@ public class Sentence {
             }
             else
             // it shouldn't be new Tree (w), I think
-                tt_list.add (new TypedTree (null, tl, Order.NEITHER, w, null, null));
+                tt_list.add (new TypedTree (tl, Order.NEITHER, w, null, null));
         }
     }
 

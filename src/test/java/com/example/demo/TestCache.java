@@ -46,7 +46,7 @@ public class TestCache {
                 Sentence S = new Sentence (line);
 
                 Tab.ln ("first ... S.tt_list.size() = " + S.tt_list.size());
-                LinkedList<TypedTree> l_tt = TypedTree.typed_trees(null, S.tt_list);
+                LinkedList<TypedTree> l_tt = TypedTree.typed_trees(S.tt_list);
 
                 Iterator<TypedTree> li = l_tt.iterator();
                 while (li.hasNext()) {

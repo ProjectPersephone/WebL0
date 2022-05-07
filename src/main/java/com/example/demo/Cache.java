@@ -103,7 +103,7 @@ public class Cache {
                 Iterator<TypedTree> t_it = t.iterator();
                 while (t_it.hasNext()) {
                     tt = t_it.next();        Tab.ln ("tt=" + tt.str());
-                    rv_row_elt1.addAll (TypedTree.combine (parent, ti, tt)); // parent null may be wrong
+                    rv_row_elt1.addAll (TypedTree.combine (ti, tt)); // parent null may be wrong
                 }
                                              Tab.__o();
             }  Tab.__o();
