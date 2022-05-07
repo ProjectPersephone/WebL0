@@ -46,7 +46,7 @@ public class TestCache {
                 Sentence S = new Sentence (line);
 
                 Tab.ln ("first ... S.tt_list.size() = " + S.tt_list.size());
-                LinkedList<TypedTree> l_tt = TypedTree.typed_trees(S.tt_list);
+                LinkedList<TypedTree> l_tt = TypedTree.typed_trees(null, S.tt_list);
 
                 Iterator<TypedTree> li = l_tt.iterator();
                 while (li.hasNext()) {
@@ -110,7 +110,7 @@ public class TestCache {
         Sentence S_2w = new Sentence(Str_2w);
 
         Tab.trace(false);
-        Cache A22 = Cache.cache(S_2w.tt_list);
+        Cache A22 = Cache.cache(null, S_2w.tt_list);
         assertEquals (2,A22.c.size());
         l_tt = A22.c.get(0).get(0);
         Tab.ln ("A22[0,0]=" + TypedTree.ls_str(l_tt));

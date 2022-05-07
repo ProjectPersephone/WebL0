@@ -27,6 +27,8 @@ import com.example.demo.Tab;
 
 public class TypedTree implements Comparable<TypedTree> {
 
+    TypedTree parent;
+
     //-- Tree tree; // these are actually 1-for-1 with TypedTree nodes    
     Set<Valence> types;
 
@@ -259,6 +261,42 @@ public class TypedTree implements Comparable<TypedTree> {
         return s;
     }
 
+    // need distinction between one-place and two-place preds
+    public LinkedList<Compound> pl2(TypedTree arg) {
+        LinkedList<Compound> s = new LinkedList<Compound>();
+
+        Valence type = get_type(this);
+        Valence before_type = get_type(before);
+        Valence after_type = get_type(after);
+
+        if (type == Atom.S || type == Atom.Conseq || type == Atom.Cond) {
+            if (before_type == Atom.Subst) {
+                s.addAll(after.pl2 (before));
+            } else
+            if (before_type == Atom.CondS) {
+                s.addAll(before.pl2 (null));
+                s.addAll(after.pl2 (null));
+            }
+        } else
+        if (type == Atom.Subst) {
+            if (lexeme == null) { // modified
+                s.addAll(after.pl2 (before));
+            } else {                  // raw
+                s.add(new Compound(type.n));
+            }
+        } else
+        if (type == Atom.PredS) {
+            if (lexeme == null) { // complex
+                s.addAll (before.pl2 (after));
+            } else {
+                s.add (new Compound(type.n));
+            }
+        } else {
+
+        }
+
+        return s;
+    }
 
     public String prolog() {
         Tab.push_trace(true);
@@ -371,7 +409,7 @@ public class TypedTree implements Comparable<TypedTree> {
         return s + "]";
     }
 
-    public TypedTree (Set<Valence> types, Order order, String lexeme, TypedTree before, TypedTree after) {
+    public TypedTree (TypedTree parent, Set<Valence> types, Order order, String lexeme, TypedTree before, TypedTree after) {
         assertNotNull (types);
         this.types = types;
         this.order = order;
@@ -380,7 +418,7 @@ public class TypedTree implements Comparable<TypedTree> {
         this.after  = after;
     }
 
-    public TypedTree (Valence t, Order order, String lexeme, TypedTree before, TypedTree after) {
+    public TypedTree (TypedTree parent, Valence t, Order order, String lexeme, TypedTree before, TypedTree after) {
         types = new TreeSet<>();
         types.add (t);
         this.order = order;
@@ -390,7 +428,7 @@ public class TypedTree implements Comparable<TypedTree> {
     }
 
     public static Set<TypedTree>
-    app (Order order, TypedTree this_ttree, TypedTree other_ttree) {
+    app (TypedTree parent, Order order, TypedTree this_ttree, TypedTree other_ttree) {
         assertNotNull(this_ttree);
         assertNotNull(other_ttree);  Tab.ln ("app: apply " + this_ttree.str() + " to " + other_ttree.str());
         Set<TypedTree> result = new TreeSet<TypedTree>();
@@ -427,6 +465,7 @@ public class TypedTree implements Comparable<TypedTree> {
                         Valence x = t_this_x;                                                                      Tab.ln ("x = " + x.toString());
                         
                         TypedTree new_before = new TypedTree (
+                                                    null,
                                                     Valence.of (Nucleus.O_, x, r),
                                                     this_ttree.order,
                                                     this_ttree.lexeme,
@@ -434,6 +473,7 @@ public class TypedTree implements Comparable<TypedTree> {
                                                     this_ttree.after );                     Tab.ln ("new_before=" + new_before.str());
                         
                         TypedTree new_after =  new TypedTree (
+                                                    null,
                                                     x,
                                                     other_ttree.order,
                                                     other_ttree.lexeme,
@@ -442,8 +482,10 @@ public class TypedTree implements Comparable<TypedTree> {
 
                         Set<Valence> ls_type2 = new TreeSet<>();
                         ls_type2.add(r);
-                        TypedTree new_tt =new TypedTree (ls_type2, order, null, new_before, new_after);
-
+                        TypedTree new_tt =new TypedTree (parent,
+                            ls_type2, order, null, new_before, new_after);
+                        new_before.parent = new_tt;
+                        new_after.parent = new_tt;
                                                                                        Tab.ln ("-Adding new_tt = " + new_tt.str());
                         result.add (new_tt);
                         Tab.__o();
@@ -457,11 +499,11 @@ public class TypedTree implements Comparable<TypedTree> {
         return result;
     }
 
-    public static Set<TypedTree> combine (TypedTree one, TypedTree the_other) {
+    public static Set<TypedTree> combine (TypedTree parent, TypedTree one, TypedTree the_other) {
                  Tab.ln ("combine(" + one.str() + ", " + the_other.str() + ")");
         Set<TypedTree> tl = new TreeSet<TypedTree>();
-        Set<TypedTree> tb = app (Order.BEFORE, one,       the_other );
-        Set<TypedTree> ta = app (Order.AFTER,  the_other, one       );
+        Set<TypedTree> tb = app (parent, Order.BEFORE, one,       the_other );
+        Set<TypedTree> ta = app (parent, Order.AFTER,  the_other, one       );
         tl.addAll(tb);
         tl.addAll(ta);
                  Tab.ln ("combine():"); Tab.ln (" =" + ls_set(tl));
@@ -471,7 +513,7 @@ public class TypedTree implements Comparable<TypedTree> {
 // This should probably go into tests--does the result match the cached result?
 
     public static LinkedList<TypedTree>
-    typed_trees(LinkedList<TypedTree> S) {
+    typed_trees(TypedTree parent, LinkedList<TypedTree> S) {
       assertNotNull(S);          Tab.ln ("typed_trees (" + ls_str(S) + "):");
       LinkedList<TypedTree> r;
       if (S.size() == 1) {
@@ -488,14 +530,14 @@ public class TypedTree implements Comparable<TypedTree> {
          Tab.ln ("-loop on " + splits.str()); Tab.o__();
         for (Split split : splits.all_splits) {
 
-            LinkedList<TypedTree> before_tts = typed_trees (split.before);
-            LinkedList<TypedTree> after_tts  = typed_trees (split.after);
+            LinkedList<TypedTree> before_tts = typed_trees (parent, split.before);
+            LinkedList<TypedTree> after_tts  = typed_trees (parent, split.after);
 
              Tab.ln (" -loop on" + ls_str(before_tts)); Tab.o__();
             for (TypedTree before : before_tts) {
                  Tab.ln ("-loop on " + ls_str(after_tts)); Tab.o__();
                 for (TypedTree after : after_tts) {
-                    r.addAll (combine (before, after));
+                    r.addAll (combine (parent, before, after));
                 }  Tab.__o();
             }  Tab.__o();
         }

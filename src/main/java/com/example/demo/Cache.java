@@ -57,7 +57,7 @@ public class Cache {
 //                        r    <- combination_of ti tt ]
 
     private static LinkedList<LinkedList<TypedTree>>
-    build (TypedTree tt, LinkedList<LinkedList<LinkedList<TypedTree>>> C) {
+    build (TypedTree parent, TypedTree tt, LinkedList<LinkedList<LinkedList<TypedTree>>> C) {
         assertNotNull (tt);
         assertNotNull (C);       Tab.ln ("build: tt=" + tt.str() + " C=" + TypedTree.ls_ls_ls_str (C));
         LinkedList<LinkedList<TypedTree>> rv_row = new LinkedList<LinkedList<TypedTree>>();
@@ -88,7 +88,7 @@ public class Cache {
         LinkedList<TypedTree> rv_row_elt1 = new LinkedList<TypedTree>();
 
         LinkedList<LinkedList<TypedTree>> row = C.removeFirst();  Tab.ln ("After removeFirst, calling build on remainder, C.size()=" + C.size());
-        LinkedList<LinkedList<TypedTree>> interms = build (tt, C); Tab.ln ("row.size()=" + row.size() + " interms.size()=" + interms.size()); Tab.ln ("After build with tt=" + tt.str() + ", getting interms desc iter:");
+        LinkedList<LinkedList<TypedTree>> interms = build (parent, tt, C); Tab.ln ("row.size()=" + row.size() + " interms.size()=" + interms.size()); Tab.ln ("After build with tt=" + tt.str() + ", getting interms desc iter:");
         Iterator<LinkedList<TypedTree>> is_it = interms.descendingIterator();  Tab.ln ("Got is_it, getting row_it:");
         Iterator<LinkedList<TypedTree>> row_it = row.iterator();  Tab.ln ("Starting is_it loop:");
         while (is_it.hasNext()) {
@@ -103,7 +103,7 @@ public class Cache {
                 Iterator<TypedTree> t_it = t.iterator();
                 while (t_it.hasNext()) {
                     tt = t_it.next();        Tab.ln ("tt=" + tt.str());
-                    rv_row_elt1.addAll (TypedTree.combine (ti, tt));
+                    rv_row_elt1.addAll (TypedTree.combine (parent, ti, tt)); // parent null may be wrong
                 }
                                              Tab.__o();
             }  Tab.__o();
@@ -145,7 +145,7 @@ public class Cache {
     }
 
     public static Cache
-    cache(LinkedList<TypedTree> tts) {
+    cache(TypedTree parent, LinkedList<TypedTree> tts) {
         assertNotNull(tts);      Tab.ln ("cache: tts = " + TypedTree.ls_str(tts));
         if (tts.size() == 1) {
             LinkedList<LinkedList<TypedTree>> x = new LinkedList<LinkedList<TypedTree>>();
@@ -158,9 +158,9 @@ public class Cache {
         // = [build this_typed_tree (transpose rs)] ++ rs
         //    where rs = cache the_rest
         TypedTree t = tts.removeFirst();     Tab.ln ("t = " + t.str() + " tts now = " + TypedTree.ls_str(tts));
-        Cache rs = cache(tts);
+        Cache rs = cache(parent, tts);
         Cache trs = rs.transpose ();         Tab.ln ("About to enter build...");
-        LinkedList<LinkedList<TypedTree>> btt = build (t, trs.c); // Tab.ln ("Finished that build, now allocating new cache");
+        LinkedList<LinkedList<TypedTree>> btt = build (parent, t, trs.c); // Tab.ln ("Finished that build, now allocating new cache");
         Cache tc = new Cache();              Tab.ln ("After tc = new Cache()");
         tc.c.add (btt);                      Tab.ln ("After adding btt to tc");
         tc.c.addAll (rs.c);                 Tab.ln ("After addAll of rs.c to tc, returning");
@@ -170,7 +170,7 @@ public class Cache {
     public static Cache cache (Sentence S) {
         assertNotNull (S);           Tab.ln ("cache(S): S = " + S.str());
         assertNotNull (S.tt_list);   Tab.ln ("About to start really caching...");
-        Cache c = cache (S.tt_list);
+        Cache c = cache (null, S.tt_list);  // null here may be wrong for sentences in blocks
         Tab.ln ("result c = " + c.str());
         return c;
     }

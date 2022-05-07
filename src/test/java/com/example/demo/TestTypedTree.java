@@ -13,6 +13,15 @@ import com.example.demo.Tab;
 
 public class TestTypedTree {
 
+    static void check_parents (TypedTree tt) {
+        if (tt.before != null) {
+            assertEquals (tt.before.parent, tt);
+        }
+        if (tt.after != null) {
+            assertEquals (tt.after.parent, tt);
+        }
+    }
+
     @Test
     public void main() throws Exception {
 //        String st = "THIS BE BIG";
@@ -22,29 +31,36 @@ public class TestTypedTree {
 //        String st = "I BE";
 //        String st = "I THINK";
 //        String st = "IF I THINK I BE";
-        String st = "I SAY SOMETHING";
+        String st[] = { "I LIVE",
+                        "I SAY SOMETHING",
+                        "I BE GOOD",
+                        "I BE BECAUSE I THINK"
+                    };
 
         Tab.reset();
         Tab.trace(true);
         Tab.ln ("**** TestTypedTree ****");
 
-        Tab.push_trace(false);
+        Tab.push_trace(true);
 
-        Sentence S = new Sentence (st);
+        for (String sample : st) {
+            Sentence S = new Sentence (sample);
 
-        Tab.ln (Valence.all_valences());
+            Tab.ln (Valence.all_valences());
 
-        Tab.ln ("Sentence \"" + st + "\" is TypeTree list of length="
-             + S.tt_list.size ());
-        
-        LinkedList<TypedTree> tl = TypedTree.typed_trees(S.tt_list);
+            Tab.ln ("Sentence \"" + st + "\" is TypeTree list of length="
+                + S.tt_list.size ());
+            
+            LinkedList<TypedTree> tl = TypedTree.typed_trees(null, S.tt_list);
 
-        Tab.ln ("TestTypedTree: Length of typed_trees = " + tl.size());
+            Tab.ln ("TestTypedTree: Length of typed_trees = " + tl.size());
 
-        Iterator<TypedTree> li = tl.iterator();
-        while (li.hasNext()) {
-            TypedTree tt = li.next();
-            Tab.ln ("typed tree: " + tt.str());
+            Iterator<TypedTree> li = tl.iterator();
+            while (li.hasNext()) {
+                TypedTree tt = li.next();
+                Tab.ln ("typed tree: " + tt.str());
+                check_parents (tt);
+            }
         }
 
         Tab.pop_trace();
