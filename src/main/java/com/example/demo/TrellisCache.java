@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import org.junit.jupiter.api.Assertions;
 import com.example.demo.LatticeNode;
 
 // Logically, the Lattice is private to a cache.

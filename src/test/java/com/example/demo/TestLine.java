@@ -3,10 +3,6 @@ package com.example.demo;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
-import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.FileSystems;
 
 import com.example.demo.Sentence;
 import com.example.demo.TypedTree;
@@ -18,7 +14,7 @@ public class TestLine  {
     @Test
     public void main () {
         __.reset();
-        Atom l = new Atom();
+        Atom llllll = new Atom();
         __.ln ("----- TestRPline ------");
         String Str_3 = "I IS BAD";
         Sentence S = new Sentence (Str_3);

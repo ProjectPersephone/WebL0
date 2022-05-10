@@ -14,6 +14,12 @@
             "type": "shell",
             "command": "mvn -B test",
             "group": "test"
+        },
+        {
+            "label": "verify",
+            "type": "shell",
+            "command": "mvn spring-boot:run",
+            "group": "none"
         }
     ]
 }

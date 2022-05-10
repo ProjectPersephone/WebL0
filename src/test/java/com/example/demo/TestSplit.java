@@ -1,11 +1,7 @@
 package com.example.demo;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.*;
 
 import com.example.demo.Sentence;
 
