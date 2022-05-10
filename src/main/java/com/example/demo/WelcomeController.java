@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.example.demo.Cache;
-import com.example.demo.Tab;
+import com.example.demo.__;
 import com.example.demo.Compound;
 
 
@@ -93,7 +93,7 @@ public class WelcomeController {
 
         String  s = doc.toString();
 
-        Tab.ln ("markdownToParses: doc.toString() = " + s);
+        __.ln ("markdownToParses: doc.toString() = " + s);
     }
 
     @GetMapping("/run")
@@ -111,37 +111,37 @@ public class WelcomeController {
 
     @PostMapping("/run")
     public String run(Post post, Model model) {
-        Tab.reset();
-        Tab.push_trace(true);
+        __.reset();
+        __.push_trace(true);
 
         if (post == null) {
-            Tab.ln ("save: post is null, strangely....");
+            __.ln ("save: post is null, strangely....");
         }
 
         String content = post.getContent();
 
-        Tab.ln ("In /run, content = " + content);
-        Tab.pop_trace();
+        __.ln ("In /run, content = " + content);
+        __.pop_trace();
         return ("run");
     }
 
     @PostMapping("/edit")
     public String save(Post post, Model model) {
 
-        Tab.reset();
-        Tab.push_trace(true);
+        __.reset();
+        __.push_trace(true);
 
         if (post == null) {
-            Tab.ln ("save: post is null, strangely....");
+            __.ln ("save: post is null, strangely....");
         }
 
         String content = post.getContent();
 
-        Tab.ln ("In /edit:save, content = " + content);
+        __.ln ("In /edit:save, content = " + content);
 
         if (content == null) {
             model.addAttribute("post", null);
-            Tab.pop_trace();
+            __.pop_trace();
             return "saved";
         }
 
@@ -158,21 +158,21 @@ public class WelcomeController {
         doc.accept(v);
         v.indented.show();
         v.indented.postprocess();  // cross fingers ...
-        Tab.reset();
-//        Tab.trace(true);
+        __.reset();
+//        __.trace(true);
         v.indented.show();
-//        Tab.trace(false);
+//        __.trace(false);
 
-        Tab.trace(true);
+        __.trace(true);
         TypedTree.nested_pp(v.indented);
-        Tab.trace(false);
+        __.trace(false);
 
         LinkedList<Compound> results = Compound.load_and_run(v.indented);
 
-        Tab.ln ("");
-        Tab.ln ("---------------------------------------------------------------");
-        Tab.ln ("Results: " + results);
-        Tab.ln ("---------------------------------------------------------------");
+        __.ln ("");
+        __.ln ("---------------------------------------------------------------");
+        __.ln ("Results: " + results);
+        __.ln ("---------------------------------------------------------------");
 
         String h = markdownToHTML(content); // linebreaks lost even tho editor keeps
         String[] lines = content.split("\\R");
@@ -187,11 +187,11 @@ public class WelcomeController {
         post.setHtml(h);
 
         JSONArray ja_new = v.toJSON();
-        Tab.ln ("Array of JSON parses with blocks=" + ja_new);
+        __.ln ("Array of JSON parses with blocks=" + ja_new);
 
         String jas = ja_new.toString();
 
-        Tab.ln ("Array of JSON parses=" + jas);
+        __.ln ("Array of JSON parses=" + jas);
 
         model.addAttribute("message", jas);
         model.addAttribute("post", post);
@@ -203,7 +203,7 @@ public class WelcomeController {
             e.printStackTrace();
         }
 
-        Tab.pop_trace();
+        __.pop_trace();
         return "saved";
     }
 
@@ -219,9 +219,9 @@ public class WelcomeController {
 
         @Override
         public void visit (BulletList bl) {
-            Tab.ln ("Hitting a BulletList: " + bl);
+            __.ln ("Hitting a BulletList: " + bl);
             
-            Tab.ln ("Calling visitChildren");
+            __.ln ("Calling visitChildren");
             indented.indent();
             visitChildren(bl);
             indented.dedent();
@@ -233,49 +233,49 @@ public class WelcomeController {
             int wordCount = text.getLiteral().split("\\W+").length; // ???
             String Str_nw = text.getLiteral();
             Sentence S = new Sentence (Str_nw);
-            Tab.reset();
-            Tab.trace(false);
+            __.reset();
+            __.trace(false);
             Cache C = Cache.cache (S);
             LinkedList<TypedTree> tt_ls = C.get(0,0);
             if (tt_ls.isEmpty()) {
-                Tab.ln ("visit: empty tt_ls");
+                __.ln ("visit: empty tt_ls");
                 return;
             }
             TypedTree tt = tt_ls.get(0);
-            Tab.ln (wordCount + " words in " + text.getLiteral() + ": " + tt.str());
-            Tab.reset();
-            Tab.trace(true);
+            __.ln (wordCount + " words in " + text.getLiteral() + ": " + tt.str());
+            __.reset();
+            __.trace(true);
             try {
                 String pl = tt.prolog();
                 pl += ",\n";
                  myFileWriter.write(pl);
-                 Tab.ln("*** Wrote " + pl + " to " + prolog_output_filename + " ***");
+                 __.ln("*** Wrote " + pl + " to " + prolog_output_filename + " ***");
             } catch (IOException e) {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
             }
-            Tab.trace(false);
+            __.trace(false);
             indented.add (tt);
         }
 
         private JSONArray toJSONArray_helper (LinkedList<Line> ll) {
             JSONArray ja = new JSONArray();
 
-            Tab.ln ("In toJSONArray_helper");
+            __.ln ("In toJSONArray_helper");
 
             for (Line ln : ll) {
-                Tab.ln ("tab level = " + ln.level);
+                __.ln ("tab level = " + ln.level);
                 JSONObject json = TypedTreeToJSON (ln.line);
                 if (ln.block != null && ln.block.size() != 0) {
                     JSONArray sub = toJSONArray_helper(ln.block);
                     json.put ("block", sub);
-                    Tab.ln ("adding to block: " + sub.toString());
+                    __.ln ("adding to block: " + sub.toString());
                 }
                 ja.add (json);
                 JSONTypedTreeShow (json);
             }
 
-            Tab.ln ("Exiting toJSONArray_helper with ja = " + ja.toString());
+            __.ln ("Exiting toJSONArray_helper with ja = " + ja.toString());
             return ja;
         }
         // assume postprocessed already
@@ -339,41 +339,41 @@ public class WelcomeController {
     }
 
     public static void JSONTypedTreeShow (JSONObject o) {
-//-        Tab.ln ("JSONTypedTreeShow entered");
+//-        __.ln ("JSONTypedTreeShow entered");
         assertNotNull (o);
-//-                Tab.ln ("getting types JSONTypedTreeShow entered");
+//-                __.ln ("getting types JSONTypedTreeShow entered");
         JSONArray ty_ls = (JSONArray) o.get("types");
         assertNotNull (ty_ls);
-//-                Tab.ln ("getting first elt of type list ");
+//-                __.ln ("getting first elt of type list ");
         JSONObject ot = (JSONObject) ty_ls.get(0);
         assertNotNull (ot);
-//-                Tab.ln ("getting type of tree node");
+//-                __.ln ("getting type of tree node");
         String ty = (String) ot.get("type");
         assertNotNull (ty);
-//-                Tab.ln ("getting tree stuff");
+//-                __.ln ("getting tree stuff");
         JSONObject tr = (JSONObject) o.get ("tree");
 
         assertNotNull (tr);
-//-                Tab.ln ("getting app order");
+//-                __.ln ("getting app order");
         String ord  = (String) tr.get ("order");
         assertNotNull (ord);
-//-                Tab.ln ("ord=" + ord);
+//-                __.ln ("ord=" + ord);
         if (ord != "NEITHER") {
-            Tab.ln ("[" + ty + "]");
-//-                    Tab.ln ("getting before");
+            __.ln ("[" + ty + "]");
+//-                    __.ln ("getting before");
             JSONObject b = (JSONObject) tr.get ("before");
             assertNotNull (b);
-//-                    Tab.ln ("getting after");
+//-                    __.ln ("getting after");
             JSONObject a = (JSONObject) tr.get ("after");
             assertNotNull (a);
             JSONTypedTreeShow (b);
             JSONTypedTreeShow (a);
         }
         if (ord == "NEITHER") {
-//-                    Tab.ln ("getting atom");
+//-                    __.ln ("getting atom");
             String atom = (String) tr.get ("atom");
             assertNotNull (atom);
-            Tab.ln ("\"" + atom + "\" [" + ty + "]");
+            __.ln ("\"" + atom + "\" [" + ty + "]");
         }
 
     }
@@ -382,7 +382,7 @@ public class WelcomeController {
     @GetMapping("/sandbox")
     public String sandbox(Model model) {
 
-        Tab.reset();
+        __.reset();
 
         // String Str_nw = "IF I THINK I IS BAD";
         String Str_nw = "I SAY I IS BAD";
@@ -396,7 +396,7 @@ public class WelcomeController {
             JSONObject json = TypedTreeToJSON (tt);
             s += json.toString();
             System.out.println ("s=" + s);
-            Tab.reset();
+            __.reset();
             JSONTypedTreeShow (json);
         }
 

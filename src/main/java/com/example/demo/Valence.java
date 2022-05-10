@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.*;
 
@@ -25,12 +24,12 @@ public class Valence implements Comparable<Valence> {
         int c = 0;
         assertNotNull(t);
 
-        Tab.push_trace(false);
+        __.push_trace(false);
 
         if (this != t) {
-            Tab.ln ("comparing " + t  + " to " + this);
+            __.ln ("comparing " + t  + " to " + this);
             if (n == Nucleus.O_ && t.n == Nucleus.O_) {
-                Tab.ln ("Both t and this are O-type");
+                __.ln ("Both t and this are O-type");
                 assertNotNull(x);
                 assertNotNull(y);
                 assertNotNull(t.x);
@@ -41,13 +40,13 @@ public class Valence implements Comparable<Valence> {
                     c = y.compareTo (t.y);
             }
             else {
-                Tab.ln ("Comparing " + this.n + " to " + t.n);
+                __.ln ("Comparing " + this.n + " to " + t.n);
                 c = this.n.compareTo (t.n);
             }
         }
 
-        Tab.ln (this.toString() + " compared to " + t.toString() + " = " + c);
-        Tab.pop_trace();
+        __.ln (this.toString() + " compared to " + t.toString() + " = " + c);
+        __.pop_trace();
 
         return c;
     }
@@ -57,25 +56,25 @@ public class Valence implements Comparable<Valence> {
 
         if (n == Nucleus.O_) {
             if (x.compareTo(q) == 0) {
-                Tab.ln (this.toString() + "." + "fxy(" + q.toString() + ") = y =" + y.toString());
+                __.ln (this.toString() + "." + "fxy(" + q.toString() + ") = y =" + y.toString());
                 return y;
              }
              else {
 
-                Tab.ln ("x:" + x.toString() + " =/= q:" + q.toString() + " -- FAILS");
+                __.ln ("x:" + x.toString() + " =/= q:" + q.toString() + " -- FAILS");
 
-                Tab.ln ("x="+x.hashCode()+" q="+q.hashCode());
+                __.ln ("x="+x.hashCode()+" q="+q.hashCode());
 
                 return null;
              }
         }
 
-        Tab.ln (this.toString() + "." + "fxy(" + q.toString() + ") = null");
+        __.ln (this.toString() + "." + "fxy(" + q.toString() + ") = null");
         return null;
     }
 
     private Valence(Nucleus n, Valence one, Valence the_other) {
-        Tab.ln ("******** Valence constructor called:" + n + "," + one + "," + the_other);
+        __.ln ("******** Valence constructor called:" + n + "," + one + "," + the_other);
         this.n = n;
         x = one;
         y = the_other;
@@ -83,7 +82,7 @@ public class Valence implements Comparable<Valence> {
     }
 
     public Valence(Nucleus n, Valence one, Valence the_other, String label) {
-        Tab.ln ("******** Valence constructor called:" + n + "," + one + "," + the_other);
+        __.ln ("******** Valence constructor called:" + n + "," + one + "," + the_other);
         this.n = n;
         x = one;
         y = the_other;
@@ -112,17 +111,17 @@ public class Valence implements Comparable<Valence> {
     }
 
     static public Valence of (Nucleus n, Valence t_x, Valence t_y, String label) {
-        Tab.ln ("Trying insert of " + n + "," + t_x + ", " + t_y);
+        __.ln ("Trying insert of " + n + "," + t_x + ", " + t_y);
 
         Valence tr = new Valence (n, t_x, t_y, label);
-// boolean tmp = Tab.trace(false);     // avoid a million compare traces
+// boolean tmp = __.trace(false);     // avoid a million compare traces
         if (n == Nucleus.O_) { 
             for (Valence t : uniques) {        // list may get huge, but not during initialization at least
                 if (tr.compareTo(t) == 0)
                     return t;
                 }
         }
-// Tab.trace (tmp);
+// __.trace (tmp);
 
         Valence t = index.get(n);
 
@@ -133,7 +132,7 @@ public class Valence implements Comparable<Valence> {
         index.put (n, tr);
         uniques.add (tr);
 
-        Tab.ln ("**************** Valence.of: created " + tr + "***********");
+        __.ln ("**************** Valence.of: created " + tr + "***********");
 
         return tr;
     }

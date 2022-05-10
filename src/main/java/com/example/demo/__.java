@@ -1,11 +1,11 @@
 package com.example.demo;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Stack;
 
-public class Tab {
+public class __ {
+    public __() { super(); }  // shuts the compiler up
     private   static int base_level = 0;
     private   static Boolean initialized = false;
     protected static String one_tab = "| ";

@@ -1,7 +1,5 @@
 package com.example.demo;
 
-import org.junit.jupiter.api.Assertions;
-
 import java.util.*;
 
 import com.example.demo.TypedTree;

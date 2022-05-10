@@ -1,19 +1,11 @@
 package com.example.demo;
 
-import org.junit.jupiter.api.Assertions;
+import com.example.demo.TypedTree;
 
-import ch.qos.logback.core.joran.conditional.ElseAction;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.DynamicTest.stream;
 
 import java.util.*;
-
-import com.example.demo.Valence;
-import com.example.demo.TypedTree;
 
 // Actually more like "element of a compound" -- is there a way to say that in chemistry?
 
@@ -87,16 +79,16 @@ public class Compound {
 
                     // Shouldn't really be a member function of Context, just hacked for now
                     private static Compound value_of(Compound sym, Context this_context) {
-                        Tab.ln ("value_of: this_context="+this_context);
+                        __.ln ("value_of: this_context="+this_context);
                         for (Bond bi : this_context.bonds) {
                             if (bi.nom.equals(sym)) {
-                                Tab.ln ("value_of: found "+ bi + "returning " + bi.val);
+                                __.ln ("value_of: found "+ bi + "returning " + bi.val);
                                 return bi.val;
                             }
                             else
-                                Tab.ln ("failed: "+bi+".nom.equals("+sym+")");
+                                __.ln ("failed: "+bi+".nom.equals("+sym+")");
                         }
-                        if (this_context.outer != null) {                    Tab.ln ("recursive call of value_of");
+                        if (this_context.outer != null) {                    __.ln ("recursive call of value_of");
                             return value_of(sym, this_context.outer);
                         }
                         return null;
@@ -143,7 +135,7 @@ public class Compound {
                 // With cascaded gets, could modify in outer scope
 
                 public Boolean add_pred(Compound c) {
-                    Tab.ln ("add_pred: this=" + this + "c="+c);
+                    __.ln ("add_pred: this=" + this + "c="+c);
                     LinkedList<Compound> l = preds.get(c.n);
                     if (l == null) {
                         l = new LinkedList<Compound>();
@@ -156,7 +148,7 @@ public class Compound {
 
                 // deep binding?
                 public LinkedList<Compound> get(Nucleus n) {
-                    Tab.ln ("Context.get("+n+") with bindings="+bindings);
+                    __.ln ("Context.get("+n+") with bindings="+bindings);
                     LinkedList<Compound> r = preds.get(n);
                     if (outer != null && outer.preds != null) { // should make sure preds ptr non-null
                         if (r != null) {
@@ -166,7 +158,7 @@ public class Compound {
                         }
                         else r = outer.preds.get(n);
                     }
-                    Tab.ln("Context.get returning r="+r);
+                    __.ln("Context.get returning r="+r);
                     return r;
                 }
 
@@ -181,7 +173,7 @@ public class Compound {
                 }
 
                 public Bond put (Compound n, Compound v) {
-                    Tab.ln ("new binding being added, n=" + n + " v=" + v);
+                    __.ln ("new binding being added, n=" + n + " v=" + v);
                     Bond b;
                     if (value_of (n) == null) {
                         b = new Bond (n,v);
@@ -222,7 +214,7 @@ public class Compound {
                 public Compound val;    // like I, YOU, ...
 
                 private Bond (Compound n, Compound v) {
-                    Tab.ln ("making bond from n=" + n.toString() + " and v=" + v.toString());
+                    __.ln ("making bond from n=" + n.toString() + " and v=" + v.toString());
                     nom = n;
                     val = v;
                 }
@@ -255,7 +247,7 @@ public class Compound {
                         return true;
             // TIME_WHEN, others???? Maybe IF can be a "whether", THIS can be a "which", etc.
             /*
-            case THIS:  Tab.ln ("Checking for are THIS in has_unbound_var");
+            case THIS:  __.ln ("Checking for are THIS in has_unbound_var");
                         return (just_atom());
             */
             default:
@@ -296,15 +288,15 @@ public class Compound {
 
     private Boolean satisfy (Compound to_do) {
         Boolean r = false;
-        LinkedList<Compound> ps;                                    Tab.ln ("satisfy: this="+this+" to_do="+to_do);
+        LinkedList<Compound> ps;                                    __.ln ("satisfy: this="+this+" to_do="+to_do);
 
-        ps = bindings.peek().get(n);                               Tab.ln(""); Tab.ln ("satisfy: ps="+ps);
+        ps = bindings.peek().get(n);                               __.ln(""); __.ln ("satisfy: ps="+ps);
 
         if (ps == null)
             r = false;
         else
-            for (Compound cp : ps) {                                Tab.ln ("satisfy: trying cp="+cp);
-                if (unify (this, cp, to_do)) {                      Tab.ln ("satisfy: unified");
+            for (Compound cp : ps) {                                __.ln ("satisfy: trying cp="+cp);
+                if (unify (this, cp, to_do)) {                      __.ln ("satisfy: unified");
                     r = true;
                 }
             }
@@ -320,12 +312,12 @@ public class Compound {
         for (Compound a : args) {
             if (a.n == Nucleus.THIS) {
                 if (a.just_atom()) {
-                    Tab.ln ("subst_this_copy: unhandled case");
+                    __.ln ("subst_this_copy: unhandled case");
                     return null;  // sure, take the null pointer exception later
                 }
                 assertEquals(1, a.args.size());
                 Compound nom = a.args.get(0);
-                Tab.ln ("About to call value_of on "+nom+" with bindings=" + bindings);
+                __.ln ("About to call value_of on "+nom+" with bindings=" + bindings);
                 Compound v = value_of(nom);     // drag it up from whatever context
                 assertNotNull(v);               // bad if un-init var
                 bindings.peek().put(nom,v);     // assert the value in this context
@@ -345,26 +337,26 @@ public class Compound {
         // and succeed to the end at least once. Simply adding a fact doesn't
         // contribute. These may actually need to be retracted if
         // there's failure.
-                                                                Tab.push_trace(true);
-                                                                if (++call_depth > 30) { Tab.ln ("call_depth>30, bailing"); return null; }
-                                                                Tab.ln("");
-                                                                Tab.ln("In react(cl="+cl+",bindings="+bindings);
-        for (Compound c = cl; c != null; c = c.next)  {         Tab.ln ("react: c="+c);
+                                                                __.push_trace(true);
+                                                                if (++call_depth > 30) { __.ln ("call_depth>30, bailing"); return null; }
+                                                                __.ln("");
+                                                                __.ln("In react(cl="+cl+",bindings="+bindings);
+        for (Compound c = cl; c != null; c = c.next)  {         __.ln ("react: c="+c);
             if (c.n == Nucleus.IF) {
                 Compound cond = c.args.get(0);
                 Compound to_do = c.args.get(1);
-                Tab.ln ("Hit IF, trying cond " + cond);
+                __.ln ("Hit IF, trying cond " + cond);
 
                 // new_Context();
-                Boolean r = cond.satisfy(to_do); // ideally, no dependency on side-effects
+                /* Boolean r = */ cond.satisfy(to_do); // ideally, no dependency on side-effects
                 // bindings.pop();
                 /*
                 if (r) {
                     Compound consequent = c.args.get(1);
-                    Tab.ln ("IF cond="+cond+" was met, now reacting consequent="+ consequent);
+                    __.ln ("IF cond="+cond+" was met, now reacting consequent="+ consequent);
                     react (consequent);
                 } else {
-                    Tab.ln ("IF cond="+cond+" failed, bindings now "+bindings);
+                    __.ln ("IF cond="+cond+" failed, bindings now "+bindings);
                 }
                 */
                 continue;
@@ -387,37 +379,37 @@ public class Compound {
         // This seems to imply a unify (x, consequent), however.
 
             LinkedList<Compound> ps;
-            ps = bindings.peek().get(c.n);                                Tab.ln ("react: ps="+ps);
-            LinkedList<Compound> ua = c.unbound_vars();         Tab.ln ("react: ua="+ua);
+            ps = bindings.peek().get(c.n);                                __.ln ("react: ps="+ps);
+            LinkedList<Compound> ua = c.unbound_vars();         __.ln ("react: ua="+ua);
             if (ps == null || ua.isEmpty()) {
                 //
                 // need to resolve THIS <t> bound vars. How? Straight-up substitution in a copy?
                 // Context C = new_Context();      // just to make react return a different context
 
                 /* go through all preds in scope (down through scopes?) */ {
-                    Compound x = c.subst_this_copy();   Tab.ln ("react: after subst_this_copy, x="+x); // add the bound THIS <t> values literally
+                    Compound x = c.subst_this_copy();   __.ln ("react: after subst_this_copy, x="+x); // add the bound THIS <t> values literally
                     // react (x);                          // cause any bindings needed for this context
                     // adds only first one found (I, when there's also YOU)
                     // so maybe subst_this_copy has to do the bindings?, recursively? calling react again
                     // but not ending up in an infinite recursion? Can it work just by calling add_pred?
-                    bindings.peek().add_pred(x);                          Tab.ln("just added " + c +" in bindings "+bindings);
+                    bindings.peek().add_pred(x);                          __.ln("just added " + c +" in bindings "+bindings);
                     // recursion step here, or ....?
                 }
                 continue;
             }
-            if (!ua.isEmpty()) {                        Tab.ln ("react: ua="+ua +" so going through ps to bind vars");
-              for (Compound cp : ps) {                  Tab.ln ("react: trying cp="+cp+"with bindings="+bindings);
-                if (unify (c, cp, null)) {        Tab.ln ("react: unified");
-                    Context r = react (c.next);         Tab.ln ("react r=react (c.next, C)="+r);
+            if (!ua.isEmpty()) {                        __.ln ("react: ua="+ua +" so going through ps to bind vars");
+              for (Compound cp : ps) {                  __.ln ("react: trying cp="+cp+"with bindings="+bindings);
+                if (unify (c, cp, null)) {        __.ln ("react: unified");
+                    Context r = react (c.next);         __.ln ("react r=react (c.next, C)="+r);
                 }
               }
             }
-                else Tab.ln ("react: ua had no vars to bind");
+                else __.ln ("react: ua had no vars to bind");
         }
         Context C = bindings.peek();
-                                                                Tab.ln("react: returning "+C);
+                                                                __.ln("react: returning "+C);
                                                                 --call_depth;
-                                                                Tab.pop_trace();
+                                                                __.pop_trace();
         return C;
     }
 
@@ -428,70 +420,67 @@ public class Compound {
     // maybe stop dragging Context C around and refer to top of Context stack?
 
     private static Boolean unify (Compound T1, Compound T2, Compound to_do) {
-                                                    Tab.push_trace(true);
-                                                    if (++call_depth > 30) { Tab.ln ("call_depth>30, bailing"); return false; }
-        Boolean r = false;                          Tab.ln(""); Tab.ln ("unify (" + T1 + ", " + T2 + "):");
+                                                    __.push_trace(true);
+                                                    if (++call_depth > 30) { __.ln ("call_depth>30, bailing"); return false; }
+        Boolean r = false;                          __.ln(""); __.ln ("unify (" + T1 + ", " + T2 + "):");
 
         if (T1.n == Nucleus.THIS) {
-            Tab.ln ("THIS T1="+T1);
+            __.ln ("THIS T1="+T1);
             LinkedList<Compound> sym1 = T1.args;
             assertEquals(1,sym1.size());
             Compound sym = sym1.get(0);
-            //
-            // a = what sym is bound to; sym is a SOMEONE, SOMETHING, etc
-            //
-            Compound a = value_of(sym);
+
             bindings.peek().put (sym,T2);
             r = true;
         } else
         if (T2.n == Nucleus.THIS) {
-            Tab.ln ("THIS T2="+T2);
+            __.ln ("THIS T2="+T2);
             LinkedList<Compound> sym2 = T2.args;
             assertEquals(1,sym2.size());
             Compound sym = sym2.get(0);
             //
             // a = what sym is bound to; sym is a SOMEONE, SOMETHING, etc
             //
-            Tab.ln ("Getting value_of for sym="+sym);
-            Tab.ln ("   ...from bindings="+bindings);
+            __.ln ("Getting value_of for sym="+sym);
+            __.ln ("   ...from bindings="+bindings);
             Compound a = value_of(sym);
-            Tab.ln (" ...and value_of = "+a);
+            __.ln (" ...and value_of = "+a);
             bindings.peek().put (sym,T1);
             r = true;
         } else
-        if (T1.has_unbound_var()) {                         Tab.ln ("var T1=" + T1);
+        if (T1.has_unbound_var()) {                         __.ln ("var T1=" + T1);
             bindings.peek().put (T1,T2);
             r = true;
         } else
-        if (T2.has_unbound_var()) {                         Tab.ln ("var T2=" + T2);
+        if (T2.has_unbound_var()) {                         __.ln ("var T2=" + T2);
             bindings.peek().put (T2,T1);
             r = true;
         } else
-        if (T1.just_atom() && T2.just_atom()) {             Tab.ln ("trying to unify two atoms: " + T1.n + " == " + T2.n);
+        if (T1.just_atom() && T2.just_atom()) {             __.ln ("trying to unify two atoms: " + T1.n + " == " + T2.n);
             r = (T1.n == T2.n);
         } else
         if (T1.complex() && T2.complex()
          && T1.arity() == T2.arity()
-         && T1.n == T2.n) {                                 Tab.ln ("Try unifying " + T1 + " with " + T2);
+         && T1.n == T2.n) {                                 __.ln ("Try unifying " + T1 + " with " + T2);
                 Iterator<Compound> T1i = T1.args.iterator();
                 Iterator<Compound> T2i = T2.args.iterator();
                 r = true;
                 while (T1i.hasNext())  {
-                    if (!unify (T1i.next(), T2i.next(), to_do)) {  Tab.ln ("Failed to unify two args to unify");
+                    if (!unify (T1i.next(), T2i.next(), to_do)) {  __.ln ("Failed to unify two args to unify");
                         r = false;
                         break;
                     }
                 if (r) {
-                    Tab.ln ("all args bound for " + T1 +" and "+ T2);
+                    __.ln ("all args bound for " + T1 +" and "+ T2);
                 }
             }
         }
         // use the bindings created so far:
         if (to_do != null)
             react(to_do);
-                                             Tab.ln ("unify=" + r);
+                                             __.ln ("unify=" + r);
                                             --call_depth;
-                                            Tab.pop_trace();
+                                            __.pop_trace();
         return r;
     }
 
@@ -506,22 +495,18 @@ public class Compound {
         Compound run_list_end_ptr = null;
 
         for (Line Li : L) {
-            Compound blk = null;
-
-            if (Li.line.types.size() > 1) {                 Tab.ln ("build: Looks like unreduced type for lexeme " + Li.line.lexeme);
+            if (Li.line.types.size() > 1) {                 __.ln ("build: Looks like unreduced type for lexeme " + Li.line.lexeme);
                 break;
             }
-
             // Just calling TypedTree on an Li.line thats just IF <cond>
             // will apparently throw out the IF.
-
-            Tab.push_trace(false);
+            __.push_trace(false);
              LinkedList<Compound> npl = TypedTree.pl(Li.line,null);
-            Tab.pop_trace();
+            __.pop_trace();
 
   
-                                                        Tab.ln("build: npl=" + npl.toString());
-                                                        Tab.ln("Adding to compound...");
+                                                        __.ln("build: npl=" + npl.toString());
+                                                        __.ln("Adding to compound...");
             for (Compound c : npl) {
                 if (run_list == null)
                     run_list = c;
@@ -540,80 +525,80 @@ public class Compound {
 
     public static LinkedList<Compound> load_and_run(NestedLines nlp) {
 
-        Tab.reset();
-        Tab.trace(true);
+        __.reset();
+        __.trace(true);
 
-        Tab.ln ("----------- load_and_run: clear bindings & run list & preds ---------");
+        __.ln ("----------- load_and_run: clear bindings & run list & preds ---------");
         bindings.clear();
 
         new_Context();      // prevent empty stack exception
 
-        Tab.ln ("initial bindings =" + bindings);
+        __.ln ("initial bindings =" + bindings);
 
         call_depth = 0;
 
-        Tab.ln ("------------------- load_and_run: get query ---------------------------");
+        __.ln ("------------------- load_and_run: get query ---------------------------");
 
         Line last = nlp.lines.removeLast(); // last line will be query, for now
-        Tab.push_trace(false);
+        __.push_trace(false);
         LinkedList<Compound> npl = TypedTree.pl(last.line,null);
-        Tab.pop_trace();
-        Tab.ln ("npl=" + npl);
+        __.pop_trace();
+        __.ln ("npl=" + npl);
         Compound query = npl.get(0);
-        Tab.ln ("query=" + query);
+        __.ln ("query=" + query);
 
-        Tab.ln ("------------------- load_and_run: build: -----------------------------");
+        __.ln ("------------------- load_and_run: build: -----------------------------");
 
         // process all lines into NSM prolog, adding them to run_list
         // Needs handling of block structure; maybe make it recursive routine
         Compound run_list = build (nlp.lines);
         
-        Tab.ln ("----------- load_and_run: run_list & initial bindings ----------------");
+        __.ln ("----------- load_and_run: run_list & initial bindings ----------------");
 
         for (Compound ci = run_list; ci != null; ci = ci.next) {
-            Tab.ln (ci.toString());
+            __.ln (ci.toString());
         }
 
-        Tab.ln ("bindings = " + bindings);
+        __.ln ("bindings = " + bindings);
 
-        Tab.ln ("------------ load_and_run: running react on run_list -------------------");
+        __.ln ("------------ load_and_run: running react on run_list -------------------");
 
         Context C = react (run_list);
         if (C == null) {    // need to prep free vars first????
-            Tab.ln ("FAILED!!!!!!!!!!!!!");
+            __.ln ("FAILED!!!!!!!!!!!!!");
         } else {
-            Tab.ln ("SUCCESS ! ! ! !");
+            __.ln ("SUCCESS ! ! ! !");
         }
-        Tab.ln ("Context C=" + C);
-        Tab.ln ("bindings = " + bindings);
+        __.ln ("Context C=" + C);
+        __.ln ("bindings = " + bindings);
 
-        Tab.ln ("------------------- load_and_run: try running query ------------------");
+        __.ln ("------------------- load_and_run: try running query ------------------");
 
-        Tab.ln ("Bindings before running query:" + bindings);
-        Tab.ln ("query=" + query);
+        __.ln ("Bindings before running query:" + bindings);
+        __.ln ("query=" + query);
 
         Context r = react (query);
 
-        Tab.ln ("react returned " + r + " possibly for stupid reasons");
-        Tab.ln ("query now=" + query);
-        Tab.ln ("Bindings now: " + bindings);
-        Tab.ln ("~~~~~~~~~~~~~~~~ TO DO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        Tab.ln ("I get to do these things:");
-        Tab.ln ("Implement");
+        __.ln ("react returned " + r + " possibly for stupid reasons");
+        __.ln ("query now=" + query);
+        __.ln ("Bindings now: " + bindings);
+        __.ln ("~~~~~~~~~~~~~~~~ TO DO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        __.ln ("I get to do these things:");
+        __.ln ("Implement");
 
-        Tab.ln ("  CAN - done!");
-        Tab.ln ("  NOT - seems OK");
-        Tab.ln ("  multiline rules -- chained IFs inserted or ...");
-        Tab.ln ("  call -- may require meta, using WORDS as a handle on Compounds");
+        __.ln ("  CAN - done!");
+        __.ln ("  NOT - seems OK");
+        __.ln ("  multiline rules -- chained IFs inserted or ...");
+        __.ln ("  call -- may require meta, using WORDS as a handle on Compounds");
 
-        Tab.ln ("Figure out where my Prolog comb rule fits into the flow");
-        Tab.ln ("    (Maybe as first-level check on app()/combine() success, intrasentially?");
+        __.ln ("Figure out where my Prolog comb rule fits into the flow");
+        __.ln ("    (Maybe as first-level check on app()/combine() success, intrasentially?");
 
-        Tab.ln ("Red Queen arithmetic");
+        __.ln ("Red Queen arithmetic");
 
-        Tab.ln ("Cleaner handling of unrecognized words");
-        Tab.ln ("Change Title to Query");
-        Tab.ln ("A Run button, to get query output on web page");
+        __.ln ("Cleaner handling of unrecognized words");
+        __.ln ("Change Title to Query");
+        __.ln ("A Run button, to get query output on web page");
 
         Set<Nucleus> keys = bindings.peek().preds.keySet();
         LinkedList<Compound> whats_true = new LinkedList<Compound>();
@@ -621,8 +606,8 @@ public class Compound {
             LinkedList<Compound> cl = bindings.peek().preds.get(n);
             whats_true.addAll (cl);
         }
-        Tab.ln(""); Tab.ln("");
-        Tab.ln ("whats_true="+whats_true);
+        __.ln(""); __.ln("");
+        __.ln ("whats_true="+whats_true);
 
         return whats_true;
     }

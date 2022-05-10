@@ -4,16 +4,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.jsoup.select.NodeTraversor;
-import org.jsoup.safety.Whitelist;
 
 // mport org.jsoup.parseBodyFragment;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.html.HtmlRenderer;
@@ -24,7 +18,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import java.util.*;
 
 import com.example.demo.FlexmarkHTML;
-import com.example.demo.Tab;
+import com.example.demo.__;
 
 public class TestFlexmarkHTML {
 
@@ -47,7 +41,7 @@ public class TestFlexmarkHTML {
         for (Element element : elements) {
 
             switch (element.tagName()) {
-                case "p":   Tab.ln(element.text());
+                case "p":   __.ln(element.text());
                             break;
                 case "th":  if (C1 != null) {
                                 C2 = element.text();
@@ -57,16 +51,16 @@ public class TestFlexmarkHTML {
                             }
                             break;
                 case "td":  if (td1 != null) {
-                                Tab.ln(C1 + " " + td1 + " " + C2 + " " + element.text());
+                                __.ln(C1 + " " + td1 + " " + C2 + " " + element.text());
                                 td1 = null;
                             }
                             else {
                                 td1 = element.text();
                             }
                             break;
-                case "li":  Tab.ln ("\t" + element.text());
+                case "li":  __.ln ("\t" + element.text());
                             break;
-                default:    // Tab.ln (element.tagName());
+                default:    // __.ln (element.tagName());
                             break;
             }
         }
@@ -77,37 +71,37 @@ public class TestFlexmarkHTML {
 
         String html = renderer.render(document);
 
-        Tab.trace(false);
-        Tab.ln ("\nhtml renderer output:");
-        Tab.ln(html);
+        __.trace(false);
+        __.ln ("\nhtml renderer output:");
+        __.ln(html);
 
-        Tab.ln ("\nGetting just paragraphs:");
+        __.ln ("\nGetting just paragraphs:");
         Document doc = Jsoup.parseBodyFragment(html);
         Elements paras = doc.getElementsByTag("p");
         for (Element para : paras) {
             String paraText = para.text();
-            Tab.ln ("paragraph: " + paraText);
+            __.ln ("paragraph: " + paraText);
         }
 
-        Tab.ln ("\nGetting just data tags:");
+        __.ln ("\nGetting just data tags:");
         Elements tds = doc.getElementsByTag("td");
         for (Element td : tds) {
             String tdText = td.text();
-            Tab.ln ("td: " + tdText);
+            __.ln ("td: " + tdText);
         }
 
-        Tab.trace(false);
-        Tab.ln ("\ndoc.toString output:");
+        __.trace(false);
+        __.ln ("\ndoc.toString output:");
         String prettyHtml = doc.toString();
-        Tab.ln(prettyHtml);
+        __.ln(prettyHtml);
 
     }
 
     @Test
     public void main() throws Exception {
 
-        Tab.reset();
-        Tab.ln ("\n----------- Flexmark/Jsoup tryout ------------------\n");
+        __.reset();
+        __.ln ("\n----------- Flexmark/Jsoup tryout ------------------\n");
         
         Atom l = new Atom();
 
@@ -140,15 +134,15 @@ public class TestFlexmarkHTML {
 
         String html = renderer.render(document);
 
-        Tab.ln ("\nGetting just paragraphs:");
+        __.ln ("\nGetting just paragraphs:");
         Document doc = Jsoup.parseBodyFragment(html);
 
-        Tab.ln ("\nAll elements + text content:");
+        __.ln ("\nAll elements + text content:");
         test_HTML_to_NSM(doc);
     
-        Tab.ln ("\n--------------------------------------------------------");
+        __.ln ("\n--------------------------------------------------------");
 
    // need this or the next test fails????? wow
-        Tab.trace(true); 
+        __.trace(true); 
     }
 }

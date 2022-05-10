@@ -1,11 +1,5 @@
 package com.example.demo;
 
-import org.junit.jupiter.api.Assertions;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-
 import java.util.*;
 
 import com.example.demo.Valence;
@@ -25,8 +19,6 @@ public class Atom {
     public static Valence ModPred;
     public static Valence PredS;
 
-    private static Valence Good;
-    private static Valence Bad;
     public static Valence Someone;
     public static Valence Something;
 
@@ -61,8 +53,8 @@ public class Atom {
 //  -- evaluator/goodness -- "somewhat"
 //  -- intensifier - very
 
-        Tab.reset();
-        Tab.trace(false);
+        __.reset();
+        __.trace(false);
 
         for (Nucleus n : Nucleus.values()) {
             String sym = n.toString();
@@ -72,7 +64,7 @@ public class Atom {
             valences_for(sym).add(Valence.of (n,null,null));
         }
 
-        Tab.trace(false);
+        __.trace(false);
 
         Valence something = Valence.of (Nucleus.SOMETHING,null,null);
 //        Type sometime = O_(S,S);  //  Main.hs "tomorrow", should be same as c
@@ -83,12 +75,12 @@ public class Atom {
 //        Type some = Type.of (AUGType.THIS,null,null);  // when not modifying, so maybe not needed
         Valence good = Valence.of (Nucleus.GOOD,null,null);
         Valence bad = Valence.of (Nucleus.BAD,null,null);
-        Valence say = Valence.of (Nucleus.SAY, null, null);
+        // Valence say = Valence.of (Nucleus.SAY, null, null);
         Valence is = Valence.of (Nucleus.BE,null,null);
-        Valence live = Valence.of (Nucleus.LIVE,null,null);
+        // Valence live = Valence.of (Nucleus.LIVE,null,null);
         Valence true_ = Valence.of (Nucleus.TRUE,null,null);
 
-        Valence if_ = Valence.of (Nucleus.IF,null,null);
+        // Valence if_ = Valence.of (Nucleus.IF,null,null);
         Valence this_ = Valence.of(Nucleus.THIS,null,null);
         Valence maybe = Valence.of(Nucleus.MAYBE, null, null);
 
@@ -106,8 +98,6 @@ public class Atom {
         CondS = map (Cond,S, "CondS");
         ModPred = map (Pred,Pred, "ModPred");        // really needed?????????????????????????????
 
-        Good = good;
-        Bad = bad;
         Someone = someone;
         Something = something;
         //
@@ -287,9 +277,9 @@ public class Atom {
                 String sym = t.toString();
                 if (t == Nucleus.O_)
                         continue;
-                Tab.ln ("t=" + t + " string=" + sym + Valence.ls_str(valences_for(sym)));            
+                __.ln ("t=" + t + " string=" + sym + Valence.ls_str(valences_for(sym)));            
         }
-        Tab.ln ("<<<<<<<<<<<<<<<<<<<<< ALL TYPES >>>>>>>>>>>>>>>>>>>>>");
-        Tab.ln (Valence.all_valences());
+        __.ln ("<<<<<<<<<<<<<<<<<<<<< ALL TYPES >>>>>>>>>>>>>>>>>>>>>");
+        __.ln (Valence.all_valences());
     }
 }

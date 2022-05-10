@@ -1,9 +1,6 @@
 package com.example.demo;
 
-import org.junit.jupiter.api.Assertions;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
 
@@ -38,7 +35,7 @@ public class Sentence {
         for (String w : sa) {
             Set<Valence> tl = Atom.valences_for (w);
             if (tl == null) {
-                Tab.ln ("Word w=" + w + " not in Lexicon");
+                __.ln ("Word w=" + w + " not in Lexicon");
             }
             else
             // it shouldn't be new Tree (w), I think
