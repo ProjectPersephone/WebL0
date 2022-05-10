@@ -447,6 +447,8 @@ public class TypedTree implements Comparable<TypedTree> {
         assertNotNull(other_ttree);  Tab.ln ("app: apply " + this_ttree.str() + " to " + other_ttree.str());
         Set<TypedTree> result = new TreeSet<TypedTree>();
 
+        Tab.push_trace(false);
+
         Tab.ln ("Over " + this_ttree.types); Tab.o__();
         
         for (Valence t_this : this_ttree.types) {
@@ -507,6 +509,8 @@ public class TypedTree implements Comparable<TypedTree> {
             }
         }  Tab.__o();
          Tab.ln ("app()"); Tab.ln (" =" + TypedTree.ls_set(result));
+         Tab.pop_trace();
+         
         return result;
     }
 

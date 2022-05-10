@@ -69,6 +69,9 @@ public class TestTypedTree {
 
             Tab.ln ("TestTypedTree: Length of typed_trees = " + tl.size());
 
+            Tab.reset();
+            Tab.push_trace(true);
+
             Iterator<TypedTree> li = tl.iterator();
             while (li.hasNext()) {
                 TypedTree tt = li.next();
