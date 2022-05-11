@@ -1,0 +1,259 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+      <title>NSM AUG Parse Trees</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+      <link th:rel="stylesheet" th:href="@{/webjars/font-awesome/5.11.2/css/all.css} "/>
+
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    
+      <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+
+      <link rel="stylesheet" th:href="@{/css/main.css}"/>
+        
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">NSM Parse Trees</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="col-sm-12 mt-5">
+        <h1 th:text="${post.title}">Title</h1>
+        <div th:utext="${post.html}">Content</div>
+
+        <a th:href="@{/edit}" class="btn btn-primary">Go back</a>
+    </div>
+</div>
+
+            <!-- CLUES HERE FOR SENDING PREVIOUS TEXT BACK
+<div class="container">
+    <div class="row mt-5">
+        <div class="col">
+            <form method="post" th:object="${post}">
+            <!-- CLUES HERE FOR SENDING PREVIOUS TEXT BACK
+                <div class="form-group">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" placeholder="Title" autocomplete="off" class="form-control"
+                           th:field="*{title}"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">Content:</label>
+                    <textarea type="text" rows="4" id="content" placeholder="Content" class="form-control"
+                              th:field="*{content}" autocomplete="off"></textarea>
+                </div>
+
+
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+            -->
+
+<p></p><p></p>
+
+<main role="main" class="container" th:value="${message}" id="container">
+<!--
+ <form method="post" th:object="${post}">
+ -->
+
+ <p>test test test</p>
+    <script th:script="javascript">
+    
+        function tree_to_html (t) {
+            if (t.order == "BEFORE")
+                return ttree_to_html (t.before) + ' ' + ttree_to_html (t.after);
+            else
+                return ttree_to_html (t.after) + ' ' + ttree_to_html (t.before);
+        }
+
+        function spell_it_out (tt) {
+            if (tt.tree.order == "NEITHER")
+                return tt.tree.atom + " ";
+            if (tt.tree.order == "BEFORE")
+                return spell_it_out (tt.tree.before) + spell_it_out (tt.tree.after);
+            else
+            return spell_it_out (tt.tree.after) + spell_it_out (tt.tree.before);
+        }
+
+        function show_types (tt) {
+            var s = '';
+            for (const v of tt.types) {
+                s += v.type + " ";
+            }
+            return s;
+        }
+    
+        function ttree_to_html(tt) {
+            var s = "<li>";
+
+  // might work again . . . someday ...
+  //          s  = "<li data-jstree='{ \"selected\" : false, \"opened\" : true }'>";
+
+            s += "<b>" + spell_it_out (tt) + "</b>: ";
+            s += "<em>" + show_types(tt) + "</em>";
+
+            if (tt.hasOwnProperty ("block")) {
+                s += "* ";
+            }
+            if (tt.tree.order != "NEITHER") {
+                s += "<ul>" + tree_to_html(tt.tree) + "</ul>";
+            }
+
+            s += "</li>";
+    
+            return s;
+        }
+
+        function make_ttree_div (o) {
+
+            const obj = o;
+            var s = "";
+
+// Is this screwing things up?
+//            s += '<div id=\"container\">';
+            s += '<ul>';
+            for (const p of obj) {
+                s += ttree_to_html (p);
+            }
+            s += '</ul>';
+//            s += '</div>';
+
+            return s;
+        }
+
+
+// copypasta from https://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
+// XSS (cross-site scripting) risks here, among other issues
+
+        function HTMLescape (str) {
+
+            return str 
+                .replace(/&/g, '&amp;')
+                .replace(/>/g, '&gt;')
+                .replace(/</g, '&lt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
+        }
+
+        function rerender_nsm (tt) {
+            var s = "<li>";
+
+// might work again . . . someday ...
+//            s  = "<li data-jstree='{ \"selected\" : false, \"opened\" : true }'>";
+
+            spellout = spell_it_out (tt);
+            parseout = make_ttree_div ([tt]);
+
+            s += '<button type="button" class="btn btn-link" data-toggle="modal" data-target="#exampleModal2" ';
+            s +=         'data-words="' + HTMLescape (parseout) + '"';
+            s += '>';
+            s +=     spellout;
+            s += '</button>';
+
+            if (tt.hasOwnProperty ("block")) {
+                s += "<ul>";
+                    var l = tt.block.length;
+                    for (var i = 0; i < l; ++i) {
+                        s += rerender_nsm (tt.block[i]);
+                    }
+                s += "</ul>";
+            }
+
+            s += "</li>";
+    
+            return s;
+        }
+    
+        const d = document.getElementById("container");
+        const m = d.getAttribute("value");
+        const obj = JSON.parse (m);
+        var s = "";
+
+//        s += make_ttree_div (obj);
+
+        s += '<div id=\"container\">';
+        s += '<ul>';
+        for (const p of obj) {
+            s += rerender_nsm (p);
+        }
+        s += '</ul>';
+        s += '</div>';
+
+        d.innerHTML = s;
+    
+    </script>
+
+<!-- maybe this could work again . . . someday
+    <script>
+    $(function() {
+         $('#container').jstree();
+         $('#container').jstree().hide_icons();
+         $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    });
+    </script>
+-->
+
+<!-- This did work, based on https://frontbackend.com/thymeleaf/spring-boot-bootstrap-thymeleaf-modal -->
+
+<div class="container">
+            <th:block th:replace="_modals :: modal('exampleModal')">modal</th:block>
+            <th:block th:replace="_modals :: modal('exampleModal1')">modal</th:block>
+            <th:block th:replace="_modals :: modal('exampleModal2')">modal</th:block>
+</div>
+
+<script>
+    $('#exampleModal1').on('show.bs.modal', function () {
+        $.get("/modals/modal1", function (data) {
+            $('#exampleModal1').find('.modal-body').html(data);
+        })
+    });
+
+    $('#exampleModal2').on('show.bs.modal', function (e) {
+// inspired by https://stackoverflow.com/questions/33234209/parameter-from-button-to-modal-and-then-call-spring-controller
+        var name = $(e.relatedTarget).data('words');
+        $.get("/modals/modal2?name=" + name, function (data) {
+            $('#exampleModal2').find('.modal-body').html(data);
+        })
+    })
+</script>
+
+<!------------------------------------------------------------------------------>
+
+
+</main>
+
+</body>
+</html>

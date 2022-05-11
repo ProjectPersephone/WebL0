@@ -10,6 +10,20 @@
             "request": "launch",
             "mainClass": "com.example.demo.StartWebApplication",
             "projectName": "demo"
-        }
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)",
+            "request": "launch",
+            "mainClass": "",
+            "args": ""
+          },
+          {
+            "type": "java",
+            "name": "Debug (Attach)",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 8080
+          }
     ]
 }

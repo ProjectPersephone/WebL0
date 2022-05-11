@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"></html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://code.jquery.com/jquery-1.12.1.js"></script>
+  <!--
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  -->
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+
+  <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+  
+
+  <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+  <link th:rel="stylesheet" th:href="@{/webjars/font-awesome/5.11.2/css/all.css} "/>
+<!--
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+-->
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+<!--
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+-->
+
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+<script src="http://code.jquery.com/jquery-migrate-1.4.0.js"></script>
+<!--
+  <script src="http://code.jquery.com/jquery-migrate-3.0.0.js"></script>
+-->
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.0.9/themes/default/style.min.css" />
+<script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.0.9/jstree.min.js"></script>
+
+<!--
+<style>
+  /* Tooltip container */
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+  }
+  
+  /* Tooltip text */
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+   
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+  }
+  
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+  </style>
+-->
+
+
+</head>
+<body>
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+  <div class="container">
+      <a class="navbar-brand" href="/">NSM Parse Trees</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+              aria-controls="navbarResponsive"
+              aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+              <li class="nav-item active">
+                  <a class="nav-link" href="#">Home
+                      <span class="sr-only">(current)</span>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="#">About</a>
+              </li>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+
+<p></p><p></p>
+
+<main role="main" class="container" th:value="${message}" id="container">
+
+    <script th:script="javascript">
+    
+        function tree_to_html (t) {
+            return ttree_to_html (t.before) + ' ' + ttree_to_html (t.after);
+        }
+
+        function spell_it_out (tt) {
+            if (tt.tree.order == "NEITHER")
+                return tt.tree.atom + " ";
+            return spell_it_out (tt.tree.before) + spell_it_out (tt.tree.after);
+        }
+
+        function show_types (tt) {
+            s = '';
+            for (const v of tt.types) {
+                s += v.type + " ";
+            }
+            return s;
+        }
+    
+        function ttree_to_html(tt) {
+            s  = "<li data-jstree='{ \"selected\" : false, \"opened\" : true }'>";
+            s += "<b>" + spell_it_out (tt) + "</b>: ";
+            s += "<em>" + show_types(tt) + "</em>";
+
+            if (tt.hasOwnProperty ("block")) {
+                s += "* ";
+            }
+            if (tt.tree.order != "NEITHER") {
+                s += "<ul>" + tree_to_html(tt.tree) + "</ul>";
+            }
+
+            s += "</li>";
+    
+            return s;
+        }
+
+        const d = document.getElementById("container");
+        const m = d.getAttribute("value");
+        const obj = JSON.parse (m);
+        s = "";
+
+        s += '<div id=\"container\">';
+        s += '<ul>';
+        for (const p of obj) {
+            s += ttree_to_html (p);
+        }
+        s += '</ul>';
+        s += '</div>';
+
+        // d.innerHTML = '<div id=\"container\"><ul>' + ttree_to_html (obj[0]) + '</ul></div>';
+        d.innerHTML = s;
+    
+    </script>
+
+    <script>
+
+         $('#container').jstree();
+         $('#container').jstree().hide_icons();
+   //    $(document).ready(function(){ $('[data-toggle="tooltip"]').tooltip(); });
+
+
+   $(function() {
+        $('body').tooltip({
+              selector: '[data-toggle="tooltip"]',
+              html:true,  // doesn't help
+              sanitize:false // doesn't help either
+          });
+    })
+    </script>
+    
+</main>
+
+<script>
+
+</script>
+
+</body>
+</html>

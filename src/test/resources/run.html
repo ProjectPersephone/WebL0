@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Spring Boot Thymeleaf Application - Bootstrap Markdown Editor</title>
+    <title>WebL0 program output</title>
 
     <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
     <link th:rel="stylesheet" th:href="@{/webjars/font-awesome/5.11.2/css/all.css} "/>
@@ -14,7 +14,7 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div class="container">
-        <a class="navbar-brand" href="/">Thymeleaf - Bootstrap Markdown Editor</a>
+        <a class="navbar-brand" href="/">WebL0 program output</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
                 aria-controls="navbarResponsive"
                 aria-expanded="false" aria-label="Toggle navigation">
@@ -35,28 +35,20 @@
     </div>
 </nav>
 
+<p><span th:text="${name}">Our App</span></p>
+
 <div class="container">
     <div class="row mt-5">
         <div class="col">
             <form method="post" th:object="${post}">
 
-                <div class="form-group">
-                    <label for="title">Title:</label>
-                    <input type="text" id="title" placeholder="Title" autocomplete="off" class="form-control"
-                           th:field="*{title}"/>
-                </div>
-
-                <div class="form-group">
-                    <label for="content">Content:</label>
-                    <textarea type="text" rows="4" id="content" placeholder="Content" class="form-control"
-                              th:field="*{content}" autocomplete="off"></textarea>
-                </div>
-
-                <button class="btn btn-primary" type="submit">Submit</button>
+                ${post}
+                <a th:href="@{/edit}" class="btn btn-primary">Edit</a>
             </form>
         </div>
     </div>
 </div>
+
 
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>

@@ -7,24 +7,69 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.5.13</version>
 		<relativePath/> <!-- lookup parent from repository -->
+		<!--<version>2.1.5.RELEASE</version> -->
+		<!-- according to code in frontbackend.com link (see below) -->
 	</parent>
+
 	<groupId>com.example</groupId>
 	<artifactId>demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>demo</name>
 	<description>Demo project for Spring Boot</description>
+
+<!-- much copying from https://frontbackend.com/thymeleaf/spring-boot-bootstrap-thymeleaf-markdown-editor -->
+
 	<properties>
 		<java.version>8</java.version>
+        <bootstrap.version>4.0.0-2</bootstrap.version>
+        <webjars-locator.version>0.30</webjars-locator.version>
+        <lombok.version>1.18.2</lombok.version>
+        <font-awesome.version>5.11.2</font-awesome.version>
+        <commonmark.version>0.13.1</commonmark.version>
 	</properties>
+
 	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>${bootstrap.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>webjars-locator</artifactId>
+            <version>${webjars-locator.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>font-awesome</artifactId>
+            <version>${font-awesome.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atlassian.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>${commonmark.version}</version>
+        </dependency>
+
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -33,28 +78,26 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+
+		<!-- end of dependencies from frontbackend.com code -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-<!-- adding old pom.xml dependencies back in here-->
 
 		<dependency>
         	<groupId>org.junit.jupiter</groupId>
@@ -63,35 +106,33 @@
         	<scope>provided</scope>
     	</dependency>
 
-
-				<!-- at https://frontbackend.com/thymeleaf/spring-boot-bootstrap-thymeleaf-markdown-editor
-		     this is com.atlassian.commonmark; try org.commonmark first to
-			 see if w can keep table extension on the first try; if it fails,
-			 see if Atlassian has that extension by default -->
-			 
-		<dependency>
-			<groupId>org.commonmark</groupId>
-				<artifactId>commonmark</artifactId>
-				<version>0.17.2</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.commonmark</groupId>
-			<artifactId>commonmark-ext-gfm-tables</artifactId>
-			<version>0.17.2</version>
-		</dependency>
-
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<version>1.1.1</version>
 		</dependency>
 
+<!-- might go back to this at some point, especially if there's table support: -->
+
 		<dependency>
 			<groupId>com.vladsch.flexmark</groupId>
 			<artifactId>flexmark-all</artifactId>
 			<version>0.62.2</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery</artifactId>
+			<version>3.6.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.webjars/popper.js -->
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>popper.js</artifactId>
+			<version>1.12.9-1</version>
+		</dependency>
+
 
 	</dependencies>
 
