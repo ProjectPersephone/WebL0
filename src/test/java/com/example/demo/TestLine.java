@@ -14,7 +14,7 @@ public class TestLine  {
     @Test
     public void main () {
         __.reset();
-        Atom llllll = new Atom();
+        Atoms llllll = new Atoms();
         __.ln ("----- TestRPline ------");
         String Str_3 = "I IS BAD";
         Sentence S = new Sentence (Str_3);

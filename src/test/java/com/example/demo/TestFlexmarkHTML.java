@@ -103,7 +103,7 @@ public class TestFlexmarkHTML {
         __.reset();
         __.ln ("\n----------- Flexmark/Jsoup tryout ------------------\n");
         
-        Atom l = new Atom();
+        Atoms l = new Atoms();
 
         MutableDataSet options = new MutableDataSet();
 

@@ -11,7 +11,7 @@ import com.example.demo.Order;
 import com.example.demo.Nucleus;
 import com.example.demo.Valence;
 import com.example.demo.Splits;
-import com.example.demo.Atom;
+import com.example.demo.Atoms;
 import com.example.demo.Compound;
 
 import com.example.demo.__;
@@ -88,7 +88,7 @@ public class TypedTree implements Comparable<TypedTree> {
         Valence v = get_type(tt);
         if (tt != null)
             __.ln ("substantive: tt=" + tt.str());
-        Boolean r = (v.x == Atom.Someone || v.x == Atom.Something);
+        Boolean r = (v.x == Atoms.Someone || v.x == Atoms.Something);
         __.ln ("returning " + r);
         return r;
     }
@@ -139,7 +139,7 @@ public class TypedTree implements Comparable<TypedTree> {
     sentence (TypedTree before, TypedTree after, TypedTree arg) {
         __.ln ("sentence:");
         LinkedList<Compound> s = new LinkedList<Compound>();
-        if (before != null && before.types.contains(Atom.CondS)) {
+        if (before != null && before.types.contains(Atoms.CondS)) {
             __.ln ("before: Conds");
             LinkedList<Compound> if_constr = new LinkedList<Compound>();
             Compound an_if = new Compound(Nucleus.IF);
@@ -173,14 +173,14 @@ public class TypedTree implements Comparable<TypedTree> {
         TypedTree before = tt.before;
         TypedTree after = tt.after;
 
-        if (tt.types.contains(Atom.S)
-         || tt.types.contains(Atom.Cond)
-         || tt.types.contains(Atom.Conseq)) {                       lookit("<*>", Atom.S,tt, arg);
+        if (tt.types.contains(Atoms.S)
+         || tt.types.contains(Atoms.Cond)
+         || tt.types.contains(Atoms.Conseq)) {                       lookit("<*>", Atoms.S,tt, arg);
             s = add_ls_arg (s, sentence (before, after, arg));
             __.ln ("...s = " + s); 
         } else
-        if (tt.types.contains(Atom.Pred)
-         || tt.types.contains(Atom.ModPred)) {                        lookit("Pred/ModPred", Atom.Pred,tt, arg);
+        if (tt.types.contains(Atoms.Pred)
+         || tt.types.contains(Atoms.ModPred)) {                        lookit("Pred/ModPred", Atoms.Pred,tt, arg);
             if (lexeme != null) {
                 String functor = lexeme;
                 LinkedList<Compound> a = null;
@@ -194,9 +194,9 @@ public class TypedTree implements Comparable<TypedTree> {
                 functor = before.lexeme;
                 s = funkify (functor, s);
             }
-            __.ln ("" + Atom.Pred + "/" + Atom.ModPred + ": s="+s);
+            __.ln ("" + Atoms.Pred + "/" + Atoms.ModPred + ": s="+s);
         } else 
-        if (tt.types.contains(Atom.PredS)) {
+        if (tt.types.contains(Atoms.PredS)) {
             String functor;
             if (after != null) {
                 functor = after.lexeme;
@@ -210,7 +210,7 @@ public class TypedTree implements Comparable<TypedTree> {
             }
                 else s = funkify (lexeme, pl(arg, null));
         } else
-        if (tt.types.contains(Atom.Subst)) {
+        if (tt.types.contains(Atoms.Subst)) {
             __.ln ("Subst: ");
             if (lexeme != null) {
                 s = add_ls_arg(s, lexeme);                                              __.ln ("s = " + s);
@@ -221,11 +221,11 @@ public class TypedTree implements Comparable<TypedTree> {
             }
             __.ln ("Subst: s=" + s);
         } else
-        if (lexeme == null && (type.y == Atom.Someone || type.y == Atom.Something)) {
+        if (lexeme == null && (type.y == Atoms.Someone || type.y == Atoms.Something)) {
             __.ln ("lexeme == null && type.y == Lexicon.Someone");
             s = add_ls_arg(s, pl (after, before));                                   __.ln ("s = " + s);
         } else
-        if (type.y == Atom.Pred && after != null) {      // was for x + good/bad / good/bad + x
+        if (type.y == Atoms.Pred && after != null) {      // was for x + good/bad / good/bad + x
             __.ln("type.y == Lexicon.Pred && after != null");
             if (lexeme == null) {
                 if (substantive(after)) {
@@ -236,7 +236,7 @@ public class TypedTree implements Comparable<TypedTree> {
             } else
                 s = add_ls_arg(s, pl (after,before));                                    __.ln ("s = " + s);
         } else {
-            __.ln("Default:");     lookit("<*>", Atom.S,tt, arg);
+            __.ln("Default:");     lookit("<*>", Atoms.S,tt, arg);
 
             // s = add_ls_arg (s, sentence (before, after, arg)) // could be infinite loop???
 
@@ -271,23 +271,23 @@ public class TypedTree implements Comparable<TypedTree> {
         Valence type = get_type(this);
         Valence before_type = get_type(before);
 
-        if (type == Atom.S || type == Atom.Conseq || type == Atom.Cond) {
-            if (before_type == Atom.Subst) {
+        if (type == Atoms.S || type == Atoms.Conseq || type == Atoms.Cond) {
+            if (before_type == Atoms.Subst) {
                 s.addAll(after.pl2 (before));
             } else
-            if (before_type == Atom.CondS) {
+            if (before_type == Atoms.CondS) {
                 s.addAll(before.pl2 (null));
                 s.addAll(after.pl2 (null));
             }
         } else
-        if (type == Atom.Subst) {
+        if (type == Atoms.Subst) {
             if (lexeme == null) { // modified
                 s.addAll(after.pl2 (before));
             } else {                  // raw
                 s.add(new Compound(type.n));
             }
         } else
-        if (type == Atom.PredS) {
+        if (type == Atoms.PredS) {
             if (lexeme == null) { // complex
                 s.addAll (before.pl2 (after));
             } else {
@@ -445,12 +445,12 @@ public class TypedTree implements Comparable<TypedTree> {
 
             TreeSet<Valence> lx;
 
-            __.ln (t_this.toString() + Valence.ls_str (Atom.valences_for(t_this.toString())) + "...applying...");
+            __.ln (t_this.toString() + Valence.ls_str (Atoms.valences_for(t_this.toString())) + "...applying...");
             if (t_this.n == Nucleus.O_) {
                 lx = new TreeSet<Valence>();                           __.ln ("...to  = " + t_this + " with just " + Valence.ls_str(lx));
                 lx.add (t_this);
             } else {
-                lx = Atom.valences_for(t_this.toString());          __.ln ("...to  = " + t_this + " including " + Valence.ls_str(lx));
+                lx = Atoms.valences_for(t_this.toString());          __.ln ("...to  = " + t_this + " including " + Valence.ls_str(lx));
             }
 
             for (Valence t_this_x : lx) 

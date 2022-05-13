@@ -68,7 +68,7 @@ public class TestCache {
     @Test
     public void main() throws Exception {
         __.reset();
-        Atom l = new Atom();
+        Atoms l = new Atoms();
         LinkedList<TypedTree> l_tt;
 
         String Str_2w = "SAY SOMETHING";

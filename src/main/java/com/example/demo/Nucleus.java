@@ -1,9 +1,15 @@
 package com.example.demo;
 
 public enum Nucleus {
-//     T,        // from paper; should try to eliminate
+//     T,        // from Hudak, et al. paper; eliminated
 //     S,        // predicates could reduce to this??? check
      O_,        // combinator op // should this still be here?
+
+     // need some way to indicate blocks; presently done
+     // with the Line/Lines class
+     block_,        // begins with indentation; every eol should add an S to a block.
+                    // including top-level scope.
+     block_end_,    // block ends with dedent.
 
      I,
      YOU,
@@ -16,8 +22,6 @@ public enum Nucleus {
      PART,
      WORDS,
 */
-
-
      THIS,
 /*
      THE_SAME,

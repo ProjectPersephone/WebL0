@@ -8,8 +8,11 @@ import com.example.demo.TypedTree;
 // "Element" probably better, with "Atom" being a single instance of an Element,
 //    "Compound" combinations of Atoms,
 //    and "Molecule" being a stable definition of a Compound
-public class Atom {
-    private static HashMap<String,TreeSet<Valence>> map;
+public class Atoms {
+    private static HashMap<String,TreeSet<Valence>> map
+        // = new HashMap<String,TreeSet<Valence>>()
+        ;
+
     public static Valence S;
     public static Valence Pred;
     public static Valence Subst; // SAY, THINK ....
@@ -44,17 +47,16 @@ public class Atom {
             return Valence.of (Nucleus.O_, x, y, label);
     }
 
-    public Atom() {
-
-        map = new HashMap<String,TreeSet<Valence>>();
+    public Atoms() {
+            map = new HashMap<String,TreeSet<Valence>>();
 
 //  somewhether IF
 //  somemuch(?) SOME -- quantifier
 //  -- evaluator/goodness -- "somewhat"
 //  -- intensifier - very
 
-        __.reset();
-        __.trace(false);
+                                                __.reset();
+                                                __.trace(false);
 
         for (Nucleus n : Nucleus.values()) {
             String sym = n.toString();
@@ -64,7 +66,7 @@ public class Atom {
             valences_for(sym).add(Valence.of (n,null,null));
         }
 
-        __.trace(false);
+                                                __.trace(false);
 
         Valence something = Valence.of (Nucleus.SOMETHING,null,null);
 //        Type sometime = O_(S,S);  //  Main.hs "tomorrow", should be same as c
@@ -277,9 +279,9 @@ public class Atom {
                 String sym = t.toString();
                 if (t == Nucleus.O_)
                         continue;
-                __.ln ("t=" + t + " string=" + sym + Valence.ls_str(valences_for(sym)));            
+                                        __.ln ("t=" + t + " string=" + sym + Valence.ls_str(valences_for(sym)));            
         }
-        __.ln ("<<<<<<<<<<<<<<<<<<<<< ALL TYPES >>>>>>>>>>>>>>>>>>>>>");
-        __.ln (Valence.all_valences());
+                                        __.ln ("<<<<<<<<<<<<<<<<<<<<< ALL TYPES >>>>>>>>>>>>>>>>>>>>>");
+                                        __.ln (Valence.all_valences());
     }
 }

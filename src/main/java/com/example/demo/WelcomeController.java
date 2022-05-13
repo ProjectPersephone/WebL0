@@ -38,28 +38,17 @@ import java.util.Set;
 import com.example.demo.Cache;
 import com.example.demo.__;
 import com.example.demo.Compound;
+import com.example.demo.Visitor;
 
 @Controller
 @RequestMapping("/")
 public class WelcomeController {
 
-    private static Atom L = new Atom();
-    private static FileWriter myFileWriter;
-    String prolog_output_filename = "output.pl";
+    Atoms ___ = new Atoms();
 
     // inject via application.properties
     @Value("${welcome.message}")
     private String message;
-
-    private List<String> tasks = Arrays.asList(
-        "Figure out why ServletInitializer stuff needed before",
-        "Try to fully parameterized for the name Deliberatorium",
-        "Why does addAttribute take a couple of different types?",
-        "inject via application.properties -- how does this work?",
-        "Back to getting junit tests working again",
-        "look into multilingualism",
-        "make argument tree active",
-        "icons for argument tree for question, comment, etc.");
 
     @GetMapping
     public String main(Model model) {
@@ -88,69 +77,18 @@ public class WelcomeController {
         return "edit";
     }
 
-    private void markdownToParses (String content) {
-        Node doc = markdownToDocument (content);
-
-        String  s = doc.toString();
-
-        __.ln ("markdownToParses: doc.toString() = " + s);
-    }
-
-    @GetMapping("/run")
-    public String mainRun(@RequestParam(name="name", required = false, defaultValue = "Ahmed") String name) {
-        System.out.println ("Hit run ...");
-        /*
-        Post p = new Post();
-        String h = "<h1>Blah</h1>";
-        p.setHtml(h);
-        model.addAttribute("post", p);
-        */
-
-        return "run";
-    }
-
-    @PostMapping("/run")
-    public String run(Post post, Model model) {
-        __.reset();
-        __.push_trace(true);
-
-        if (post == null) {
-            __.ln ("save: post is null, strangely....");
-        }
-
-        String content = post.getContent();
-
-        __.ln ("In /run, content = " + content);
-        __.pop_trace();
-        return ("run");
-    }
-
     @PostMapping("/edit")
     public String save(Post post, Model model) {
-
-        __.reset();
-        __.push_trace(true);
-
+                                                                __.reset();
+                                                                __.push_trace(true);
         if (post == null) {
-            __.ln ("save: post is null, strangely....");
+                                                                __.ln ("save: post is null, strangely....");
         }
-
-        String content = post.getContent();
-
-        __.ln ("In /edit:save, content = " + content);
+        String content = post.getContent();                     __.ln ("In /edit:save, content = " + content);
 
         if (content == null) {
-            model.addAttribute("post", null);
-            __.pop_trace();
+            model.addAttribute("post", null);                   __.pop_trace();
             return "saved";
-        }
-
-//        markdownToParses (content);
-        try {
-            myFileWriter = new FileWriter(prolog_output_filename);
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
         }
 
         Visitor v = new Visitor();  
@@ -158,26 +96,19 @@ public class WelcomeController {
         doc.accept(v);
         v.indented.show();
         v.indented.postprocess();  // cross fingers ...
-        __.reset();
-//        __.trace(true);
+                                                                __.reset();
         v.indented.show();
-//        __.trace(false);
-
-        __.trace(true);
-        TypedTree.nested_pp(v.indented);
-        __.trace(false);
+                                                                __.trace(true);
+        TypedTree.nested_pp(v.indented);                        __.trace(false);
 
         LinkedList<Compound> results = Compound.load_and_run(v.indented);
-
-        __.ln ("");
-        __.ln ("---------------------------------------------------------------");
-        __.ln ("Results: " + results);
-        __.ln ("---------------------------------------------------------------");
-
+                    __.ln ("");
+                    __.ln ("---------------------------------------------------------------");
+                    __.ln ("Results: " + results);
+                    __.ln ("---------------------------------------------------------------");
         String h = markdownToHTML(content); // linebreaks lost even tho editor keeps
         String[] lines = content.split("\\R");
-        // String s = ""; // this really needs to be an array of strings
-                        // and processed as such on the template side
+        // String s = ""; // really need string array, processed on HTML template side
         
         h += "<i>Answer:</i><p>";
         for (Compound c : results) {
@@ -186,24 +117,13 @@ public class WelcomeController {
         h += "</p>";
         post.setHtml(h);
 
-        JSONArray ja_new = v.toJSON();
-        __.ln ("Array of JSON parses with blocks=" + ja_new);
+        JSONArray ja_new = v.toJSON();              __.ln ("Array of JSON parses with blocks=" + ja_new);
 
-        String jas = ja_new.toString();
-
-        __.ln ("Array of JSON parses=" + jas);
+        String jas = ja_new.toString();             __.ln ("Array of JSON parses=" + jas);
 
         model.addAttribute("message", jas);
         model.addAttribute("post", post);
-
-        try {
-            myFileWriter.close();
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
-
-        __.pop_trace();
+                                                        __.pop_trace();
         return "saved";
     }
 
@@ -214,76 +134,6 @@ public class WelcomeController {
         return renderer.render(document);
     }
 
-    class Visitor extends AbstractVisitor {
-        public NestedLines indented = new NestedLines();
-
-        @Override
-        public void visit (BulletList bl) {
-            __.ln ("Hitting a BulletList: " + bl);
-            
-            __.ln ("Calling visitChildren");
-            indented.indent();
-            visitChildren(bl);
-            indented.dedent();
-        }
-
-        @Override
-        public void visit(Text text) {
-
-            int wordCount = text.getLiteral().split("\\W+").length; // ???
-            String Str_nw = text.getLiteral();
-            Sentence S = new Sentence (Str_nw);
-            __.reset();
-            __.trace(false);
-            Cache C = Cache.cache (S);
-            LinkedList<TypedTree> tt_ls = C.get(0,0);
-            if (tt_ls.isEmpty()) {
-                __.ln ("visit: empty tt_ls");
-                return;
-            }
-            TypedTree tt = tt_ls.get(0);
-            __.ln (wordCount + " words in " + text.getLiteral() + ": " + tt.str());
-            __.reset();
-            __.trace(true);
-            try {
-                String pl = tt.prolog();
-                pl += ",\n";
-                 myFileWriter.write(pl);
-                 __.ln("*** Wrote " + pl + " to " + prolog_output_filename + " ***");
-            } catch (IOException e) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
-            }
-            __.trace(false);
-            indented.add (tt);
-        }
-
-        private JSONArray toJSONArray_helper (LinkedList<Line> ll) {
-            JSONArray ja = new JSONArray();
-
-            __.ln ("In toJSONArray_helper");
-
-            for (Line ln : ll) {
-                __.ln ("tab level = " + ln.level);
-                JSONObject json = TypedTreeToJSON (ln.line);
-                if (ln.block != null && ln.block.size() != 0) {
-                    JSONArray sub = toJSONArray_helper(ln.block);
-                    json.put ("block", sub);
-                    __.ln ("adding to block: " + sub.toString());
-                }
-                ja.add (json);
-                JSONTypedTreeShow (json);
-            }
-
-            __.ln ("Exiting toJSONArray_helper with ja = " + ja.toString());
-            return ja;
-        }
-        // assume postprocessed already
-        public JSONArray toJSON() {
-            return toJSONArray_helper (indented.lines);
-        }
-    }
-
     private Node markdownToDocument (String markdown) {
         Parser parser = Parser.builder().build();
         Node node = parser.parse(markdown);
@@ -291,16 +141,10 @@ public class WelcomeController {
         return node;
     }
 
-    private JSONObject documentToJSON (Document d) {
-        JSONObject json = new JSONObject();
-
-        return json;
-    }
-
+    /*
 // should really look at whether Jackson can do most of this JSON construction
 
     public static String OrderToJSON(Order order) {
-    //    return "\"" + order + "\"";
         return order.toString();
     }
 
@@ -338,52 +182,40 @@ public class WelcomeController {
         return o;
     }
 
-    public static void JSONTypedTreeShow (JSONObject o) {
-//-        __.ln ("JSONTypedTreeShow entered");
-        assertNotNull (o);
-//-                __.ln ("getting types JSONTypedTreeShow entered");
+    public static void JSONTypedTreeShow (JSONObject o) {   //- __.ln ("JSONTypedTreeShow entered");
+        assertNotNull (o);                                  //- __.ln ("getting types JSONTypedTreeShow entered");
         JSONArray ty_ls = (JSONArray) o.get("types");
-        assertNotNull (ty_ls);
-//-                __.ln ("getting first elt of type list ");
+        assertNotNull (ty_ls);                              //-  __.ln ("getting first elt of type list ");
         JSONObject ot = (JSONObject) ty_ls.get(0);
-        assertNotNull (ot);
-//-                __.ln ("getting type of tree node");
+        assertNotNull (ot);                                 //-  __.ln ("getting type of tree node");
         String ty = (String) ot.get("type");
-        assertNotNull (ty);
-//-                __.ln ("getting tree stuff");
+        assertNotNull (ty);                                 //-  __.ln ("getting tree stuff");
         JSONObject tr = (JSONObject) o.get ("tree");
 
-        assertNotNull (tr);
-//-                __.ln ("getting app order");
+        assertNotNull (tr);                                 //- __.ln ("getting app order");
         String ord  = (String) tr.get ("order");
-        assertNotNull (ord);
-//-                __.ln ("ord=" + ord);
+        assertNotNull (ord);                                //- __.ln ("ord=" + ord);
         if (ord != "NEITHER") {
-            __.ln ("[" + ty + "]");
-//-                    __.ln ("getting before");
+            __.ln ("[" + ty + "]");                         //- __.ln ("getting before");
             JSONObject b = (JSONObject) tr.get ("before");
-            assertNotNull (b);
-//-                    __.ln ("getting after");
+            assertNotNull (b);                              //- __.ln ("getting after");
             JSONObject a = (JSONObject) tr.get ("after");
             assertNotNull (a);
             JSONTypedTreeShow (b);
             JSONTypedTreeShow (a);
         }
-        if (ord == "NEITHER") {
-//-                    __.ln ("getting atom");
+        if (ord == "NEITHER") {                             //- __.ln ("getting atom");
             String atom = (String) tr.get ("atom");
-            assertNotNull (atom);
-            __.ln ("\"" + atom + "\" [" + ty + "]");
+            assertNotNull (atom);                           //- __.ln ("\"" + atom + "\" [" + ty + "]");
         }
 
     }
+    */
 
     // maybe broken now ---
     @GetMapping("/sandbox")
     public String sandbox(Model model) {
-
-        __.reset();
-
+                                                                __.reset();
         // String Str_nw = "IF I THINK I IS BAD";
         String Str_nw = "I SAY I IS BAD";
         Sentence S = new Sentence (Str_nw);
@@ -393,11 +225,10 @@ public class WelcomeController {
         // TypedTree tt = tt_ls.get(0);
         String s = "";
         for (TypedTree tt : tt_ls) {
-            JSONObject json = TypedTreeToJSON (tt);
+            JSONObject json = Visitor.TypedTreeToJSON (tt);
             s += json.toString();
-            System.out.println ("s=" + s);
-            __.reset();
-            JSONTypedTreeShow (json);
+            System.out.println ("s=" + s);                      __.reset();
+            Visitor.JSONTypedTreeShow (json);
         }
 
         model.addAttribute("message", s);

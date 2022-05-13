@@ -8,7 +8,7 @@ import com.example.demo.Order;
 import com.example.demo.Nucleus;
 import com.example.demo.Valence;
 import com.example.demo.TypedTree;
-import com.example.demo.Atom;
+import com.example.demo.Atoms;
 
 public class Sentence {
     public LinkedList<TypedTree> tt_list;
@@ -33,12 +33,11 @@ public class Sentence {
         String[] sa = s.split(" ");
         assertNotNull (sa);
         for (String w : sa) {
-            Set<Valence> tl = Atom.valences_for (w);
+            Set<Valence> tl = Atoms.valences_for (w);
             if (tl == null) {
                 __.ln ("Word w=" + w + " not in Lexicon");
             }
             else
-            // it shouldn't be new Tree (w), I think
                 tt_list.add (new TypedTree (tl, Order.NEITHER, w, null, null));
         }
     }
