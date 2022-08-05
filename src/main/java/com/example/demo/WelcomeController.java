@@ -39,6 +39,7 @@ import com.example.demo.Cache;
 import com.example.demo.__;
 import com.example.demo.Compound;
 import com.example.demo.Visitor;
+import com.example.demo.WordVisitor;
 
 @Controller
 @RequestMapping("/")
@@ -81,8 +82,7 @@ public class WelcomeController {
     public String save(Post post, Model model) {
                                                                 __.reset();
                                                                 __.push_trace(true);
-        if (post == null) {
-                                                                __.ln ("save: post is null, strangely....");
+        if (post == null) {                                     __.ln ("save: post is null, strangely....");
         }
         String content = post.getContent();                     __.ln ("In /edit:save, content = " + content);
 
@@ -91,8 +91,30 @@ public class WelcomeController {
             return "saved";
         }
 
-        Visitor v = new Visitor();  
+                                                __.push_trace(true);
         Node doc = markdownToDocument(content);
+        WordVisitor wv = new WordVisitor();
+        WordVisitor.init();
+        doc.accept(wv);
+
+                                                __.ln ("Word list");
+        for (String s : WordVisitor.word_list) {
+            __.ln ("-> " + s);
+        }
+        LinkedList<TypedTree> glommed = Sentence.Glom(WordVisitor.word_list);
+                                                __.pop_trace();
+
+                                                __.push_trace(true);
+        Cache Cwv = Cache.cache (null, glommed);
+
+        __.ln ("-------------- Cwv -----------");
+        __.ln ("Cwv.c = " + Cwv.c);
+        __.ln ("");
+        __.ln (TypedTree.ls_ls_ls_str (Cwv.c));
+        __.ln ("------------------------------");
+                                                __.pop_trace();       
+        Visitor v = new Visitor();  
+//        Node doc = markdownToDocument(content);
         doc.accept(v);
         v.indented.show();
         v.indented.postprocess();  // cross fingers ...
@@ -106,6 +128,7 @@ public class WelcomeController {
                     __.ln ("---------------------------------------------------------------");
                     __.ln ("Results: " + results);
                     __.ln ("---------------------------------------------------------------");
+        
         String h = markdownToHTML(content); // linebreaks lost even tho editor keeps
         String[] lines = content.split("\\R");
         // String s = ""; // really need string array, processed on HTML template side

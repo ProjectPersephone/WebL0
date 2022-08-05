@@ -10,6 +10,10 @@ import com.example.demo.Valence;
 import com.example.demo.TypedTree;
 import com.example.demo.Atoms;
 
+// For now, a "Sentence" can also be all words of a text glommed together;
+// use the constructor Sentence (LinkedList<String>) for this case.
+// Need a new class eventually, and maybe retire this one.
+
 public class Sentence {
     public LinkedList<TypedTree> tt_list;
 
@@ -40,6 +44,20 @@ public class Sentence {
             else
                 tt_list.add (new TypedTree (tl, Order.NEITHER, w, null, null));
         }
+    }
+
+    static public LinkedList<TypedTree> Glom (LinkedList<String> ss) {
+        LinkedList<TypedTree> tts = new LinkedList<TypedTree>();
+        for (String w : ss) {
+            Set<Valence> tl = Atoms.valences_for (w);
+            if (tl == null) {
+                __.ln ("Word w=" + w + " not in Lexicon");
+            }
+            else
+                tts.add (new TypedTree (tl, Order.NEITHER, w, null, null));
+        }
+
+        return tts;
     }
 
     public Sentence (LinkedList<TypedTree> tts) {

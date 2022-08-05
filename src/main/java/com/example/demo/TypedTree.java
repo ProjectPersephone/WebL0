@@ -103,9 +103,14 @@ public class TypedTree implements Comparable<TypedTree> {
     }
     static LinkedList<Compound>
     add_ls_arg(LinkedList<Compound> npl, String lexeme) {
-        Nucleus tl = Nucleus.valueOf(lexeme);
-        Compound np = new Compound(tl);
-        npl.add(np);
+        try {
+            Nucleus tl = Nucleus.valueOf(lexeme);
+            Compound np = new Compound(tl);
+            npl.add(np);
+        } catch (Exception e) {
+            System.out.println ("add_ls_arg: lexeme="+lexeme+" unrecognized...ignoring");
+            System.out.println ("e.getMessage()=" + e.getMessage());
+        }
         return npl;
     }
     static LinkedList<Compound> listify(LinkedList<Compound> npl, LinkedList<Compound> arg) {

@@ -27,22 +27,10 @@ public class TestAtoms {
         Set<Valence> w_types = Atoms.valences_for (w);
         assertNotNull(w_types);
         assertEquals(w_types.size(),1);
-/* change to "set" kills this:
-        Type trb = w_types.get(0);
-        assertEquals (trb,t);
-*/
     }
 
     @Test
     public void main() throws Exception {
         Atoms d = new Atoms();
-        /*
-        Type T = Type.term();
-        AUGType O = AUGType.O;
-        Type OTT = Type.of (O,T,T); // OTT is like an adjective
-
-        // readback (new String ("I"), T   );  // commented out after adding more types
-        readback (new String ("BAD"),   OTT );
-        */
     }
 }
