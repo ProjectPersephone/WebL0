@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+// import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.*;
 
 import com.example.demo.Nucleus;
@@ -22,7 +22,7 @@ public class Valence implements Comparable<Valence> {
 
     public int compareTo(Valence t) {
         int c = 0;
-        assertNotNull(t);
+        // assertNotNull(t);
 
         __.push_trace(false);
 
@@ -30,10 +30,12 @@ public class Valence implements Comparable<Valence> {
             __.ln ("comparing " + t  + " to " + this);
             if (n == Nucleus.O_ && t.n == Nucleus.O_) {
                 __.ln ("Both t and this are O-type");
+                /*
                 assertNotNull(x);
                 assertNotNull(y);
                 assertNotNull(t.x);
                 assertNotNull(t.y);
+                 */
 
                 c = x.compareTo (t.x);
                 if (c == 0)
@@ -52,7 +54,7 @@ public class Valence implements Comparable<Valence> {
     }
 
     public Valence fxy(Valence q) {
-        assertNotNull(q);
+        // assertNotNull(q);
 
         if (n == Nucleus.O_) {
             if (x.compareTo(q) == 0) {
@@ -98,8 +100,8 @@ public class Valence implements Comparable<Valence> {
         String s = this.n.name();
 
         if (n == Nucleus.O_) {
-            assertNotNull (x);
-            assertNotNull (y);
+            // assertNotNull (x);
+            // assertNotNull (y);
             return s + "(+" + x.toString() + "⥅" + y.toString() + ")";
         }
         else

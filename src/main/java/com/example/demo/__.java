@@ -1,7 +1,7 @@
 package com.example.demo;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+// import static org.junit.jupiter.api.Assertions.assertFalse;
+// import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Stack;
 
 public class __ {
@@ -27,13 +27,13 @@ public class __ {
     }
 
     private static int stackdepth() {
-        assertTrue(initialized);
+        // assertTrue(initialized);
         StackTraceElement a[] = Thread.currentThread().getStackTrace();
         return a.length;
     }
 
     public static void init() {
-        assertFalse(initialized);
+        // assertFalse(initialized);
         initialized = true;
         base_level = stackdepth() - 1; // -1 to account for this call to init
         flag_stack.clear();
@@ -48,7 +48,7 @@ public class __ {
     }
 
     public static String out() {
-        assertTrue(initialized);
+        // assertTrue(initialized);
         if (!flag_stack.peek()) return "";
 
         String tabs = new String("");
@@ -61,7 +61,7 @@ public class __ {
     }
 
     public static void ln(String S) {
-        assertTrue(initialized);
+        // assertTrue(initialized);
         if (!flag_stack.peek()) return;
         ++base_level;   // compensate for calling print
         System.out.println (out() + S);

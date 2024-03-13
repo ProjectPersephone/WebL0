@@ -1,4 +1,9 @@
 # WebL0
+To run with the command line in git bash: mvn spring-boot:run
+Then point your browser at http://localhost:8080
+
+What this is:
+
 Front- and back-end for tools using Natural Semantic Metalanguage (NSM), Applicative Universal Grammar (AUG), and Radical Construction Grammar (RCG).
 
 It's work in progress. It can parse a little English NSM already.
