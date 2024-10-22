@@ -238,15 +238,19 @@ public class WelcomeController {
     // maybe broken now ---
     @GetMapping("/sandbox")
     public String sandbox(Model model) {
+        System.out.println("Entered sandbox");
                                                                 __.reset();
         // String Str_nw = "IF I THINK I IS BAD";
-        String Str_nw = "I SAY I IS BAD";
+        // String Str_nw = "I SAY I BE BAD";
+
+        String Str_nw = "I BE GOOD";
+        System.out.println("About to make new sentence");
         Sentence S = new Sentence (Str_nw);
         Cache C = Cache.cache (S);
-        LinkedList<TypedTree> tt_ls = C.get(0,0);
-
-        // TypedTree tt = tt_ls.get(0);
         String s = "";
+
+        LinkedList<TypedTree> tt_ls = C.get(0,0);
+        System.out.println("...entering tt loop...");
         for (TypedTree tt : tt_ls) {
             JSONObject json = Visitor.TypedTreeToJSON (tt);
             s += json.toString();
@@ -255,10 +259,9 @@ public class WelcomeController {
         }
 
         model.addAttribute("message", s);
-
-//        model.addAttribute("message", message);
 //        model.addAttribute("tasks", tasks);
 
+        System.out.println("Returning from sandbox");
         return "sandbox"; //view
     }
 

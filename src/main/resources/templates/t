@@ -1,0 +1,43 @@
+s={"types":[{"type":"S"}],
+   "tree":{"before": {
+             "types":[{"type":"Subst"}],
+	     "tree":{"atom":"I",
+	             "order":"NEITHER"}
+	    },
+	   "after":{
+	      "types":[{"type":"PredS"}],
+	      "tree":{
+	        "before": {
+		   "types":[{"type":"O_(+O_(+S?Pred)?Pred)"}],
+		   "tree":{
+		     "atom":"SAY",
+		     "order":"NEITHER"
+		   }
+		},
+		"after":{
+		   "types":[{"type":"O_(+S?Pred)"}],
+		   "tree":{
+		     "before":{
+		       "types":[{"type":"Subst"}],
+		       "tree":{"atom":"I","order":"NEITHER"}
+		     },
+		     "after":{
+		       "types":[{"type":"PredS"}],
+		       "tree":{
+		         "before":{
+			   "types":[{"type":"O_(+O_(+BAD?Pred)?Pred)"}],
+			   "tree":{"atom":"BE","order":"NEITHER"}
+			 },
+			 "after":{
+			   "types":[{"type":"O_(+BAD?Pred)"}],
+			   "tree":{"atom":"BAD","order":"NEITHER"}
+			 },
+			 "order":"BEFORE"}
+		       },
+		     "order":"BEFORE"}
+		   },
+		"order":"BEFORE"}
+	      },
+	   "order":"BEFORE"}
+}
+
