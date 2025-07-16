@@ -72,64 +72,72 @@ public class WelcomeController {
 
     @GetMapping("/edit")
     public String mainNothingSpecial(Model model) {
-        System.out.println ("Hit nsm editor ...");
         model.addAttribute("post", new Post());
-
         return "edit";
     }
 
     @PostMapping("/edit")
     public String save(Post post, Model model) {
                                                                 __.reset();
-                                                                __.push_trace(true);
+                                                                __.push_trace(false);
         if (post == null) {                                     __.ln ("save: post is null, strangely....");
         }
         String content = post.getContent();                     __.ln ("In /edit:save, content = " + content);
 
         if (content == null) {
-            model.addAttribute("post", null);                   __.pop_trace();
+            model.addAttribute("post", null);
+                                                                __.pop_trace();
             return "saved";
         }
 
-                                                __.push_trace(true);
         Node doc = markdownToDocument(content);
         WordVisitor wv = new WordVisitor();
         WordVisitor.init();
         doc.accept(wv);
-
-                                                __.ln ("Word list");
+                                                                __.ln ("Word list");
         for (String s : WordVisitor.word_list) {
             __.ln ("-> " + s);
         }
+                                                                __.ln("OK, just before Sentence.Glom call");
         LinkedList<TypedTree> glommed = Sentence.Glom(WordVisitor.word_list);
-                                                __.pop_trace();
 
-                                                __.push_trace(true);
+        __.ln("...and after Glom call");
+
+        __.push_trace(false);
         Cache Cwv = Cache.cache (null, glommed);
+        __.pop_trace();
 
+        __.push_trace(false);
         __.ln ("-------------- Cwv -----------");
-        __.ln ("Cwv.c = " + Cwv.c);
-        __.ln ("");
+        // __.ln ("Cwv.c = " + Cwv.c);
+        // __.ln ("");
         __.ln (TypedTree.ls_ls_ls_str (Cwv.c));
         __.ln ("------------------------------");
-                                                __.pop_trace();       
+        __.pop_trace();
+
+        __.push_trace(false);
+        __.ln("just before new Visitor() call");
         Visitor v = new Visitor();  
 //        Node doc = markdownToDocument(content);
+        __.ln("just before doc.accept(v)");
         doc.accept(v);
+        __.ln("just before first v.indented.show() call");
         v.indented.show();
+        __.ln("just before v.indented.postprocess() call");
         v.indented.postprocess();  // cross fingers ...
-                                                                __.reset();
-        v.indented.show();
-                                                                __.trace(true);
-        TypedTree.nested_pp(v.indented);                        __.trace(false);
+        __.ln("just before second v.indented.show() call");
 
-                                                                __.trace(true);
+        v.indented.show();
+        __.pop_trace();
+
+        TypedTree.nested_pp(v.indented);
+
         LinkedList<Compound> results = Compound.load_and_run(v.indented);
                     __.ln ("");
                     __.ln ("---------------------------------------------------------------");
                     __.ln ("Results: " + results);
                     __.ln ("---------------------------------------------------------------");
-        
+
         String h = markdownToHTML(content); // linebreaks lost even tho editor keeps
         String[] lines = content.split("\\R");
         // String s = ""; // really need string array, processed on HTML template side

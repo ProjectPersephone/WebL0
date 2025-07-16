@@ -320,7 +320,7 @@ public class Compound {
         // and succeed to the end at least once. Simply adding a fact doesn't
         // contribute. These may actually need to be retracted if
         // there's failure.
-                                                                __.push_trace(true);
+                                                                __.push_trace(false);
         if (++call_depth > 30) {                                __.ln ("call_depth>30, bailing");
                                                                 __.pop_trace();
             return null;
@@ -403,7 +403,7 @@ public class Compound {
     // maybe stop dragging Context C around and refer to top of Context stack?
 
     private static Boolean unify (Compound T1, Compound T2, Compound to_do) {
-                                                    __.push_trace(true);
+                                                    __.push_trace(false);
         if (++call_depth > 30) {                    __.ln ("call_depth>30, bailing");
             return false;
         }
@@ -498,8 +498,9 @@ public class Compound {
 
     public static LinkedList<Compound> load_and_run(NestedLines nlp) {
                                                 __.reset();
-                                                __.trace(true);
+
         __.ln ("\n----------- load_and_run: clear bindings & run list & preds ---------");
+                                                __.trace(false);
         bindings.clear();
         new_Context();      // prevent empty stack exception
                                                 __.ln ("initial bindings =" + bindings);

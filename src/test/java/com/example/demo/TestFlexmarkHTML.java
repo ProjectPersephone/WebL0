@@ -143,6 +143,6 @@ public class TestFlexmarkHTML {
         __.ln ("\n--------------------------------------------------------");
 
    // need this or the next test fails????? wow
-        __.trace(true); 
+        __.trace(false);
     }
 }

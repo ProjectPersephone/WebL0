@@ -51,10 +51,10 @@ public class TestTypedTree {
                     };
 
         __.reset();
-        __.trace(true);
+        __.trace(false);
         __.ln ("**** TestTypedTree ****");
 
-        __.push_trace(true);
+        __.push_trace(false);
 
         for (String sample : st) {
             Sentence S = new Sentence (sample);
@@ -69,7 +69,7 @@ public class TestTypedTree {
             __.ln ("TestTypedTree: Length of typed_trees = " + tl.size());
 
             __.reset();
-            __.push_trace(true);
+            __.push_trace(false);
 
             Iterator<TypedTree> li = tl.iterator();
             while (li.hasNext()) {

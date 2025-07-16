@@ -61,7 +61,6 @@ public class __ {
     }
 
     public static void ln(String S) {
-        // assertTrue(initialized);
         if (!flag_stack.peek()) return;
         ++base_level;   // compensate for calling print
         System.out.println (out() + S);

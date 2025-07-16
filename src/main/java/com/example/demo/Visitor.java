@@ -31,8 +31,8 @@ class Visitor extends AbstractVisitor {
 
         int wordCount = text.getLiteral().split("\\W+").length; // ???
         String Str_nw = text.getLiteral();
-        Sentence S = new Sentence (Str_nw);             __.reset();
-                                                        __.trace(false);
+        Sentence S = new Sentence (Str_nw);
+
         Cache C = Cache.cache (S);
         LinkedList<TypedTree> tt_ls = C.get(0,0);
         if (tt_ls.isEmpty()) {                          __.ln ("visit: empty tt_ls");
@@ -40,10 +40,7 @@ class Visitor extends AbstractVisitor {
         }
         TypedTree tt = tt_ls.get(0);
                                                         __.ln (wordCount + " words in " + text.getLiteral() + ": " + tt.str());
-                                                        __.reset();
-                                                        __.trace(true);
 
-                                                        __.trace(false);
         indented.add (tt);
     }
 
@@ -54,6 +51,8 @@ class Visitor extends AbstractVisitor {
             for (Line ln : ll) {                            __.ln ("tab level = " + ln.level);
                 JSONObject json = TypedTreeToJSON (ln.line);
                 if (ln.block != null && ln.block.size() != 0) {
+                    System.out.println("Just before helper call");
+                    System.out.flush();
                     JSONArray sub = toJSONArray_helper(ln.block);
                     json.put ("block", sub);            __.ln ("adding to block: " + sub.toString());
                 }

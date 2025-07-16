@@ -15,7 +15,7 @@ public class TestCompound {
     public void main() throws Exception {
 
         __.reset();
-        __.trace(true);
+        __.trace(false);
         __.ln ("**** TestCompound ****");
 
         Compound c = new Compound(Nucleus.BE);
