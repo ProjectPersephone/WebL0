@@ -497,7 +497,6 @@ public class Compound {
     }
 
     public static LinkedList<Compound> load_and_run(NestedLines nlp) {
-                                                __.reset();
 
         __.ln ("\n----------- load_and_run: clear bindings & run list & preds ---------");
                                                 __.trace(false);

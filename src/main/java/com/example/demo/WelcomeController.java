@@ -130,13 +130,24 @@ public class WelcomeController {
         v.indented.show();
         __.pop_trace();
 
-        TypedTree.nested_pp(v.indented);
+        __.trace(true);
+        __.ln("Just before nested_pp call");
 
+        __.push_trace(true);
+        TypedTree.nested_pp(v.indented);
+        __.pop_trace();
+
+        __.ln("Just before load_and_run call");
+
+        __.push_trace(true);
         LinkedList<Compound> results = Compound.load_and_run(v.indented);
                     __.ln ("");
                     __.ln ("---------------------------------------------------------------");
                     __.ln ("Results: " + results);
                     __.ln ("---------------------------------------------------------------");
+        __.pop_trace();
+
+        __.ln("Just before markdownToHTML call");
 
         String h = markdownToHTML(content); // linebreaks lost even tho editor keeps
         String[] lines = content.split("\\R");
@@ -152,6 +163,8 @@ public class WelcomeController {
         JSONArray ja_new = v.toJSON();              __.ln ("Array of JSON parses with blocks=" + ja_new);
 
         String jas = ja_new.toString();             __.ln ("Array of JSON parses=" + jas);
+
+
 
         model.addAttribute("message", jas);
         model.addAttribute("post", post);
