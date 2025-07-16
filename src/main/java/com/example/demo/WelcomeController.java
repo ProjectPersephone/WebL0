@@ -123,6 +123,7 @@ public class WelcomeController {
                                                                 __.trace(true);
         TypedTree.nested_pp(v.indented);                        __.trace(false);
 
+                                                                __.trace(true);
         LinkedList<Compound> results = Compound.load_and_run(v.indented);
                     __.ln ("");
                     __.ln ("---------------------------------------------------------------");
